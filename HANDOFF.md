@@ -106,3 +106,15 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
 - **`qrcteam` is a GitHub USER account, not an org** — `gh api orgs/qrcteam` 404s and the
   current `gh` token has no `admin:org` scope. It's also the account `gh` is authenticated as,
   so `gh repo create qrcteam/<name>` just works. Don't go hunting for org permissions. [gotcha]
+
+## 2026-08-12 session tg-diagnose
+- Oz reported "no telegrams back" from his own Hermes install (via Claude Telegram). NOT a crash:
+  the agent's `clarify` tool asked a question at 15:15 UTC and blocked the session for its full
+  3600s timeout. Oz's replies during the wait — voice notes AND short texts — never unblocked it;
+  they were cached/batched but not matched to the pending clarify. It woke at 16:15 and resumed
+  normally. Kit installs will hit this: users answer clarify questions by voice. [gotcha]
+- Second weakness on Oz's install: primary provider (openai-codex via chatgpt.com) throws
+  intermittent APIConnectionError (retries succeed at attempt 2), and BOTH fallbacks are dead —
+  OpenRouter = payment/credit error, Nous = never authenticated (`hermes auth` never run).
+  One bad codex day = mute agent. Check fallback health in vault-health / runbooks. [gotcha]
+- Offered Oz: drop clarify timeout (60min → ~2min) + fix a fallback provider. Awaiting his word. [state]
