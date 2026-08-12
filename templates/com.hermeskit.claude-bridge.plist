@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  macOS launchd job — Hermes → Claude Code delegation bridge.
+  Fires when a task file lands in ~/.hermes/handoffs/inbox, plus a 5-minute
+  backstop interval in case a WatchPaths event is missed.
+
+  Install:
+    1. Replace every /Users/<USER> below.
+    2. Copy claude-bridge.sh to ~/.hermes/claude-bridge.sh && chmod +x it.
+    3. Save this to ~/Library/LaunchAgents/com.hermeskit.claude-bridge.plist
+    4. launchctl unload ~/Library/LaunchAgents/com.hermeskit.claude-bridge.plist 2>/dev/null
+       launchctl load  ~/Library/LaunchAgents/com.hermeskit.claude-bridge.plist
+    5. Confirm:  launchctl list | grep claude-bridge
+
+  Requires Claude Code installed and authenticated for the login user
+  (default path ~/.local/bin/claude — override with CLAUDE_BIN below).
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.hermeskit.claude-bridge</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/&lt;USER&gt;/.hermes/claude-bridge.sh</string>
+    </array>
+
+    <key>WatchPaths</key>
+    <array>
+        <string>/Users/&lt;USER&gt;/.hermes/handoffs/inbox</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>300</integer>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <!-- launchd starts with a bare PATH; claude shells out to git/node/etc. -->
+        <key>PATH</key>
+        <string>/Users/&lt;USER&gt;/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>CLAUDE_BIN</key>
+        <string>/Users/&lt;USER&gt;/.local/bin/claude</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/&lt;USER&gt;/Library/Logs/claude-bridge.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/&lt;USER&gt;/Library/Logs/claude-bridge.log</string>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>LowPriorityIO</key>
+    <true/>
+</dict>
+</plist>
