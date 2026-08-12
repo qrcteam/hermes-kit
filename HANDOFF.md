@@ -118,3 +118,9 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   OpenRouter = payment/credit error, Nous = never authenticated (`hermes auth` never run).
   One bad codex day = mute agent. Check fallback health in vault-health / runbooks. [gotcha]
 - Offered Oz: drop clarify timeout (60min → ~2min) + fix a fallback provider. Awaiting his word. [state]
+- Set `agent.clarify_timeout: 120` in Oz's `~/.hermes/config.yaml` (was default 3600). Verified
+  live in-container — clarify reads config per call, no gateway restart. Backup at
+  config.yaml.bak-<utc>. Caveat from upstream docstring (#32762): very short timeouts can evict
+  a clarify entry mid-think so a late button-tap lands on a dead entry — watch for it. [decision]
+- Proposed Hermes→Claude delegation bridge: drop-box at ~/.hermes/handoffs/{inbox,outbox} +
+  host-side watcher running `claude -p` (skills like /audit-site). Awaiting Oz's go. [state]
