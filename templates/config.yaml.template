@@ -1,0 +1,78 @@
+# ~/.hermes/config.yaml
+#
+# Only the settings that MATTER for this kit are listed. Hermes writes plenty of
+# other keys itself — leave those alone. If a key isn't here, you don't need to
+# think about it.
+#
+# Apply with `hermes config set <key> <value>` rather than hand-editing where you
+# can; Hermes rewrites this file and will clobber manual edits it doesn't expect.
+
+# ── MUST NOT CHANGE ──────────────────────────────────────────────────────────
+
+database:
+  # SQLite write-ahead logging CORRUPTS across a Docker bind mount on macOS
+  # (virtiofs) and Windows (9p). This is not a preference. Leave it as `delete`.
+  # Symptom if you get this wrong: "database disk image is malformed", and the
+  # agent loses its session history.
+  journal_mode: delete
+
+approvals:
+  # Ask before anything irreversible.
+  mode: smart
+  # Scheduled AGENT jobs can never take an action, because a cron job can't stop
+  # to ask a person who is asleep. Note this does NOT block `--no-agent` script
+  # jobs — that's how the health watchdog runs unattended, and it's intentional.
+  cron_mode: deny
+
+# ── SET PER PERSON ───────────────────────────────────────────────────────────
+
+model:
+  # Set this with `hermes model` (interactive) rather than by hand — it has to
+  # match a credential in auth.json. Whatever their own subscription provides.
+  default: openai-codex/gpt-5.6-terra
+  provider: auto
+
+memory:
+  # Hermes keeps its own short profile of the person, separate from the vault.
+  # Think of it as what it remembers about *how to talk to them*; the vault is
+  # what it remembers about *their life*.
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+
+stt:
+  # Voice notes. Most people send them constantly once they realise they can.
+  # Local Whisper — the audio never leaves the machine.
+  enabled: true
+  local:
+    model: base
+  language: en
+
+agent:
+  max_turns: 500
+  reasoning_effort: medium
+
+# ── SENSIBLE DEFAULTS, CHANGE IF YOU LIKE ────────────────────────────────────
+
+display:
+  # Acknowledge on receipt. People text from their phone and walk away; silence
+  # reads as broken.
+  busy_ack_detail: true
+  long_running_notifications: true
+
+session_reset:
+  # Don't wipe context daily — the whole point is continuity.
+  mode: none
+  idle_minutes: 1440
+
+telemetry:
+  shared_metrics:
+    enabled: false
+
+platforms:
+  telegram:
+    extra:
+      # Fallback IPs for Telegram's API. Works around DNS flakiness that
+      # otherwise looks like "the bot is dead". Harmless to leave in.
+      fallback_ips: 149.154.166.110,149.154.167.220

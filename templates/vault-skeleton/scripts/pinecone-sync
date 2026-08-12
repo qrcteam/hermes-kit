@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+"""pinecone-sync — vectorize the OzLuv vault into the `ozluv-vault` Pinecone index.
+
+Usage:
+  scripts/pinecone-sync                      # incremental sync (content-hash based)
+  scripts/pinecone-sync --full               # re-upsert everything
+  scripts/pinecone-sync search "question"    # semantic search across all namespaces
+  scripts/pinecone-sync search "q" --ns bp-business --topk 5
+
+Index: ozluv-vault (integrated inference, llama-text-embed-v2, field "text").
+Namespaces: the 7 buckets + concepts / entities / reports / sessions.
+API key: $PINECONE_KEY_FILE, else $PINECONE_API_KEY, else ~/.claude.json → mcpServers.pinecone.env.
+The key NEVER lives in this vault; state file .pinecone-sync-state.json is gitignored.
+
+Multi-tenant: every default below is the original Oz behaviour, so this runs
+unchanged here. Other people's installs (see qrcteam/hermes-kit) override via env:
+  VAULT_ROOT          which vault to index      (default: the parent of this script)
+  PINECONE_INDEX      which index to write to   (default: ozluv-vault)
+  PINECONE_STATE      where to keep sync state  (default: <vault>/.pinecone-sync-state.json)
+  PINECONE_KEY_FILE   a file containing the key (default: unset)
+The state path is overridable because a Hermes install mounts the vault READ-ONLY,
+so the state file cannot live inside it.
+"""
+import hashlib
+import json
+import os
+import sys
+import urllib.request
+
+INDEX = os.environ.get("PINECONE_INDEX") or "ozluv-vault"
+API_VERSION = "2025-04"
+VAULT = os.environ.get("VAULT_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATE_PATH = os.environ.get("PINECONE_STATE") or os.path.join(VAULT, ".pinecone-sync-state.json")
+CHUNK_TARGET = 4000  # chars; llama-text-embed-v2 truncates ~2048 tokens, so chunk long notes
+BATCH = 50
+
+
+def api_key():
+    # A key file is preferred for unattended installs: it keeps the key out of the
+    # process environment, where a subprocess or a crash dump could pick it up.
+    kf = os.environ.get("PINECONE_KEY_FILE")
+    if kf and os.path.exists(kf):
+        k = open(kf).read().strip()
+        if k:
+            return k
+    k = os.environ.get("PINECONE_API_KEY")
+    if k:
+        return k
+    try:
+        cfg = json.load(open(os.path.expanduser("~/.claude.json")))
+        return cfg["mcpServers"]["pinecone"]["env"]["PINECONE_API_KEY"]
+    except Exception:
+        sys.exit("No PINECONE_API_KEY in env or ~/.claude.json mcpServers.pinecone.env")
+
+
+def req(url, payload=None, method=None, ndjson=False):
+    data = None
+    headers = {"Api-Key": api_key(), "X-Pinecone-API-Version": API_VERSION}
+    if payload is not None:
+        if ndjson:
+            data = ("\n".join(json.dumps(r) for r in payload)).encode()
+            headers["Content-Type"] = "application/x-ndjson"
+        else:
+            data = json.dumps(payload).encode()
+            headers["Content-Type"] = "application/json"
+    r = urllib.request.Request(url, data=data, headers=headers, method=method or ("POST" if data else "GET"))
+    with urllib.request.urlopen(r, timeout=60) as resp:
+        body = resp.read().decode()
+        return json.loads(body) if body else {}
+
+
+def index_host(state):
+    # Re-resolve if the state file was written against a different index, so a
+    # reused state file can never silently write into the wrong person's vectors.
+    if state.get("_host") and state.get("_index", "ozluv-vault") == INDEX:
+        return state["_host"]
+    info = req(f"https://api.pinecone.io/indexes/{INDEX}")
+    state["_index"] = INDEX
+    state["_host"] = info["host"]
+    return state["_host"]
+
+
+def namespace_for(rel):
+    parts = rel.split("/")
+    if parts[0] == "wiki" and parts[1] == "topics":
+        return parts[2]
+    if parts[0] == "wiki":
+        return parts[1]  # concepts / entities / reports
+    if parts[0] == "raw" and parts[1] == "sessions":
+        return "sessions"
+    return None
+
+
+def collect_files():
+    out = []
+    for base in ("wiki", os.path.join("raw", "sessions")):
+        root = os.path.join(VAULT, base)
+        if not os.path.isdir(root):
+            continue
+        for dirpath, _dirs, files in os.walk(root):
+            for f in sorted(files):
+                if not f.endswith(".md"):
+                    continue
+                rel = os.path.relpath(os.path.join(dirpath, f), VAULT)
+                if namespace_for(rel):
+                    out.append(rel)
+    return sorted(out)
+
+
+def chunk(text):
+    if len(text) <= CHUNK_TARGET * 1.5:
+        return [text]
+    chunks, cur = [], ""
+    for para in text.split("\n\n"):
+        if cur and len(cur) + len(para) > CHUNK_TARGET:
+            chunks.append(cur)
+            cur = para
+        else:
+            cur = cur + "\n\n" + para if cur else para
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+
+def records_for(rel, text):
+    ns = namespace_for(rel)
+    title = os.path.splitext(os.path.basename(rel))[0]
+    recs = []
+    for i, c in enumerate(chunk(text)):
+        recs.append({"_id": f"{rel}#{i}", "text": f"[{ns} / {title}]\n{c}", "path": rel, "title": title, "chunk": i})
+    return ns, recs
+
+
+def load_state():
+    try:
+        return json.load(open(STATE_PATH))
+    except Exception:
+        return {}
+
+
+def sync(full=False):
+    state = load_state()
+    host = index_host(state)
+    files = collect_files()
+    seen = set()
+    upserts = {}   # ns -> [records]
+    deletes = {}   # ns -> [ids]
+    for rel in files:
+        seen.add(rel)
+        text = open(os.path.join(VAULT, rel), encoding="utf-8", errors="replace").read()
+        h = hashlib.sha256(text.encode()).hexdigest()
+        prev = state.get(rel)
+        if not full and prev and prev["hash"] == h:
+            continue
+        ns, recs = records_for(rel, text)
+        upserts.setdefault(ns, []).extend(recs)
+        new_ids = {r["_id"] for r in recs}
+        if prev:
+            stale = [i for i in prev["ids"] if i not in new_ids]
+            if stale:
+                deletes.setdefault(prev["ns"], []).extend(stale)
+        state[rel] = {"hash": h, "ids": sorted(new_ids), "ns": ns}
+    for rel in [r for r in state if not r.startswith("_") and r not in seen]:
+        deletes.setdefault(state[rel]["ns"], []).extend(state[rel]["ids"])
+        del state[rel]
+
+    n_up = sum(len(v) for v in upserts.values())
+    n_del = sum(len(v) for v in deletes.values())
+    for ns, recs in upserts.items():
+        for i in range(0, len(recs), BATCH):
+            req(f"https://{host}/records/namespaces/{ns}/upsert", recs[i:i + BATCH], ndjson=True)
+    for ns, ids in deletes.items():
+        req(f"https://{host}/vectors/delete", {"ids": ids, "namespace": ns})
+    json.dump(state, open(STATE_PATH, "w"), indent=0, sort_keys=True)
+    files_synced = len({r["path"] for v in upserts.values() for r in v})
+    print(f"pinecone-sync: {files_synced} files → {n_up} records upserted, {n_del} stale deleted "
+          f"({len(files)} files tracked, index {INDEX})")
+
+
+def search(query, ns=None, topk=5):
+    state = load_state()
+    host = index_host(state)
+    spaces = [ns] if ns else sorted({v["ns"] for k, v in state.items() if not k.startswith("_")})
+    hits = []
+    for space in spaces:
+        try:
+            out = req(f"https://{host}/records/namespaces/{space}/search",
+                      {"query": {"inputs": {"text": query}, "top_k": topk}, "fields": ["path", "text"]})
+            for h in out.get("result", {}).get("hits", []):
+                hits.append((h.get("_score", 0), space, h["fields"].get("path", h["_id"]),
+                             h["fields"].get("text", "")[:300].replace("\n", " ")))
+        except Exception as e:
+            print(f"  ({space}: {e})", file=sys.stderr)
+    hits.sort(reverse=True)
+    for score, space, path, snippet in hits[:topk]:
+        print(f"{score:.3f}  [{space}] {path}\n       {snippet}\n")
+    if not hits:
+        print("no hits")
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if args and args[0] == "search":
+        q_args = args[1:]
+        ns = topk = None
+        q = []
+        i = 0
+        while i < len(q_args):
+            if q_args[i] == "--ns":
+                ns = q_args[i + 1]; i += 2
+            elif q_args[i] == "--topk":
+                topk = int(q_args[i + 1]); i += 2
+            else:
+                q.append(q_args[i]); i += 1
+        if not q:
+            sys.exit("usage: pinecone-sync search \"question\" [--ns bucket] [--topk N]")
+        search(" ".join(q), ns, topk or 5)
+    else:
+        sync(full="--full" in args)

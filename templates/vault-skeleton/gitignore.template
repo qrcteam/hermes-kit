@@ -1,0 +1,23 @@
+# Rename to .gitignore in the person's vault.
+#
+# (Shipped as gitignore.template so this kit's own git doesn't apply it.)
+
+# Obsidian per-machine state — noisy, conflicts constantly, means nothing to anyone else
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+
+# Pinecone sync state. It normally lives in ~/.hermes for a Hermes install, but
+# ignore it here too in case someone runs a sync with the default state path.
+.pinecone-sync-state.json
+
+# macOS
+.DS_Store
+
+# Obsidian's own trash
+.trash/
+
+# Nothing secret should ever be in a vault, but belt and braces.
+*.key
+.env
+secrets/

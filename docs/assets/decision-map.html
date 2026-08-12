@@ -1,0 +1,499 @@
+<title>Hermes Decision Map</title>
+<style>
+  /* ── tokens: light is the base, both dark paths override only these ───────── */
+  :root {
+    --paper:   #EEF1F3;
+    --surface: #FFFFFF;
+    --sunk:    #E4E9EC;
+    --ink:     #13202A;
+    --muted:   #566673;
+    --line:    #D2DADF;
+    --line-2:  #BCC7CE;
+    --copper:  #A0522B;
+    --patina:  #2A6A61;
+    --clay:    #96362E;
+    --shadow:  0 1px 2px rgba(19,32,42,.06), 0 8px 24px -12px rgba(19,32,42,.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:   #0E151B;
+      --surface: #17212A;
+      --sunk:    #121B23;
+      --ink:     #DFE7EC;
+      --muted:   #8B9BA7;
+      --line:    #27333D;
+      --line-2:  #35434F;
+      --copper:  #E08C58;
+      --patina:  #5FB6A8;
+      --clay:    #DE7A6E;
+      --shadow:  0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:   #0E151B;
+    --surface: #17212A;
+    --sunk:    #121B23;
+    --ink:     #DFE7EC;
+    --muted:   #8B9BA7;
+    --line:    #27333D;
+    --line-2:  #35434F;
+    --copper:  #E08C58;
+    --patina:  #5FB6A8;
+    --clay:    #DE7A6E;
+    --shadow:  0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  :root {
+    --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", ui-serif, Georgia, serif;
+    --body: -apple-system, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --measure: 68ch;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px 96px; }
+  .col  { max-width: var(--measure); }
+
+  /* ── masthead ─────────────────────────────────────────────────────────────── */
+  header.mast { padding: 72px 0 40px; border-bottom: 1px solid var(--line); margin-bottom: 56px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--copper); margin: 0 0 20px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(2.6rem, 6.2vw, 4.1rem);
+    line-height: 1.02; font-weight: 600; letter-spacing: -.018em;
+    margin: 0 0 22px; text-wrap: balance; max-width: 15ch;
+  }
+  .standfirst { font-size: 1.16rem; color: var(--muted); margin: 0; max-width: 56ch; }
+
+  /* ── sections ─────────────────────────────────────────────────────────────── */
+  section { margin-bottom: 68px; }
+  h2 {
+    font-family: var(--display);
+    font-size: 1.72rem; font-weight: 600; letter-spacing: -.012em;
+    margin: 0 0 6px; text-wrap: balance;
+  }
+  .sublede { color: var(--muted); margin: 0 0 28px; max-width: 60ch; }
+  p { margin: 0 0 1.05em; }
+  .col > p:last-child { margin-bottom: 0; }
+  strong { font-weight: 640; }
+  a { color: var(--copper); text-underline-offset: 2px; }
+
+  /* ── the thesis ───────────────────────────────────────────────────────────── */
+  .thesis {
+    border-left: 3px solid var(--copper);
+    padding: 4px 0 4px 26px;
+    margin: 0 0 68px;
+    max-width: 62ch;
+  }
+  .thesis p {
+    font-family: var(--display);
+    font-size: clamp(1.3rem, 2.9vw, 1.72rem);
+    line-height: 1.42; margin: 0; text-wrap: pretty;
+  }
+  .thesis .after { font-family: var(--body); font-size: .96rem; color: var(--muted); margin-top: 14px; }
+
+  /* ── piece cards ──────────────────────────────────────────────────────────── */
+  .pieces { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 18px; }
+  .piece {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 3px; padding: 22px 22px 20px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+  }
+  .piece h3 { font-family: var(--display); font-size: 1.24rem; font-weight: 600; margin: 0 0 3px; }
+  .piece .role {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--patina); margin: 0 0 14px;
+  }
+  .piece p { font-size: .95rem; margin: 0 0 14px; }
+  .piece dl { margin: auto 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: .87rem; }
+  .piece dt {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 2px;
+  }
+  .piece dd { margin: 0 0 10px; }
+  .piece dd:last-child { margin-bottom: 0; }
+  .chip {
+    display: inline-block; font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: .07em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 2px; border: 1px solid currentColor;
+    margin-bottom: 14px; align-self: flex-start;
+  }
+  .chip.req { color: var(--clay); }
+  .chip.opt { color: var(--muted); }
+
+  /* ── figure ───────────────────────────────────────────────────────────────── */
+  figure { margin: 0; }
+  .scroll { overflow-x: auto; padding-bottom: 6px; }
+  figure svg { display: block; width: 100%; min-width: 860px; height: auto; color: var(--ink); }
+  figcaption { color: var(--muted); font-size: .92rem; margin-top: 16px; max-width: 62ch; }
+
+  /* ── tables ───────────────────────────────────────────────────────────────── */
+  table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+  th, td { text-align: left; padding: 11px 16px 11px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    font-family: var(--mono); font-weight: 500; font-size: 10.5px;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    border-bottom-color: var(--line-2);
+  }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .verdict { font-family: var(--mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; }
+  .verdict.y { color: var(--clay); }
+  .verdict.n { color: var(--muted); }
+  tr.total td { border-bottom: none; padding-top: 14px; font-weight: 640; }
+  tr.total td:first-child { color: var(--copper); }
+
+  /* ── confusions ───────────────────────────────────────────────────────────── */
+  .confusions { display: grid; gap: 2px; background: var(--line); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+  .cf { background: var(--surface); padding: 20px 22px; }
+  .cf .neq { font-family: var(--mono); font-size: .95rem; color: var(--copper); margin: 0 0 7px; }
+  .cf p { font-size: .93rem; margin: 0; color: var(--muted); }
+  .cf p em { color: var(--ink); font-style: normal; font-weight: 560; }
+
+  /* ── not-for list ─────────────────────────────────────────────────────────── */
+  ul.plain { list-style: none; margin: 0; padding: 0; max-width: var(--measure); }
+  ul.plain li { padding: 13px 0 13px 26px; border-bottom: 1px solid var(--line); position: relative; font-size: .95rem; }
+  ul.plain li::before {
+    content: "—"; position: absolute; left: 0; top: 13px; color: var(--copper); font-family: var(--mono);
+  }
+  ul.plain li:last-child { border-bottom: none; }
+  ul.plain b { font-weight: 620; }
+
+  /* ── questions: a real sequence, so numbering earns its place ─────────────── */
+  ol.q { list-style: none; counter-reset: q; margin: 0; padding: 0; display: grid; gap: 16px; }
+  ol.q li {
+    counter-increment: q; position: relative; padding-left: 46px;
+    max-width: 62ch;
+  }
+  ol.q li::before {
+    content: counter(q); position: absolute; left: 0; top: 1px;
+    font-family: var(--mono); font-size: 12px; color: var(--copper);
+    border: 1px solid var(--line-2); border-radius: 50%;
+    width: 27px; height: 27px; display: grid; place-items: center;
+  }
+  ol.q b { display: block; font-weight: 620; margin-bottom: 1px; }
+  ol.q span { color: var(--muted); font-size: .93rem; }
+
+  /* ── callout ──────────────────────────────────────────────────────────────── */
+  .rule {
+    background: var(--sunk); border: 1px solid var(--line);
+    border-left: 3px solid var(--clay);
+    border-radius: 3px; padding: 20px 24px; max-width: var(--measure);
+  }
+  .rule p { margin: 0; font-size: .95rem; }
+  .rule p + p { margin-top: .8em; }
+  .rule .head { font-weight: 640; color: var(--clay); }
+
+  code {
+    font-family: var(--mono); font-size: .86em;
+    background: var(--sunk); border: 1px solid var(--line);
+    padding: .08em .34em; border-radius: 2px;
+  }
+
+  footer {
+    border-top: 1px solid var(--line); padding-top: 26px; margin-top: 84px;
+    color: var(--muted); font-size: .88rem; display: flex; flex-wrap: wrap; gap: 8px 22px;
+  }
+  footer span.k { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <p class="eyebrow">hermes-kit · doc 00</p>
+    <h1>The Decision Map</h1>
+    <p class="standfirst">
+      Four moving parts, in plain English — what each one does, which you can skip,
+      and what it costs to give one person an assistant that remembers them.
+    </p>
+  </header>
+
+  <div class="thesis">
+    <p>You're giving someone a text-message assistant that writes down what it learns
+      into a folder of notes they own, backs that folder up, and can search it by
+      meaning instead of by keyword.</p>
+    <p class="after">Everything below is just which tool does which part of that sentence.</p>
+  </div>
+
+  <section>
+    <h2>The four pieces</h2>
+    <p class="sublede">One paragraph each. If you only read one line per card, read “without it”.</p>
+
+    <div class="pieces">
+
+      <article class="piece">
+        <h3>Hermes</h3>
+        <p class="role">the agent you text</p>
+        <span class="chip req">Mandatory</span>
+        <p>An open-source agent that runs continuously on their machine and connects to a
+          Telegram bot, so they text it from their phone like a person. Unlike ChatGPT it
+          doesn't start from zero every time — it reads a file describing who they are,
+          and it reads their notes.</p>
+        <dl>
+          <dt>Cost</dt><dd>Free. It needs a model to run on — that's the $20 below.</dd>
+          <dt>Without it</dt><dd>You have a folder of notes and nobody to talk to.</dd>
+        </dl>
+      </article>
+
+      <article class="piece">
+        <h3>The vault</h3>
+        <p class="role">the memory itself</p>
+        <span class="chip req">Mandatory</span>
+        <p>A plain folder of markdown files — notes in a handful of buckets, one fact each,
+          cross-linked. The whole point is that it's text in a folder. If Hermes vanished
+          tomorrow, they'd still have a readable notebook. No lock-in, no export step.</p>
+        <dl>
+          <dt>Cost</dt><dd>Nothing.</dd>
+          <dt>Without it</dt><dd>The agent forgets everything between conversations. This is the piece.</dd>
+        </dl>
+      </article>
+
+      <article class="piece">
+        <h3>Obsidian</h3>
+        <p class="role">the window onto it</p>
+        <span class="chip opt">Optional</span>
+        <p>A free app that opens that folder and makes it navigable. It's a <em>viewer</em>,
+          not a writer — it does nothing to the system. It's how a human looks at what the
+          agent knows, thinks “that's not right”, and fixes it.</p>
+        <dl>
+          <dt>Cost</dt><dd>Free.</dd>
+          <dt>Without it</dt><dd>Everything still works. You'd be opening <code>.md</code> files in TextEdit.</dd>
+        </dl>
+      </article>
+
+      <article class="piece">
+        <h3>Pinecone</h3>
+        <p class="role">recall by meaning</p>
+        <span class="chip opt">Defer if needed</span>
+        <p>Keyword search for “plumber” only finds notes containing the word. Semantic search
+          for <em>“who did I hire for the bathroom?”</em> finds the note saying “went with Ruiz
+          for the Henderson re-pipe” — no shared words at all.</p>
+        <dl>
+          <dt>Cost</dt><dd>Free tier is genuinely enough for one person.</dd>
+          <dt>Without it</dt><dd>Search stays literal. Fine at 50 notes, frustrating at 500.</dd>
+        </dl>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>How a thought becomes a memory</h2>
+    <p class="sublede">
+      The mechanism worth understanding before anything else: the agent proposes, and a
+      separate program disposes.
+    </p>
+
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 1000 392" role="img"
+             aria-label="Flow diagram. A person texts Hermes, which proposes a note into an inbox. Both sit on the untrusted agent side. A dashed trust boundary separates them from the host side, where a promoter script — the only component that can write — files the note into the vault, then git and Pinecone. The vault is read back by Hermes across the boundary, read-only.">
+          <defs>
+            <marker id="hd" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+            <marker id="hd-p" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--patina)"/>
+            </marker>
+          </defs>
+
+          <!-- side labels -->
+          <text x="270" y="26" text-anchor="middle" font-family="ui-monospace,Menlo,monospace"
+                font-size="11" letter-spacing="1.6" fill="var(--muted)">AGENT SIDE — CAN BE TALKED INTO THINGS</text>
+          <text x="772" y="26" text-anchor="middle" font-family="ui-monospace,Menlo,monospace"
+                font-size="11" letter-spacing="1.6" fill="var(--muted)">HOST SIDE — THE ONLY WRITER</text>
+
+          <!-- the trust boundary -->
+          <line x1="536" y1="40" x2="536" y2="330" stroke="var(--copper)"
+                stroke-width="1.5" stroke-dasharray="7 5"/>
+          <text x="536" y="352" text-anchor="middle" font-family="ui-monospace,Menlo,monospace"
+                font-size="11" letter-spacing="1.4" fill="var(--copper)">TRUST BOUNDARY</text>
+
+          <!-- boxes -->
+          <rect x="16" y="112" width="118" height="56" rx="2" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <text x="75" y="136" text-anchor="middle" font-size="13" fill="currentColor">Their phone</text>
+          <text x="75" y="153" text-anchor="middle" font-size="11.5" fill="var(--muted)">Telegram</text>
+
+          <rect x="186" y="112" width="152" height="56" rx="2" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <text x="262" y="136" text-anchor="middle" font-size="13" fill="currentColor">Hermes</text>
+          <text x="262" y="153" text-anchor="middle" font-size="11.5" fill="var(--muted)">the agent</text>
+
+          <rect x="390" y="112" width="112" height="56" rx="2" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <text x="446" y="136" text-anchor="middle" font-size="13" fill="currentColor">inbox</text>
+          <text x="446" y="153" text-anchor="middle" font-size="11.5" fill="var(--muted)">staging</text>
+
+          <rect x="570" y="106" width="168" height="68" rx="2" fill="none" stroke="var(--copper)" stroke-width="1.75"/>
+          <text x="654" y="132" text-anchor="middle" font-size="13.5" fill="currentColor">the promoter</text>
+          <text x="654" y="149" text-anchor="middle" font-size="11.5" fill="var(--muted)">60 lines of bash.</text>
+          <text x="654" y="164" text-anchor="middle" font-size="11.5" fill="var(--muted)">no AI.</text>
+
+          <rect x="800" y="52" width="184" height="48" rx="2" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <text x="892" y="82" text-anchor="middle" font-size="13" fill="currentColor">the vault</text>
+
+          <rect x="800" y="116" width="184" height="48" rx="2" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <text x="892" y="146" text-anchor="middle" font-size="13" fill="currentColor">git — undo + backup</text>
+
+          <rect x="800" y="180" width="184" height="48" rx="2" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <text x="892" y="210" text-anchor="middle" font-size="13" fill="currentColor">Pinecone — recall</text>
+
+          <!-- forward arrows -->
+          <line x1="134" y1="140" x2="180" y2="140" stroke="currentColor" stroke-width="1.25" marker-end="url(#hd)"/>
+          <text x="157" y="131" text-anchor="middle" font-size="11" fill="var(--muted)">texts</text>
+
+          <line x1="338" y1="140" x2="384" y2="140" stroke="currentColor" stroke-width="1.25" marker-end="url(#hd)"/>
+          <text x="361" y="131" text-anchor="middle" font-size="11" fill="var(--muted)">proposes</text>
+
+          <line x1="502" y1="140" x2="564" y2="140" stroke="currentColor" stroke-width="1.25" marker-end="url(#hd)"/>
+          <text x="533" y="131" text-anchor="middle" font-size="11" fill="var(--muted)">every 15 min</text>
+
+          <!-- promoter fan-out -->
+          <path d="M 738 130 H 768 V 76 H 794" fill="none" stroke="currentColor" stroke-width="1.25" marker-end="url(#hd)"/>
+          <path d="M 738 140 H 794" fill="none" stroke="currentColor" stroke-width="1.25" marker-end="url(#hd)"/>
+          <path d="M 738 150 H 768 V 204 H 794" fill="none" stroke="currentColor" stroke-width="1.25" marker-end="url(#hd)"/>
+          <text x="768" y="46" text-anchor="middle" font-size="11" fill="var(--muted)">writes</text>
+
+          <!-- read-only return path -->
+          <path d="M 984 76 H 996 V 300 H 262 V 174"
+                fill="none" stroke="var(--patina)" stroke-width="1.5"
+                marker-end="url(#hd-p)"/>
+          <text x="600" y="291" text-anchor="middle" font-size="11.5" fill="var(--patina)"
+                font-family="ui-monospace,Menlo,monospace" letter-spacing=".6">
+            Hermes reads the vault back — mounted read-only
+          </text>
+        </svg>
+      </div>
+      <figcaption>
+        Every arrow into the vault starts at the promoter, and the only arrow back out to
+        Hermes is read-only. That's the whole safety argument: the agent can propose a note,
+        but it has no path that writes one.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Why the agent can't write</h2>
+    <div class="rule">
+      <p><span class="head">The vault is mounted read-only, and that's enforced by the operating system.</span></p>
+      <p>Hermes is a language model wired to tools, so it can be talked into things — a
+        forwarded email or a web page can contain instructions. That's true of every agent,
+        not a flaw in this one.</p>
+      <p>So the design assumes it will eventually try to do something wrong, and makes the
+        damaging version <em>impossible</em> rather than forbidden. It isn't a rule the agent
+        is asked to follow. It's a rule it cannot break.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What you can skip</h2>
+    <p class="sublede">Five of these are load-bearing. Two are conveniences.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th style="width:30%">Piece</th><th style="width:20%">Verdict</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>The vault</td><td class="verdict y">Mandatory</td><td>It <em>is</em> the memory</td></tr>
+          <tr><td><code>SOUL.md</code></td><td class="verdict y">Mandatory</td><td>Without it you have a generic chatbot with their name on it</td></tr>
+          <tr><td>Git</td><td class="verdict y">Mandatory</td><td>Undo, and the only backup. A disk dies and the memory is gone</td></tr>
+          <tr><td>Hermes + Telegram</td><td class="verdict y">Mandatory</td><td>It's the thing they talk to</td></tr>
+          <tr><td>The promoter</td><td class="verdict y">Mandatory</td><td>Nothing gets remembered without it</td></tr>
+          <tr><td>Pinecone</td><td class="verdict n">Defer</td><td>Add it under ~200 notes only if the install is going smoothly</td></tr>
+          <tr><td>Obsidian</td><td class="verdict n">Optional</td><td>Purely a human convenience — install it for anyone curious</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Money, honestly</h2>
+    <p class="sublede">Per person, per month.</p>
+    <div class="scroll">
+      <table>
+        <tbody>
+          <tr><td>Hermes</td><td class="num">$0</td><td>Open source, runs on their machine</td></tr>
+          <tr><td>Obsidian</td><td class="num">$0</td><td>Free for personal use</td></tr>
+          <tr><td>Git hosting</td><td class="num">$0</td><td>Private repos are free</td></tr>
+          <tr><td>Pinecone</td><td class="num">$0</td><td>Free tier covers one person comfortably</td></tr>
+          <tr><td><strong>Model access</strong></td><td class="num"><strong>~$20</strong></td><td><strong>The only real cost</strong> — their own ChatGPT or Claude subscription</td></tr>
+          <tr class="total"><td>Total</td><td class="num">~$20/mo</td><td>each, paid by them</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="col" style="margin-top:22px; color:var(--muted); font-size:.93rem">
+      Each person brings their own subscription. One credential can't be shared across four
+      people without getting rate-limited, and it keeps the boundary clean — a paying client
+      pays for her own agent. The unlisted costs are electricity and a machine that stays
+      awake: Hermes has to be running to receive a text.
+    </p>
+  </section>
+
+  <section>
+    <h2>Three things worth separating</h2>
+    <p class="sublede">The names collide, and that's where most of the confusion came from.</p>
+    <div class="confusions">
+      <div class="cf">
+        <p class="neq">Hermes Agent  ≠  OpenClaw</p>
+        <p>Different projects, different people. You're running <em>NousResearch's hermes-agent</em>.
+          Where course material says “OpenClaw”, mentally substitute.</p>
+      </div>
+      <div class="cf">
+        <p class="neq">Hermes  ≠  Claude OS</p>
+        <p>Claude OS is a dashboard that <em>displays</em> stats from Hermes, the vault and Pinecone.
+          It's a viewer. It isn't part of this stack and this kit doesn't touch it.</p>
+      </div>
+      <div class="cf">
+        <p class="neq">Hermes  ≠  Claude Code</p>
+        <p>Claude Code is the developer tool you build with. Hermes is the assistant you text.
+          Both read the vault; only one writes code. <em>Mazíx, Diane and Doug get Hermes only.</em></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What it isn't for</h2>
+    <p class="sublede">Say these out loud at handover, so expectations don't drift.</p>
+    <ul class="plain">
+      <li><b>Not a task manager.</b> It remembers; it doesn't nag. A morning digest is not the same thing.</li>
+      <li><b>Not a second brain you maintain.</b> If someone has to curate it, they won't. Capture is automatic and messy on purpose.</li>
+      <li><b>Not private from the model provider.</b> What they text goes to OpenAI or Anthropic like any other chat. The storage is theirs; the thinking isn't.</li>
+      <li><b>Not a replacement for their existing tools.</b> Diane keeps Keap. This sits alongside.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Decide before you start</h2>
+    <p class="sublede">
+      Four answers per person, written into their record before you touch a terminal.
+      They run in this order because each one narrows the next.
+    </p>
+    <ol class="q">
+      <li><b>What machine?</b><span>Mac follows runbook 02, Windows runbook 03. This decides everything about scheduling.</span></li>
+      <li><b>What model subscription do they already have?</b><span>ChatGPT $20 is the path of least resistance. If they have neither, that's a conversation before install day — not during.</span></li>
+      <li><b>What are their buckets?</b><span>Four or five life areas, in their words, not yours. Annoying to change later, because notes are already filed into them.</span></li>
+      <li><b>What's the one job?</b><span>One sentence. “Doug wants to know what he was working on.” It goes at the top of their SOUL.md and shapes every other decision.</span></li>
+    </ol>
+  </section>
+
+  <footer>
+    <span class="k">hermes-kit</span>
+    <span>Next: <strong>01 Architecture</strong> for the mechanics, or <strong>02 Runbook</strong> to build one.</span>
+    <span>Install order — Mazíx, then Doug, then Diane.</span>
+  </footer>
+
+</div>

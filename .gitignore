@@ -1,0 +1,11 @@
+.DS_Store
+.impeccable/
+
+# Filled-in copies of templates must never be committed — they hold real keys.
+*.env
+.env
+**/secrets/
+*.key
+
+# A person's actual install record may pick up paths you'd rather not publish;
+# the committed people/*.md files are records WITHOUT secrets by design.

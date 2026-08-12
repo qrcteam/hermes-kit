@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  macOS launchd job — runs the promoter every 15 minutes.
+
+  Install:
+    1. Replace every <NAME> and every /Users/<USER> below.
+    2. Save to ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
+    3. launchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2>/dev/null
+       launchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
+    4. Confirm:  launchctl list | grep vault-promote
+
+  WATCH OUT: the vault must NOT be under ~/Desktop, ~/Documents or ~/Downloads.
+  macOS TCC blocks launchd from all three, and it fails SILENTLY — you get
+  "Operation not permitted" in a log nobody reads while the index quietly rots.
+  ~/Memory/<NAME>-vault is not TCC-gated. Use it.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.hermeskit.vault-promote</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/&lt;USER&gt;/.hermes/promote.sh</string>
+    </array>
+
+    <!-- Every 15 minutes. Also fires once at login so a reboot doesn't leave a gap. -->
+    <key>StartInterval</key>
+    <integer>900</integer>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/&lt;USER&gt;/Memory/&lt;NAME&gt;-vault</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>VAULT_ROOT</key>
+        <string>/Users/&lt;USER&gt;/Memory/&lt;NAME&gt;-vault</string>
+
+        <key>HERMES_HOME</key>
+        <string>/Users/&lt;USER&gt;/.hermes</string>
+
+        <key>PINECONE_INDEX</key>
+        <string>&lt;NAME&gt;-vault</string>
+
+        <key>PINECONE_STATE</key>
+        <string>/Users/&lt;USER&gt;/.hermes/pinecone-state.json</string>
+
+        <key>PINECONE_KEY_FILE</key>
+        <string>/Users/&lt;USER&gt;/.hermes/secrets/pinecone.key</string>
+
+        <key>PINECONE_SYNC</key>
+        <string>/Users/&lt;USER&gt;/Memory/&lt;NAME&gt;-vault/scripts/pinecone-sync</string>
+
+        <!-- launchd starts with a bare PATH. git, docker and python3 all need finding. -->
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+
+        <!-- Set this to `master` if the vault repo uses the old default branch name. -->
+        <key>GIT_BRANCH</key>
+        <string>main</string>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/Users/&lt;USER&gt;/Library/Logs/vault-promote.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/&lt;USER&gt;/Library/Logs/vault-promote.log</string>
+
+    <!-- Don't let it fight for the disk while they're working. -->
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>LowPriorityIO</key>
+    <true/>
+</dict>
+</plist>

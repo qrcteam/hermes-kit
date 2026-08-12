@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Windows Task Scheduler job — runs the promoter every 15 minutes.
+
+  ENCODING: this file is UTF-8 and says so. Task Scheduler's own exports are
+  UTF-16, and a few Windows builds insist on it. If schtasks rejects this with
+  an encoding complaint, re-save as UTF-16 LE and change the declaration to match:
+      Get-Content task.xml | Set-Content -Encoding Unicode task-utf16.xml
+
+  It calls the SAME promote.sh as macOS, through WSL2. One script, two platforms.
+  Do not write a PowerShell port; you'd then have two things to keep in step.
+
+  Install (PowerShell, as the person's own user — NOT as Administrator):
+
+    # 1. Replace <USER> and <NAME> throughout, save as vault-promote-task.xml
+    # 2. Register it:
+    schtasks /Create /TN "HermesVaultPromote" /XML "C:\Users\<USER>\vault-promote-task.xml"
+    # 3. Kick it once and check:
+    schtasks /Run /TN "HermesVaultPromote"
+    Get-Content "\\wsl$\Ubuntu\home\<USER>\vault-promote.log" -Tail 20
+
+  Path notes:
+    · The vault lives on the WINDOWS filesystem so Obsidian opens it natively.
+    · WSL sees C:\Users\<USER>\Memory\<NAME>-vault as /mnt/c/Users/<USER>/Memory/<NAME>-vault
+    · /mnt/c is slow (9p). Irrelevant for a few hundred markdown files; do not
+      let anyone talk you into "optimising" it by moving the vault into WSL,
+      because then Obsidian on Windows can't see it properly.
+
+  Requires: "Run whether user is logged on or not" is deliberately NOT set —
+  Docker Desktop only runs in a logged-in session anyway, so there is nothing
+  to promote to when nobody is logged in.
+-->
+<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>Files notes captured by Hermes into the vault, commits, pushes, and refreshes the search index.</Description>
+    <URI>\HermesVaultPromote</URI>
+  </RegistrationInfo>
+
+  <Triggers>
+    <!-- Every 15 minutes, forever, starting at logon. -->
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+      <Repetition>
+        <Interval>PT15M</Interval>
+        <StopAtDurationEnd>false</StopAtDurationEnd>
+      </Repetition>
+    </LogonTrigger>
+  </Triggers>
+
+  <Principals>
+    <Principal id="Author">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <Enabled>true</Enabled>
+    <Hidden>true</Hidden>
+    <ExecutionTimeLimit>PT10M</ExecutionTimeLimit>
+    <Priority>7</Priority>
+    <IdleSettings>
+      <StopOnIdleEnd>false</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+  </Settings>
+
+  <Actions Context="Author">
+    <Exec>
+      <Command>C:\Windows\System32\wsl.exe</Command>
+      <!--
+        All the per-person configuration lives on this one line.
+        VAULT_ROOT / PINECONE_INDEX / the two paths are what change per install.
+      -->
+      <Arguments>-e bash -lc "VAULT_ROOT=/mnt/c/Users/&lt;USER&gt;/Memory/&lt;NAME&gt;-vault HERMES_HOME=$HOME/.hermes PINECONE_INDEX=&lt;NAME&gt;-vault PINECONE_STATE=$HOME/.hermes/pinecone-state.json PINECONE_KEY_FILE=$HOME/.hermes/secrets/pinecone.key PINECONE_SYNC=/mnt/c/Users/&lt;USER&gt;/Memory/&lt;NAME&gt;-vault/scripts/pinecone-sync GIT_BRANCH=main bash $HOME/.hermes/promote.sh &gt;&gt; $HOME/vault-promote.log 2&gt;&amp;1"</Arguments>
+    </Exec>
+  </Actions>
+</Task>
