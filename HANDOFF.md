@@ -99,3 +99,10 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
 - `promote.sh` and `vault-health.sh` are tested against a throwaway vault (create, append,
   collision, three reject paths, CRLF, silent-when-green, loud-when-red) but **have never run
   against a real Hermes install**. First real exercise is Mazíx. [state]
+
+## 2026-08-12 session kit-build (addendum)
+- Pushed to **`qrcteam/hermes-kit`**, private, default branch `master`. Supersedes the
+  "no git remote" stop-point above — that thread is closed. [state]
+- **`qrcteam` is a GitHub USER account, not an org** — `gh api orgs/qrcteam` 404s and the
+  current `gh` token has no `admin:org` scope. It's also the account `gh` is authenticated as,
+  so `gh repo create qrcteam/<name>` just works. Don't go hunting for org permissions. [gotcha]
