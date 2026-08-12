@@ -94,11 +94,13 @@
   a { color: var(--copper); text-underline-offset: 2px; }
 
   /* ── the thesis ───────────────────────────────────────────────────────────── */
-  .thesis {
-    border-left: 3px solid var(--copper);
-    padding: 4px 0 4px 26px;
-    margin: 0 0 68px;
-    max-width: 62ch;
+  /* A short rule above, not a bar beside — the mark reads as editorial punctuation
+     rather than a tab clipped to the side of a card. */
+  .thesis { margin: 0 0 68px; max-width: 62ch; }
+  .thesis::before {
+    content: ""; display: block;
+    width: 46px; height: 2px; background: var(--copper);
+    margin-bottom: 24px;
   }
   .thesis p {
     font-family: var(--display);
@@ -189,14 +191,18 @@
   ol.q span { color: var(--muted); font-size: .93rem; }
 
   /* ── callout ──────────────────────────────────────────────────────────────── */
+  /* Semantics carried by the label, not by a coloured edge. */
   .rule {
     background: var(--sunk); border: 1px solid var(--line);
-    border-left: 3px solid var(--clay);
-    border-radius: 3px; padding: 20px 24px; max-width: var(--measure);
+    border-radius: 3px; padding: 22px 26px; max-width: var(--measure);
+  }
+  .rule .kicker {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--clay); margin: 0 0 13px;
   }
   .rule p { margin: 0; font-size: .95rem; }
   .rule p + p { margin-top: .8em; }
-  .rule .head { font-weight: 640; color: var(--clay); }
+  .rule .head { font-weight: 640; }
 
   code {
     font-family: var(--mono); font-size: .86em;
@@ -389,6 +395,7 @@
   <section>
     <h2>Why the agent can't write</h2>
     <div class="rule">
+      <p class="kicker">The safety argument</p>
       <p><span class="head">The vault is mounted read-only, and that's enforced by the operating system.</span></p>
       <p>Hermes is a language model wired to tools, so it can be talked into things — a
         forwarded email or a web page can contain instructions. That's true of every agent,
