@@ -124,3 +124,19 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   a clarify entry mid-think so a late button-tap lands on a dead entry — watch for it. [decision]
 - Proposed Hermes→Claude delegation bridge: drop-box at ~/.hermes/handoffs/{inbox,outbox} +
   host-side watcher running `claude -p` (skills like /audit-site). Awaiting Oz's go. [state]
+- **HCD PDF-refresh assignment (via Monday/ChatGPT → Oz's Telegram): already done by the
+  bp-promo-1e session at 10:56 local** — coordinated via SendMessage, stood down. Live hosted
+  PDF deliberately still the old priced 5-pager until Oz says swap. That session is iterating
+  a new packet page 3; leave HCD's packet to it. [state]
+- **`claude -p` HANGS under launchd** (LaunchAgent, launchctl submit — all forms). Parked in
+  kevent with ESTABLISHED api.anthropic.com conns, ~0.5s CPU, no output even with --debug.
+  NOT env (minimal-env repro works in shell), NOT keychain (security read OK under launchd),
+  NOT MCP (--strict-mcp-config still hangs). Unsolved; bridge LaunchAgent UNLOADED for now.
+  Bridge itself verified end-to-end when run from a user shell (8s round-trip). [gotcha]
+- **Headless `claude -p` spawns the user's full MCP set, including the Telegram plugin —
+  which steals the bot's single getUpdates slot and kills the interactive session's Telegram
+  channel** (hit live mid-debug; plugin server.ts exits when another poller holds the token).
+  Fix shipped: bridge runs claude with `--strict-mcp-config`. If Telegram goes quiet, check
+  for stray headless claudes first. Interim delegation: this session watches handoffs/inbox
+  with a persistent Monitor and executes tasks itself; replies to Oz sent via Bot API curl
+  (token in ~/.claude/channels/<chan>/.env) while the MCP channel is down. [gotcha]

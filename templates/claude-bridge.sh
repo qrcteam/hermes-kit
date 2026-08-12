@@ -60,7 +60,7 @@ while :; do
     echo
   } > "$result.tmp"
 
-  if (cd "$HOME" && "$CLAUDE_BIN" -p --output-format text --dangerously-skip-permissions \
+  if (cd "$HOME" && "$CLAUDE_BIN" -p --output-format text --strict-mcp-config --dangerously-skip-permissions \
         < "$PROCESSING/$task" >> "$result.tmp" 2>> "$LOG"); then
     echo >> "$result.tmp"
     echo "_finished: $(date -u +%Y-%m-%dT%H:%M:%SZ) · status: ok_" >> "$result.tmp"
