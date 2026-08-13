@@ -179,3 +179,10 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   people/diane.md boundary). Hosted noindexed at beautiful-possibilities.com/kit/install/
   (snapshot in bp-promo/public/kit/install/ — re-copy on changes). Flagged to Oz: his own
   ruling says Diane installs LAST/debugged-twice; he's planning her tomorrow — his call. [decision]
+- **OpenRouter-key-hijacks-auto gotcha, hit live on Oz's install**: with model.provider:auto
+  + a base_url pointing at openrouter, adding OPENROUTER_API_KEY flipped the MAIN model onto
+  openrouter → 400 "openai-codex/gpt-5.6-terra is not a valid model ID" (non-retryable, bot
+  mute). Fix applied + verified (hermes -z → PROVIDER-OK): model.provider pinned openai-codex,
+  fallback_providers=[{openrouter, anthropic/claude-sonnet-4.5}]. Documented in
+  06-troubleshooting + accounts page card; hosted snapshot redeployed. RULE for installs:
+  second provider key ⇒ pin primary + explicit fallback, never leave auto. [gotcha]
