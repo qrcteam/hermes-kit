@@ -29,3 +29,11 @@ Check in at day five with one question: **"has it remembered anything useful yet
 
 If the answer is no, it's almost always a thin `SOUL.md` or buckets that don't match how they
 think. Both take ten minutes to fix in week one, and become permanent if you leave them.
+
+## Training resources — bookmarks for onboarding
+
+Curated as they prove useful; add sparingly, date each.
+
+| Resource | What it's for | Added |
+|---|---|---|
+| [How to Use Google NotebookLM (Full Tutorial)](https://youtu.be/uSVBfyHBiDU) — Kevin Stratvert | The NotebookLM layer: when a client (or the operator) is ready for the delight tier — audio overviews / podcasts from their vault notes, mind maps. Horizon material, not install-day: send it when they've been capturing for a few weeks and want more out of what they've saved. | 2026-08-13 |
