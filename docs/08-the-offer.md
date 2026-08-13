@@ -31,7 +31,20 @@ forget, backs itself up, and connects to the tools they already pay for.
 | **1 · Initiate** | ~6 weeks | Install and connect. The map, Hermes sandboxed, the vault backing itself up, their models + Telegram wired in, their key system (CRM etc.) connected, one stuck project finished. Weekly working calls. |
 | **2 · Investigate** | ~6 weeks | The map deepens. Opportunities surface. The AI learns the person and their business. Refining and tweaking what phase 1 installed. |
 | **3 · Innovate** | ~3 months | Expanding creativity and automation in specific, personal ways — the system starts actively supporting the person's zone of genius rather than just remembering things. |
-| **4 · _____ate** (ongoing) | month-to-month | Support, maintenance, improvement. Access to Oz during set working hours, the latest prompts and processes, the memory and system kept performing at their best. |
+| **4 · _____ate** (ongoing) | month-to-month | Support, maintenance, improvement. Access to Oz during set working hours — **no 1-on-1 calls**. Latest prompts and processes; the memory and system kept performing at their best. |
+
+**The retainer ruling (Oz, 2026-08-12):** two tiers, cleanly split by state, not by calendar:
+
+- **$2,500/mo — full build, rock-and-roll retainer.** Scheduled calls, monthly objectives.
+  This is the active-build price: the system is still being assembled and Oz is driving.
+- **$500/mo — access & support.** Starts once a *stable place* is reached — major
+  automations live, working assistant in place. Working-hours access, latest prompts and
+  processes, **no 1-on-1 calls**. Capped at 25.
+
+The trigger for the price drop is a **state** ("stable, major automations, working
+assistant"), not a date — reaching it is the shared goal, and the reward for reaching it is
+the bill going down 80%. That's an honest incentive and it should be said out loud in the
+offer.
 
 **Naming the fourth phase** — candidates, one will win:
 
@@ -40,9 +53,8 @@ forget, backs itself up, and connects to the tools they already pay for.
 - Iterate — honest about what the work actually is; maybe too engineer-flavoured
 - Accelerate — stronger promise, harder to keep
 
-**Phase 4 pricing riff (2026-08-12, Oz):** ~$500/month, month-to-month, capped at a small
-group — **25 or fewer**. The cap is part of the offer, not a supply problem: it's what makes
-"access to me" true.
+The $500 cap at a small group — **25 or fewer** — is part of the offer, not a supply
+problem: it's what makes "access to me" true.
 
 ## The first written offer — Laurie, 2026-08-12
 
@@ -98,14 +110,17 @@ either have an answer in a doc or be deliberately out of scope.
 | 2026-08-12 | Laurie (call) | Are my memory and chats backed up anywhere? | the vault design — doc 01 |
 | 2026-08-12 | (open) | What does the **agreement** look like? Payment link → then what paper? | *needs writing before install #2* |
 | 2026-08-12 | (open) | What's the 24/7 story — Mac Mini / small server for laptop-shut access? | *needs a costed answer* |
-| 2026-08-12 | (open) | What does phase 2 cost? (deliberately unpriced at week 6 — but the pricing method needs to exist) | *decide during Laurie/Mazíx phase 1* |
+| 2026-08-12 | (open) | What does phase 2 cost? (deliberately unpriced at week 6 — but the pricing method needs to exist) | **answered 2026-08-12**: $2,500/mo active-build retainer → $500/mo at stable state (this page, "retainer ruling") |
 | 2026-08-12 | (open) | Windows install story — runbook 03 exists but has never met a real machine | runbook 03, unproven |
 
 ## What still has to become true
 
 - [ ] The **agreement** — one page, plain language, matching the email's tone
 - [ ] Phase 4 named (pick the -ate) and its $500/mo scope written as includes/excludes
-- [ ] A pricing method for phase 2/3 (per-outcome? retainer? menu?)
+- [x] A pricing method for phase 2/3 — ruled 2026-08-12: $2,500/mo active-build retainer
+      (scheduled calls + monthly objectives) until stable state, then $500/mo access & support
+- [ ] "Stable place" defined as a checklist — it's the price-drop trigger, so both sides
+      need to recognize it when they see it
 - [ ] Sales flow documented: call → written offer (the Laurie email is the template) →
       payment link → schedule → gate card install day
 - [ ] When live: numbers into bp-promo `offers.json`, page onto beautiful-possibilities.com

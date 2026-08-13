@@ -157,3 +157,7 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   question the kit can't answer gets a dated row. Pricing there is DRAFT; canon moves to
   bp-promo offers.json when live. Vault notes: bp-business/ai-os-six-month-journey +
   laurie-ai-os-founding-offer (updated to SENT). [decision]
+- **Retainer ruling (Oz, same day):** $2,500/mo = full-build "rock and roll" retainer
+  (scheduled calls, monthly objectives); drops to $500/mo access & support (working hours,
+  NO 1:1 calls, cap 25) once a STABLE STATE is reached — trigger is state, not calendar.
+  Doc 08 updated; "stable place" still needs a checklist definition. [decision]
