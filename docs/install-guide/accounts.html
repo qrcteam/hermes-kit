@@ -11,13 +11,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Hermes Accounts &amp; Connections</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
+  /* Palette + type lifted from e2mtech.com/apollo (Oz, 2026-08-13): Inter,
+     black/white high contrast, electric blue #188bf6, gold #ffb600. */
   :root{
-    --paper:#F7F8F6; --card:#FFFFFF; --ink:#16283C; --ink-soft:#4A5A6B;
-    --rule:#D6DBD2; --stamp:#2E6B4F; --stamp-soft:#E4EFE8;
-    --amber:#A8620A; --amber-soft:#F7EDDD; --amber-line:#DCC49A;
-    --display:"Avenir Next Condensed","Avenir Next",-apple-system,"Segoe UI",sans-serif;
-    --body:Charter,"Iowan Old Style",Georgia,serif;
+    --paper:#F5F5F5; --card:#FFFFFF; --ink:#080808; --ink-soft:#555555;
+    --rule:#E4E4E4; --stamp:#188BF6; --stamp-soft:#E8F3FE;
+    --amber:#9A6C00; --amber-soft:#FFF6DF; --amber-line:#FFD666;
+    --display:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
     --mono:"SF Mono",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -31,7 +36,7 @@
     padding:1.1rem 1.6rem .9rem;border-bottom:3px solid var(--ink);background:var(--card);
     position:sticky;top:0;z-index:30;
   }
-  header h1{font-family:var(--display);font-weight:600;font-size:1.35rem;letter-spacing:.14em;text-transform:uppercase}
+  header h1{font-family:var(--display);font-weight:700;font-size:1.35rem;letter-spacing:.14em;text-transform:uppercase}
   header .sub{color:var(--ink-soft);font-size:.9rem;font-style:italic}
   header .spacer{flex:1}
   .who{display:flex;align-items:center;gap:.45rem;font-family:var(--display);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
@@ -41,7 +46,7 @@
   .lede{max-width:64ch;color:var(--ink-soft);font-style:italic;margin-bottom:2rem}
   .lede b{color:var(--ink);font-style:normal}
 
-  h2{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;
+  h2{font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;
      margin:2.4rem 0 .3rem;display:flex;align-items:baseline;gap:.7rem}
   h2 .tally{font-family:var(--mono);font-size:.75rem;color:var(--stamp);letter-spacing:0;text-transform:none}
   .sectionnote{color:var(--ink-soft);font-size:.92rem;max-width:64ch;margin-bottom:1rem}
@@ -50,7 +55,7 @@
   .acct{border:1.5px solid var(--rule);border-radius:6px;background:var(--card);margin-bottom:.8rem;padding:.95rem 1.1rem}
   .acct.done{border-color:var(--stamp)}
   .acct .head{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
-  .acct .name{font-family:var(--display);font-weight:600;font-size:1.02rem;letter-spacing:.07em;text-transform:uppercase}
+  .acct .name{font-family:var(--display);font-weight:700;font-size:1.02rem;letter-spacing:.07em;text-transform:uppercase}
   .acct .meta{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft)}
   .acct .meta b{color:var(--stamp);font-weight:600}
   .acct .check{margin-left:auto;display:flex;align-items:center;gap:.4rem;font-family:var(--display);
@@ -71,7 +76,7 @@
   .horizon th{font-family:var(--display);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
     color:var(--ink-soft);text-align:left;padding:.45rem .6rem;border-bottom:2px solid var(--ink)}
   .horizon td{padding:.5rem .6rem;border-bottom:1px solid var(--rule);vertical-align:top}
-  .horizon td:first-child{font-family:var(--display);font-weight:600;font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+  .horizon td:first-child{font-family:var(--display);font-weight:700;font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
   .horizon .needs{font-family:var(--mono);font-size:.74rem;color:var(--ink-soft)}
   .tag{display:inline-block;font-family:var(--display);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
     border:1px solid currentColor;border-radius:3px;padding:.06rem .4rem;white-space:nowrap}

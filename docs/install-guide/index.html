@@ -16,14 +16,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Hermes Install Gate Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
+  /* Palette + type lifted from e2mtech.com/apollo (Oz, 2026-08-13): Inter,
+     black/white high contrast, electric blue #188bf6, gold #ffb600. */
   :root{
-    --paper:#F7F8F6; --card:#FFFFFF; --ink:#16283C; --ink-soft:#4A5A6B;
-    --rule:#D6DBD2; --stamp:#2E6B4F; --stamp-soft:#E4EFE8;
-    --amber:#A8620A; --amber-soft:#F7EDDD;
-    --term-bg:#0E1512; --term-fg:#C9E4D2;
-    --display:"Avenir Next Condensed","Avenir Next",-apple-system,"Segoe UI",sans-serif;
-    --body:Charter,"Iowan Old Style",Georgia,serif;
+    --paper:#F5F5F5; --card:#FFFFFF; --ink:#080808; --ink-soft:#555555;
+    --rule:#E4E4E4; --stamp:#188BF6; --stamp-soft:#E8F3FE;
+    --amber:#9A6C00; --amber-soft:#FFF6DF;
+    --term-bg:#080808; --term-fg:#EDEDED;
+    --display:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
+    --body:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
     --mono:"SF Mono",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -40,7 +45,7 @@
     padding:1.1rem 1.6rem .9rem;border-bottom:3px solid var(--ink);background:var(--card);
     position:sticky;top:0;z-index:30;
   }
-  header h1{font-family:var(--display);font-weight:600;font-size:1.35rem;letter-spacing:.14em;text-transform:uppercase}
+  header h1{font-family:var(--display);font-weight:700;font-size:1.35rem;letter-spacing:.14em;text-transform:uppercase}
   header .sub{color:var(--ink-soft);font-size:.9rem;font-style:italic}
   header .spacer{flex:1}
   .who{display:flex;align-items:center;gap:.45rem;font-family:var(--display);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
@@ -90,7 +95,7 @@
   .step > h2{margin:0}
   .step > h2 button{
     display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;background:none;border:none;
-    padding:.85rem 1.1rem;font-family:var(--display);font-weight:600;font-size:1.02rem;
+    padding:.85rem 1.1rem;font-family:var(--display);font-weight:700;font-size:1.02rem;
     letter-spacing:.09em;text-transform:uppercase;color:var(--ink);
   }
   .step .num{
@@ -109,7 +114,7 @@
 
   .gotcha{
     margin:.9rem 0 0;padding:.7rem .9rem .7rem 1rem;background:var(--amber-soft);
-    border:1px solid #DCC49A;border-radius:4px;font-size:.94rem;max-width:66ch;
+    border:1px solid #FFD666;border-radius:4px;font-size:.94rem;max-width:66ch;
   }
   .gotcha b{font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;color:var(--amber);display:block;margin-bottom:.15rem}
 
@@ -120,7 +125,7 @@
     background:var(--term-bg);color:var(--term-fg);font-family:var(--mono);font-size:.8rem;
     line-height:1.5;padding:.8rem .95rem;border-radius:5px;overflow-x:auto;white-space:pre;
   }
-  .cmd.claude pre{background:#EDF2F7;color:var(--ink);border:1.5px solid var(--ink);white-space:pre-wrap}
+  .cmd.claude pre{background:#E8F3FE;color:var(--ink);border:1.5px solid var(--stamp);white-space:pre-wrap}
   .cmd.claude .cmd-label{color:var(--ink)}
   .copy{border:1px solid var(--rule);background:var(--paper);color:var(--ink);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;border-radius:3px}
   .copy:hover{background:var(--ink);color:var(--paper)}
