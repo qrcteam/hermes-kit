@@ -48,11 +48,12 @@ transcript is what you actually write from.)
 when they say something sharp, **get the exact words down verbatim** — those quotes are the
 best lines in the finished SOUL.
 
-**C · Self-interview (no operator, or a re-run).** They open Claude or ChatGPT and paste
-this: *"Interview me using the questions in this document — one at a time, follow the
-tangents, push past vague answers to specifics. Don't summarize me yet."* — plus the
-question list from this doc. Works remote (the Laurie pattern), works for interviewing
-yourself. Export the transcript at the end.
+**C · Self-interview (no operator, or a re-run).** Send them the ready-made prompt at
+[`templates/soul-self-interview-prompt.md`](../templates/soul-self-interview-prompt.md) —
+all 27 questions inline, one-at-a-time rules, voice-dictation encouraged (the 🎤 mic key:
+they talk, no audio files, no transcription step — Claude cannot hear audio files, so
+dictation IS the voice path), and it ends by producing the SOUL draft to send back.
+Works in claude.ai, ChatGPT, or a Claude Code session. The Laurie pattern, productized.
 
 **D · Hermes runs it, in Telegram (re-interviews especially).** Send the bot:
 *"Run my SOUL re-interview. Ask me one question per message and wait for my answer —
