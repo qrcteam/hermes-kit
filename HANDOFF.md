@@ -161,3 +161,8 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   (scheduled calls, monthly objectives); drops to $500/mo access & support (working hours,
   NO 1:1 calls, cap 25) once a STABLE STATE is reached — trigger is state, not calendar.
   Doc 08 updated; "stable place" still needs a checklist definition. [decision]
+- WhatsApp channel attempted on Oz's install (`docker exec -it hermes hermes whatsapp`,
+  Baileys bridge + QR wizard) — **failed, error not captured**, Oz parked it and stays on
+  Telegram. Worth a real debug pass before offering WhatsApp to cohort installs (Diane/
+  Laurie likely prefer it). Wizard is safely resumable; check bridge npm install + creds.json
+  path in ~/.hermes when picking this back up. [state]
