@@ -25,6 +25,71 @@ matters more than questions 12 through 18 combined.
 of staff who starts Monday. Quote them directly where they said it well; their words beat your
 summary every time.
 
+---
+
+## How to capture it — the mechanics
+
+Pick ONE of these three. Don't overthink it; the write-up matters more than the capture.
+
+**A · Record + transcribe locally (best).** Phone voice-memo on the table, with permission.
+Afterwards, transcribe **on your own machine** — the interview is the most personal artifact
+in this kit and it never goes to a cloud transcriber:
+
+```bash
+ffmpeg -i interview.m4a -ar 16000 -ac 1 /tmp/interview.wav
+whisper-cli -m ~/.cache/whisper/ggml-small.en.bin -f /tmp/interview.wav -nt > interview.txt
+```
+
+(No whisper-cli? `brew install whisper-cpp` and download the small.en model once. Raw audio
+without a transcript is a last resort — you'll never scrub through 45 minutes again; the
+transcript is what you actually write from.)
+
+**B · Rough notes while talking.** A text file, half-sentences fine. The one discipline:
+when they say something sharp, **get the exact words down verbatim** — those quotes are the
+best lines in the finished SOUL.
+
+**C · Self-interview (no operator, or a re-run).** They open Claude or ChatGPT and paste
+this: *"Interview me using the questions in this document — one at a time, follow the
+tangents, push past vague answers to specifics. Don't summarize me yet."* — plus the
+question list from this doc. Works remote (the Laurie pattern), works for interviewing
+yourself. Export the transcript at the end.
+
+**D · Hermes runs it, in Telegram (re-interviews especially).** Send the bot:
+*"Run my SOUL re-interview. Ask me one question per message and wait for my answer —
+normal messages, not your clarify tool. Follow my tangents. Start with what you've
+gotten wrong about me, then the ⟨ASK⟩ blanks in your SOUL.md, then what's changed.
+When we're done, write a draft to /opt/data/soul-draft.md — do NOT touch SOUL.md itself."*
+Voice notes work as answers, which most people prefer anyway. Why this shines for round
+two: the agent has *lived with them* — it knows its own blind spots and blanks in a way no
+outside interviewer can. Why it's weaker for round one: it doesn't know them yet and a
+first interview deserves a human across the table. **The hard rule either way: the agent
+never edits its own SOUL.md.** It drafts to a separate file; a human reads, corrects, and
+moves it — identity changes go through a person, always.
+
+**All four roads end the same way:** transcript/notes/draft → Claude drafts or revises
+`SOUL.md` in prose (gate-07 prompt) → the human reads and corrects it → the write-up
+checklist below → `docker restart hermes`. Then delete the raw audio; the SOUL is the
+keeper, the recording was scaffolding.
+
+---
+
+## The re-interview — round two is the good one
+
+The SOUL is a living document, and the first version is always half-blind: it captures what
+someone *says* about themselves before the agent has lived with them. **Two to three weeks
+of real use is the best interview prep that exists.** Schedule round two then.
+
+Round two is shorter (~20 min) and asks different questions:
+
+1. **What did the agent get wrong about you?** Every irritation is a missing or wrong line.
+2. **Which ⟨ASK⟩ blanks can we now fill?** (`grep '⟨ASK' ~/.hermes/SOUL.md` lists them.)
+3. **What dated facts have changed?** Revenue, targets, decisions — update and re-date.
+4. **What rule do you wish it had?** They'll have one by now. Get the consequence attached.
+
+**Revise, don't rewrite.** Keep every line use has proven true; fix what use disproved. Then
+the same checklist and restart. After round two, a yearly pass is usually enough — the vault
+carries everything that changes faster than that.
+
 ### The two rules that make it good
 
 1. **Specific beats complete.** Five sharp facts outperform forty vague ones. *"Mornings are
