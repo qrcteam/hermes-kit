@@ -140,3 +140,10 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   for stray headless claudes first. Interim delegation: this session watches handoffs/inbox
   with a persistent Monitor and executes tasks itself; replies to Oz sent via Bot API curl
   (token in ~/.claude/channels/<chan>/.env) while the MCP channel is down. [gotcha]
+- Built `docs/install-guide/index.html` — interactive "gate card" companion to runbook 02:
+  12 stamped gates w/ timestamps, per-person command substitution (mazix/doug/diane/custom),
+  screenshot slots by convention (`docs/install-guide/shots/<person>/step-NN-k.png`, paste →
+  correctly-named download), deviation notes, markdown log export for `people/<name>.md`.
+  State is localStorage per person; page is offline/file:// safe, zero deps. Tested via
+  playwright (render + stamp flow). Mirrors the Mac runbook only — Windows installs still
+  go through 03 raw. [decision]

@@ -3,6 +3,10 @@
 *One person, one machine, start to finish. Roughly 90 minutes, of which about 45 is the
 [SOUL interview](04-soul-interview.md) and most of the rest is waiting for Docker.*
 
+> **Installing live?** Open [`install-guide/index.html`](install-guide/index.html) in a
+> browser — the interactive gate card: same steps, stamped checkboxes with timestamps,
+> per-step screenshot slots, and a one-click log export for `people/<NAME>.md`.
+
 Windows? → [`03-runbook-windows.md`](03-runbook-windows.md).
 
 ---

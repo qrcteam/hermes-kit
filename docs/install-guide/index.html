@@ -1,0 +1,610 @@
+<!doctype html>
+<!--
+  Hermes Kit · Install Gate Card — interactive companion to docs/02-runbook-mac.md
+  Open locally (file://). No network, no build step, no dependencies.
+
+  Screenshots: save as  docs/install-guide/shots/<person>/step-<NN>-<k>.png  (k = 1..6)
+  and refresh — they appear inline on the step. Paste an image onto an open step to get
+  a correctly named download.
+
+  State (checkmarks, timestamps, notes) lives in this browser's localStorage, per person.
+  Use "Export log" to copy it out as markdown for people/<name>.md.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hermes Install Gate Card</title>
+<style>
+  :root{
+    --paper:#F7F8F6; --card:#FFFFFF; --ink:#16283C; --ink-soft:#4A5A6B;
+    --rule:#D6DBD2; --stamp:#2E6B4F; --stamp-soft:#E4EFE8;
+    --amber:#A8620A; --amber-soft:#F7EDDD;
+    --term-bg:#0E1512; --term-fg:#C9E4D2;
+    --display:"Avenir Next Condensed","Avenir Next",-apple-system,"Segoe UI",sans-serif;
+    --body:Charter,"Iowan Old Style",Georgia,serif;
+    --mono:"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{transition:none!important;animation:none!important} }
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+  a{color:var(--ink)}
+  button{font-family:var(--display);cursor:pointer}
+  :focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+  /* ── top bar ─────────────────────────────────────── */
+  header{
+    display:flex;align-items:baseline;gap:1.2rem;flex-wrap:wrap;
+    padding:1.1rem 1.6rem .9rem;border-bottom:3px solid var(--ink);background:var(--card);
+    position:sticky;top:0;z-index:30;
+  }
+  header h1{font-family:var(--display);font-weight:600;font-size:1.35rem;letter-spacing:.14em;text-transform:uppercase}
+  header .sub{color:var(--ink-soft);font-size:.9rem;font-style:italic}
+  header .spacer{flex:1}
+  .who{display:flex;align-items:center;gap:.45rem;font-family:var(--display);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
+  .who select,.who input{
+    font-family:var(--mono);font-size:.85rem;padding:.3rem .5rem;border:1.5px solid var(--ink);
+    background:var(--paper);color:var(--ink);border-radius:3px;
+  }
+  .who input{width:7.5rem;display:none}
+  .btn{
+    border:1.5px solid var(--ink);background:var(--card);color:var(--ink);
+    padding:.35rem .8rem;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;border-radius:3px;
+  }
+  .btn:hover{background:var(--ink);color:var(--paper)}
+
+  /* ── layout ──────────────────────────────────────── */
+  .wrap{display:grid;grid-template-columns:230px 1fr;gap:0;max-width:1120px;margin:0 auto}
+  @media (max-width:820px){ .wrap{grid-template-columns:1fr} nav.rail{position:static;max-height:none;border-right:none;border-bottom:1.5px solid var(--rule);display:flex;overflow-x:auto} nav.rail .gate{min-width:150px} }
+
+  /* ── gate rail ───────────────────────────────────── */
+  nav.rail{
+    position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow-y:auto;
+    padding:1.2rem .9rem 2rem;border-right:1.5px solid var(--rule);
+  }
+  .progress{font-family:var(--display);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.3rem}
+  .bar{height:6px;background:var(--rule);border-radius:3px;margin-bottom:1.1rem;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--stamp);transition:width .35s}
+  .gate{
+    display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;
+    background:none;border:none;padding:.42rem .35rem;border-radius:4px;color:var(--ink);
+  }
+  .gate:hover{background:var(--stamp-soft)}
+  .gate.active{background:var(--ink);color:var(--paper)}
+  .gate .ring{
+    flex:none;width:26px;height:26px;border:2px solid currentColor;border-radius:50%;
+    display:grid;place-items:center;font-family:var(--display);font-size:.72rem;font-weight:600;
+  }
+  .gate.done .ring{background:var(--stamp);border-color:var(--stamp);color:#fff;transform:rotate(-8deg)}
+  .gate.done.active .ring{border-color:var(--stamp)}
+  .gate .g-label{font-family:var(--display);font-size:.83rem;letter-spacing:.05em;text-transform:uppercase;line-height:1.2}
+  .gate .g-time{display:block;font-family:var(--mono);font-size:.66rem;letter-spacing:0;text-transform:none;color:var(--stamp)}
+  .gate.active .g-time{color:var(--stamp-soft)}
+
+  /* ── steps ───────────────────────────────────────── */
+  main{padding:1.6rem 1.8rem 6rem;min-width:0}
+  .step{border:1.5px solid var(--rule);border-radius:6px;background:var(--card);margin-bottom:.9rem;overflow:hidden}
+  .step.done{border-color:var(--stamp)}
+  .step > h2{margin:0}
+  .step > h2 button{
+    display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;background:none;border:none;
+    padding:.85rem 1.1rem;font-family:var(--display);font-weight:600;font-size:1.02rem;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--ink);
+  }
+  .step .num{
+    flex:none;width:34px;height:34px;border:2px solid var(--ink);border-radius:50%;
+    display:grid;place-items:center;font-size:.85rem;
+  }
+  .step.done .num{background:var(--stamp);border-color:var(--stamp);color:#fff;transform:rotate(-8deg)}
+  .step .mins{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);letter-spacing:0;text-transform:none}
+  .step .stamp-time{font-family:var(--mono);font-size:.72rem;color:var(--stamp);letter-spacing:0;text-transform:none}
+  .body{display:none;padding:0 1.1rem 1.2rem;border-top:1.5px solid var(--rule)}
+  .step.open .body{display:block}
+  .body > p{margin:.9rem 0 0;max-width:62ch}
+  .body p + p{margin-top:.55rem}
+  .body code, .note-md code{font-family:var(--mono);font-size:.86em;background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:.05em .3em}
+  .doclink{font-size:.85rem;color:var(--ink-soft)}
+
+  .gotcha{
+    margin:.9rem 0 0;padding:.7rem .9rem .7rem 1rem;background:var(--amber-soft);
+    border-left:4px solid var(--amber);border-radius:0 4px 4px 0;font-size:.94rem;max-width:66ch;
+  }
+  .gotcha b{font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;color:var(--amber);display:block;margin-bottom:.15rem}
+
+  .cmd{margin:.9rem 0 0}
+  .cmd .cmd-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+  .cmd .cmd-label{font-family:var(--display);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  .cmd pre{
+    background:var(--term-bg);color:var(--term-fg);font-family:var(--mono);font-size:.8rem;
+    line-height:1.5;padding:.8rem .95rem;border-radius:5px;overflow-x:auto;white-space:pre;
+  }
+  .copy{border:1px solid var(--rule);background:var(--paper);color:var(--ink);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;border-radius:3px}
+  .copy:hover{background:var(--ink);color:var(--paper)}
+  .copy.ok{background:var(--stamp);border-color:var(--stamp);color:#fff}
+
+  .verify{
+    margin:1rem 0 0;padding:.75rem .95rem;background:var(--stamp-soft);
+    border:1.5px dashed var(--stamp);border-radius:5px;font-size:.95rem;max-width:66ch;
+  }
+  .verify b{font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;font-size:.76rem;color:var(--stamp);display:block;margin-bottom:.2rem}
+
+  .subchecks{margin:.9rem 0 0;list-style:none}
+  .subchecks li{margin:.3rem 0}
+  .subchecks label{display:flex;gap:.55rem;align-items:baseline;font-size:.97rem;cursor:pointer}
+  .subchecks input{accent-color:var(--stamp);transform:translateY(2px);width:1rem;height:1rem;flex:none}
+  .subchecks input:checked + span{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--stamp);text-decoration-thickness:1.5px}
+
+  /* screenshots */
+  .shots{margin:1.1rem 0 0}
+  .shots .shots-head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .shots .cmd-label{font-family:var(--display);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  .shots .hint{font-size:.78rem;font-family:var(--mono);color:var(--ink-soft)}
+  .tray{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
+  .tray img{max-width:280px;max-height:190px;border:1.5px solid var(--rule);border-radius:4px;cursor:zoom-in;background:#fff}
+  .tray .empty{
+    width:190px;height:110px;border:1.5px dashed var(--rule);border-radius:4px;
+    display:grid;place-items:center;text-align:center;color:var(--ink-soft);
+    font-size:.72rem;font-family:var(--mono);padding:.5rem;
+  }
+  .pastebox{margin-top:.55rem;font-size:.8rem;color:var(--ink-soft)}
+  .pastebox a{color:var(--stamp);font-weight:bold}
+
+  /* note + gate action */
+  .note{margin:1.1rem 0 0}
+  .note textarea{
+    width:100%;min-height:52px;font-family:var(--mono);font-size:.8rem;padding:.55rem .7rem;
+    border:1.5px solid var(--rule);border-radius:4px;background:var(--paper);color:var(--ink);resize:vertical;
+  }
+  .note textarea:focus{border-color:var(--ink)}
+  .gate-action{margin-top:1.2rem;display:flex;align-items:center;gap:.9rem}
+  .stampbtn{
+    border:2px solid var(--stamp);background:var(--card);color:var(--stamp);
+    padding:.5rem 1.2rem;font-size:.85rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border-radius:4px;
+  }
+  .stampbtn:hover{background:var(--stamp);color:#fff}
+  .step.done .stampbtn{background:var(--stamp);color:#fff;transform:rotate(-1.5deg)}
+  .gate-action .next{font-size:.85rem;color:var(--ink-soft);font-style:italic}
+
+  /* lightbox */
+  dialog{border:none;border-radius:6px;padding:0;max-width:92vw;max-height:92vh;background:transparent}
+  dialog::backdrop{background:rgba(14,21,18,.82)}
+  dialog img{max-width:92vw;max-height:92vh;display:block;border-radius:6px}
+
+  .foot{margin-top:2.5rem;color:var(--ink-soft);font-size:.85rem;font-style:italic;max-width:62ch}
+  .toast{
+    position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%) translateY(120%);
+    background:var(--ink);color:var(--paper);padding:.55rem 1.1rem;border-radius:5px;
+    font-family:var(--display);font-size:.85rem;letter-spacing:.08em;transition:transform .25s;z-index:50;
+    visibility:hidden;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);visibility:visible}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Hermes · Install Gate Card</h1>
+  <span class="sub">companion to <a href="../02-runbook-mac.md">02-runbook-mac.md</a> · ~90 min</span>
+  <span class="spacer"></span>
+  <div class="who">
+    <label for="person">Installing for</label>
+    <select id="person">
+      <option value="mazix">mazix</option>
+      <option value="doug">doug</option>
+      <option value="diane">diane</option>
+      <option value="custom">other…</option>
+    </select>
+    <input id="person-custom" type="text" placeholder="name" aria-label="custom name">
+  </div>
+  <button class="btn" id="export">Export log</button>
+</header>
+
+<div class="wrap">
+  <nav class="rail" aria-label="Install gates">
+    <div class="progress" id="progress">0 / 12 gates</div>
+    <div class="bar"><i id="bar-fill"></i></div>
+    <div id="rail"></div>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<dialog id="lightbox"><img alt="screenshot, enlarged"></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ══ Step definitions — mirrors docs/02-runbook-mac.md. <NAME> / <USER> substituted live. ══ */
+const STEPS = [
+{ id:'00', title:'Before install day', mins:'prep',
+  intro:`Sort these out in advance — discovering them mid-install is what turns 90 minutes into a Saturday.`,
+  subchecks:[
+    `Their machine stays on and awake — display off is fine, <b>sleep is not</b> (check laptop Energy settings)`,
+    `A model subscription in <b>their</b> name (ChatGPT Plus is the smoothest path) — they log in themselves at gate 06`,
+    `A GitHub account — theirs or yours, decided now (see 07-operator-notes.md)`,
+    `A Pinecone account — free tier, <b>theirs</b>`,
+    `Their four buckets, decided, in their words (doc 00)`,
+    `45 minutes of their time booked for the SOUL interview`,
+  ],
+  shotHint:`Energy / Lock Screen settings pane`,
+},
+{ id:'01', title:'Install the software', mins:'~10 min',
+  intro:`Docker Desktop is the engine Hermes runs in; Obsidian is the window onto their memory. Open Docker Desktop once and let it finish starting — it must be running for everything below.`,
+  cmds:[
+    {label:'install', code:`brew install --cask docker\nbrew install --cask obsidian`},
+    {label:'verify docker is up', code:`docker --version && docker ps`},
+  ],
+  verify:`A version number and an empty container table. If <code>docker ps</code> errors, Docker Desktop isn't up yet.`,
+  shotHint:`Terminal: docker ps showing the empty table`,
+},
+{ id:'02', title:'Make their Telegram bot', mins:'~5 min',
+  intro:`On <b>their phone</b>, in Telegram: message <b>@BotFather</b> → <code>/newbot</code>. Name it something they'll recognise; the username must end in <code>bot</code>. Copy the token. Then message <b>@userinfobot</b> for their numeric user ID.`,
+  gotcha:{t:'This is the lock on the door', d:`The numeric user ID is the only thing standing between a stranger and their memory. Get it right, and treat the token like a password.`},
+  verify:`Two strings in hand: a bot token (<code>8123456789:AAF…</code>) and a numeric user ID.`,
+  shotHint:`BotFather reply (crop the token out!)`,
+},
+{ id:'03', title:'Build the vault', mins:'~10 min',
+  intro:`The vault is their memory on disk.`,
+  gotcha:{t:'Not Desktop. Not Documents. Not Downloads.', d:`macOS blocks background jobs from all three and does it <b>silently</b>. <code>~/Memory</code> is not blocked.`},
+  cmds:[
+    {label:'skeleton + buckets — edit the bucket line to THEIR words', code:`export NAME=<NAME>\nexport VAULT=~/Memory/$NAME-vault\nmkdir -p "$VAULT"\n\ncp -R ~/Documents/Projects/hermes/templates/vault-skeleton/. "$VAULT"/\nmv "$VAULT/gitignore.template" "$VAULT/.gitignore"\nchmod +x "$VAULT/scripts/pinecone-sync"\n\n# their buckets — four or five, their words not yours\nfor b in projects clients learning personal; do\n  mkdir -p "$VAULT/wiki/topics/$b"\n  sed "s/<bucket-name>/$b/g; s/<Bucket Name>/\${b}/g; s/<YYYY-MM-DD>/$(date +%F)/" \\\n    "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md" > "$VAULT/wiki/topics/$b/_manual.md"\ndone\nrm "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md"\nmkdir -p "$VAULT/wiki/people" "$VAULT/wiki/reference" "$VAULT/raw/sessions"\n\ncd "$VAULT" && git init -q -b main && git add -A \\\n  && git commit -qm "vault: initial skeleton for $NAME"`},
+    {label:'connect to a NEW empty PRIVATE repo named <NAME>-vault', code:`cd "$VAULT"\ngit remote add origin git@github.com:<OWNER>/<NAME>-vault.git\ngit push -u origin main`},
+    {label:'verify buckets', code:`ls "$VAULT/wiki/topics"`},
+  ],
+  verify:`The skeleton on GitHub and the repo marked <b>Private</b> — if it says Public, stop and fix it now. Locally: their four bucket folders, each containing <code>_manual.md</code>.`,
+  shotHint:`GitHub repo page showing the Private badge`,
+},
+{ id:'04', title:'Create their Pinecone index', mins:'~5 min',
+  intro:`Sign in at app.pinecone.io with <b>their</b> account, make an API key, then create the index and store the key in a file.`,
+  cmds:[
+    {label:'create index', code:`export PC_KEY=<paste their pinecone key>\n\ncurl -s "https://api.pinecone.io/indexes/create-for-model" \\\n  -H "Api-Key: $PC_KEY" -H "Content-Type: application/json" \\\n  -H "X-Pinecone-API-Version: 2025-04" \\\n  -d '{\n    "name": "'"$NAME"'-vault",\n    "cloud": "aws",\n    "region": "us-east-1",\n    "embed": { "model": "llama-text-embed-v2", "field_map": { "text": "text" } }\n  }' | python3 -m json.tool`},
+    {label:'key goes in a file, not the environment', code:`mkdir -p ~/.hermes/secrets\nprintf '%s' "$PC_KEY" > ~/.hermes/secrets/pinecone.key\nchmod 600 ~/.hermes/secrets/pinecone.key\nunset PC_KEY`},
+  ],
+  gotcha:{t:'Why a file', d:`The promoter needs a key that can <b>write</b> to the index; the agent only ever needs to <b>search</b>. Keeping it out of the agent's environment means a prompt injection can't exfiltrate a credential that could wipe the index.`},
+  verify:`JSON with <code>"name": "<NAME>-vault"</code> and a <code>host</code>. "Already exists" is fine — carry on.`,
+  shotHint:`Terminal: the JSON response`,
+},
+{ id:'05', title:'Configure Hermes', mins:'~5 min',
+  intro:`Env file first — paste the bot token and their numeric user ID — then install the two scripts and the capture skill.`,
+  cmds:[
+    {label:'env file (mode 600)', code:`mkdir -p ~/.hermes/{inbox,scripts,secrets}\ncp ~/Documents/Projects/hermes/templates/env.template ~/.hermes/.env\nchmod 600 ~/.hermes/.env\nopen -e ~/.hermes/.env    # paste the bot token and their numeric user ID`},
+    {label:'scripts + capture skill', code:`K=~/Documents/Projects/hermes/templates\n\ncp "$K/promote.sh"        ~/.hermes/promote.sh\ncp "$K/vault-health.sh"   ~/.hermes/scripts/vault-health.sh\nchmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh\n\nmkdir -p ~/.hermes/skills/note-taking/vault-capture\ncp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md`},
+  ],
+  verify:`<code>~/.hermes/.env</code> holds real values (no <code>&lt;placeholders&gt;</code>), mode 600.`,
+  shotHint:`.env open in TextEdit (redact the token)`,
+},
+{ id:'06', title:'Start Hermes', mins:'~15 min',
+  intro:`Run the container, pin the two settings that must not drift, then have <b>them</b> log in to their model — it's their account. Test before going further.`,
+  gotcha:{t:'The :ro is the whole safety model', d:`The <code>:ro</code> on the vault mount makes it <b>impossible</b> — not merely forbidden — for the agent to damage their memory. And <code>journal_mode: delete</code> is not a preference: SQLite's WAL corrupts across a macOS Docker bind mount. Get it wrong and you'll see <code>database disk image is malformed</code> in a week.`},
+  cmds:[
+    {label:'run', code:`docker run -d --name hermes --restart unless-stopped \\\n  -p 127.0.0.1:8642:8642 \\\n  --env-file ~/.hermes/.env \\\n  -v "$HOME/.hermes:/opt/data" \\\n  -v "$HOME/Memory/<NAME>-vault:/vault:ro" \\\n  nousresearch/hermes-agent:latest`},
+    {label:'pin settings', code:`docker exec hermes hermes config set database.journal_mode delete\ndocker exec hermes hermes config set approvals.mode smart\ndocker exec hermes hermes config set approvals.cron_mode deny\ndocker restart hermes`},
+    {label:'THEY type this — their model login', code:`docker exec -it hermes hermes model`},
+    {label:'status', code:`docker exec hermes hermes status`},
+  ],
+  verify:`Gateway running, Telegram ✓ configured, a model with a logged-in provider. <b>Then the real test:</b> they text their bot "hello" and get a reply. Silence → 06-troubleshooting.md → <i>The bot is silent</i>, before continuing.`,
+  shotHint:`hermes status output + the first bot reply on their phone`,
+},
+{ id:'07', title:'Write their SOUL.md', mins:'~45 min',
+  intro:`<b>This is the step that matters.</b> Everything before it is plumbing; this is the product. Run the interview in 04-soul-interview.md, then write it in your own prose.`,
+  cmds:[
+    {label:'template in, editor open', code:`cp ~/Documents/Projects/hermes/templates/SOUL.md.template ~/.hermes/SOUL.md\nopen -e ~/.hermes/SOUL.md`},
+    {label:'after writing — restart & check for leftovers', code:`docker restart hermes\ngrep -c '<' ~/.hermes/SOUL.md`},
+  ],
+  gotcha:{t:'Placeholders become beliefs', d:`Any <code>&lt;placeholder&gt;</code> left in the file is something the agent will confidently reason from as if it were true. Strip every HTML comment and every angle bracket.`},
+  verify:`<code>grep -c '&lt;'</code> returns a low number — ideally <code>0</code>.`,
+  shotHint:`n/a — the SOUL is private; screenshot the grep count if anything`,
+},
+{ id:'08', title:'Turn on the promoter', mins:'~10 min',
+  intro:`This is the piece that actually writes their memory. Install the launchd job, then prove it runs before trusting the schedule.`,
+  cmds:[
+    {label:'install launchd job', code:`sed -e "s|<USER>|$(whoami)|g" -e "s|<NAME>|<NAME>|g" \\\n  ~/Documents/Projects/hermes/templates/com.hermeskit.vault-promote.plist \\\n  > ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\n\nplutil -lint ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\nlaunchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2>/dev/null\nlaunchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\nlaunchctl list | grep vault-promote`},
+    {label:'manual proof run', code:`VAULT_ROOT=~/Memory/<NAME>-vault \\\nPINECONE_INDEX=<NAME>-vault \\\nPINECONE_STATE=~/.hermes/pinecone-state.json \\\nPINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \\\nPINECONE_SYNC=~/Memory/<NAME>-vault/scripts/pinecone-sync \\\nbash ~/.hermes/promote.sh\n\ncat ~/.hermes/promote-state.json`},
+  ],
+  verify:`launchd line ends in exit status <code>0</code> (a <code>78</code> = malformed plist, a <code>1</code> = wrong path). Manual run: <code>"status": "ok"</code> — anything else, the message says what's wrong.`,
+  shotHint:`Terminal: launchctl list line + status ok`,
+},
+{ id:'09', title:'Watchdog + digest', mins:'~5 min',
+  intro:`The watchdog shouts only when something is wrong — silent otherwise, on purpose. The digest is their morning briefing.`,
+  gotcha:{t:'Cron hours are UTC', d:`Mountain Time is UTC−6 in summer, so <code>13</code> = 7am. Check <b>their</b> actual timezone before creating the digest. And per the notes in people/mazix.md: for a creative person consider skipping the daily digest entirely for the first fortnight — or use the one-idea variant from 05-make-it-useful.md.`},
+  cmds:[
+    {label:'watchdog', code:`docker exec hermes hermes cron create "0 14 * * *" \\\n  --name vault-health --script vault-health.sh --no-agent --deliver telegram`},
+    {label:'digest (adjust the hour — this is UTC)', code:`docker exec hermes hermes cron create "0 13 * * *" \\\n  --name daily-digest --deliver telegram \\\n  "Good morning. Read /vault/wiki/topics/*/_manual.md and any notes from the last 3 days.\n   Give a short briefing: what's open, what's owed, what they said they'd do. Two or three\n   things, in plain sentences, not a table. If nothing needs attention, say so in one line."`},
+    {label:'verify', code:`docker exec hermes hermes cron list`},
+  ],
+  verify:`Both jobs listed.`,
+  shotHint:`cron list output`,
+},
+{ id:'10', title:'Smoke test — proves it all works', mins:'~20 min',
+  intro:`Have them text their bot: <i>"remember I switched the Henderson job to the Tuesday crew because Thursday's tied up on Ruiz"</i>. The agent should confirm in plain language. Wait 15 minutes (or run the promoter manually with the env from gate 08), then check all three:`,
+  cmds:[
+    {label:'1 · note on disk?', code:`ls -la ~/Memory/<NAME>-vault/wiki/topics/*/ | grep -i henderson`},
+    {label:'2 · committed and pushed?', code:`git -C ~/Memory/<NAME>-vault log --oneline -3\ngit -C ~/Memory/<NAME>-vault status -sb`},
+    {label:'3 · findable by MEANING, not keyword?', code:`VAULT_ROOT=~/Memory/<NAME>-vault PINECONE_INDEX=<NAME>-vault \\\nPINECONE_STATE=~/.hermes/pinecone-state.json \\\nPINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \\\n~/Memory/<NAME>-vault/scripts/pinecone-sync search "who is doing the Henderson work"`},
+  ],
+  subchecks:[
+    `Note landed in the vault (on disk)`,
+    `Committed and pushed clean`,
+    `Semantic search finds it without sharing a keyword`,
+    `They text <i>"who's on Henderson?"</i> — the answer comes back right`,
+  ],
+  verify:`<b>All three must pass.</b> If the third fails but the first two pass, their memory is safe — recall is just degraded to literal search. Fix it, but don't panic.`,
+  shotHint:`the three passing checks + the bot's answer`,
+},
+{ id:'11', title:'Hand it over', mins:'~10 min',
+  intro:`Open the vault in Obsidian so they can see their own memory. Give them their onboarding doc and <b>nothing else</b> — if they have to ask you something the doc should have answered, that's an edit to make.`,
+  cmds:[
+    {label:'open their memory', code:`open -a Obsidian ~/Memory/<NAME>-vault`},
+  ],
+  subchecks:[
+    `Vault open in Obsidian, they've seen inside it`,
+    `onboarding/<NAME>.md handed over`,
+    `people/<NAME>.md filled in while fresh — paths, bot handle, index name, git remote, whose model account. <b>No secrets in that file.</b>`,
+    `Export this page's log (top right) into people/<NAME>.md`,
+  ],
+  verify:`They can use it without you in the room.`,
+  shotHint:`Obsidian open on their vault`,
+},
+];
+
+/* ══ state ══ */
+const $ = s => document.querySelector(s);
+const railEl = $('#rail'), mainEl = $('#main'), toastEl = $('#toast');
+let person = localStorage.getItem('hermes-install:who') || 'mazix';
+let state = {};   // {stepId: {done, ts, note, subs:[bool]}}
+
+const skey = () => `hermes-install:${person}`;
+function loadState(){ try{ state = JSON.parse(localStorage.getItem(skey())) || {}; }catch(e){ state = {}; } }
+function saveState(){ localStorage.setItem(skey(), JSON.stringify(state)); }
+function st(id){ return state[id] || (state[id] = {done:false, ts:null, note:'', subs:[]}); }
+
+function subName(text){ return text.replaceAll('<NAME>', person).replaceAll('<OWNER>', 'qrcteam'); }
+function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ══ render ══ */
+function render(){
+  loadState();
+  railEl.innerHTML = ''; mainEl.innerHTML = '';
+  STEPS.forEach(step => {
+    const s = st(step.id), done = !!s.done;
+
+    // rail gate
+    const g = document.createElement('button');
+    g.className = 'gate' + (done ? ' done' : '');
+    g.id = 'gate-' + step.id;
+    g.innerHTML = `<span class="ring">${done ? '✓' : step.id}</span>
+      <span class="g-label">${step.title}${done ? `<span class="g-time">${s.ts || ''}</span>` : ''}</span>`;
+    g.addEventListener('click', () => openStep(step.id, true));
+    railEl.appendChild(g);
+
+    // step card
+    const card = document.createElement('section');
+    card.className = 'step' + (done ? ' done' : '');
+    card.id = 'step-' + step.id;
+
+    let inner = `<h2><button aria-expanded="false" data-open="${step.id}">
+        <span class="num">${done ? '✓' : step.id}</span> ${step.title}
+        <span class="mins">${done ? `<span class="stamp-time">done ${s.ts}</span>` : step.mins}</span>
+      </button></h2><div class="body">`;
+
+    inner += `<p>${subName(step.intro)}</p>`;
+    if (step.gotcha) inner += `<div class="gotcha"><b>⚠ ${step.gotcha.t}</b>${subName(step.gotcha.d)}</div>`;
+
+    (step.cmds || []).forEach((c, i) => {
+      const code = subName(c.code);
+      inner += `<div class="cmd"><div class="cmd-head"><span class="cmd-label">${subName(c.label)}</span>
+        <button class="copy" data-copy="${step.id}:${i}">Copy</button></div>
+        <pre id="code-${step.id}-${i}">${esc(code)}</pre></div>`;
+    });
+
+    if (step.subchecks){
+      inner += `<ul class="subchecks">` + step.subchecks.map((t, i) =>
+        `<li><label><input type="checkbox" data-sub="${step.id}:${i}" ${s.subs && s.subs[i] ? 'checked' : ''}><span>${subName(t)}</span></label></li>`
+      ).join('') + `</ul>`;
+    }
+
+    if (step.verify) inner += `<div class="verify"><b>You should see</b>${subName(step.verify)}</div>`;
+
+    // screenshot tray
+    inner += `<div class="shots"><div class="shots-head"><span class="cmd-label">Screenshots</span>
+      <span class="hint">shots/${person}/step-${step.id}-1.png …</span>
+      <button class="copy" data-copyname="${step.id}">Copy filename</button></div>
+      <div class="tray" id="tray-${step.id}"></div>
+      <div class="pastebox" id="paste-${step.id}">Paste an image here (⌘V) while this step is open → get a correctly named file. Suggested shot: <i>${subName(step.shotHint || '')}</i></div>
+    </div>`;
+
+    inner += `<div class="note"><div class="cmd-head"><span class="cmd-label">Deviations / notes — lands in the exported log</span></div>
+      <textarea data-note="${step.id}" placeholder="anything that differed from the runbook…">${esc(s.note || '')}</textarea></div>`;
+
+    inner += `<div class="gate-action">
+      <button class="stampbtn" data-stamp="${step.id}">${done ? `✓ Stamped ${s.ts}` : 'Stamp this gate'}</button>
+      ${done ? '' : '<span class="next">verify first, then stamp</span>'}
+    </div>`;
+
+    inner += `</div>`;
+    card.innerHTML = inner;
+    mainEl.appendChild(card);
+    loadShots(step.id);
+  });
+
+  const foot = document.createElement('p');
+  foot.className = 'foot';
+  foot.textContent = `Every place you reach for knowledge that isn't on this page is a gap to fix in the runbook before the next install. Next: 05-make-it-useful.md — the first week is where these either stick or get abandoned.`;
+  mainEl.appendChild(foot);
+
+  updateProgress();
+
+  // open first unstamped gate
+  const first = STEPS.find(x => !st(x.id).done) || STEPS[STEPS.length - 1];
+  openStep(first.id, false);
+}
+
+function openStep(id, scroll){
+  document.querySelectorAll('.step').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.gate').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.step > h2 button').forEach(b => b.setAttribute('aria-expanded','false'));
+  const card = $('#step-' + id);
+  card.classList.add('open');
+  card.querySelector('h2 button').setAttribute('aria-expanded','true');
+  $('#gate-' + id).classList.add('active');
+  if (scroll) card.scrollIntoView({block:'start'});
+  openId = id;
+}
+let openId = null;
+
+function updateProgress(){
+  const done = STEPS.filter(x => st(x.id).done).length;
+  $('#progress').textContent = `${done} / ${STEPS.length} gates`;
+  $('#bar-fill').style.width = (done / STEPS.length * 100) + '%';
+}
+
+/* screenshots: try step-<id>-1..6.png under shots/<person>/ */
+function loadShots(id){
+  const tray = $('#tray-' + id);
+  tray.innerHTML = '';
+  let found = 0;
+  for (let k = 1; k <= 6; k++){
+    const img = new Image();
+    img.src = `shots/${person}/step-${id}-${k}.png`;
+    img.alt = `step ${id} screenshot ${k}`;
+    img.addEventListener('load', () => { found++; });
+    img.addEventListener('error', () => { img.remove(); if (!tray.querySelector('img')) showEmpty(tray, id); });
+    img.addEventListener('click', () => { const d = $('#lightbox'); d.querySelector('img').src = img.src; d.showModal(); });
+    tray.appendChild(img);
+  }
+  showEmpty(tray, id); // will be removed if an image loads? no — keep logic simple:
+  // remove the placeholder once any image loads
+  tray.querySelectorAll('img').forEach(img => img.addEventListener('load', () => {
+    const e = tray.querySelector('.empty'); if (e) e.remove();
+  }));
+}
+function showEmpty(tray, id){
+  if (tray.querySelector('.empty')) return;
+  const e = document.createElement('div');
+  e.className = 'empty';
+  e.textContent = `no shots yet — save as shots/${person}/step-${id}-1.png and refresh`;
+  tray.appendChild(e);
+}
+
+/* ══ events (delegated) ══ */
+document.addEventListener('click', ev => {
+  const t = ev.target;
+  if (t.dataset.open !== undefined && t.dataset.open) { openStep(t.dataset.open, false); return; }
+  const h = t.closest && t.closest('[data-open]');
+  if (h && h.dataset.open){ openStep(h.dataset.open, false); return; }
+
+  if (t.dataset.copy){
+    const [id, i] = t.dataset.copy.split(':');
+    copyText($('#code-' + id + '-' + i).textContent, t);
+    return;
+  }
+  if (t.dataset.copyname){
+    const id = t.dataset.copyname;
+    const tray = $('#tray-' + id);
+    const n = tray.querySelectorAll('img').length + 1;
+    copyText(`step-${id}-${n}.png`, t);
+    toast(`filename copied — save into shots/${person}/`);
+    return;
+  }
+  if (t.dataset.stamp){
+    const id = t.dataset.stamp, s = st(id);
+    if (s.done){ s.done = false; s.ts = null; }         // un-stamp (misclicks happen)
+    else { s.done = true; s.ts = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+    saveState();
+    const wasOpen = openId;
+    render();
+    if (s.done){
+      const next = STEPS[STEPS.findIndex(x => x.id === id) + 1];
+      if (next) openStep(next.id, true); else openStep(id, false);
+    } else openStep(wasOpen, false);
+  }
+});
+
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.dataset.sub){
+    const [id, i] = t.dataset.sub.split(':');
+    const s = st(id); s.subs = s.subs || [];
+    s.subs[+i] = t.checked; saveState();
+  }
+});
+document.addEventListener('input', ev => {
+  const t = ev.target;
+  if (t.dataset.note){ st(t.dataset.note).note = t.value; saveState(); }
+});
+
+/* paste an image → offer a correctly named download */
+document.addEventListener('paste', ev => {
+  if (!openId) return;
+  const item = [...(ev.clipboardData ? ev.clipboardData.items : [])].find(i => i.type.startsWith('image/'));
+  if (!item) return;
+  const blob = item.getAsFile();
+  const tray = $('#tray-' + openId);
+  const n = tray.querySelectorAll('img').length + 1;
+  const name = `step-${openId}-${n}.png`;
+  const url = URL.createObjectURL(blob);
+  const box = $('#paste-' + openId);
+  box.innerHTML = `<img src="${url}" style="max-width:220px;max-height:140px;border:1.5px solid var(--rule);border-radius:4px;display:block;margin:.4rem 0">
+    <a href="${url}" download="${name}">⬇ Download as ${name}</a> — then move it into <code>docs/install-guide/shots/${person}/</code> and refresh.`;
+});
+
+/* lightbox close */
+$('#lightbox').addEventListener('click', () => $('#lightbox').close());
+
+/* person switcher */
+const personSel = $('#person'), personCustom = $('#person-custom');
+function applyPerson(p){
+  person = p;
+  localStorage.setItem('hermes-install:who', p);
+  render();
+}
+(function initPerson(){
+  if (['mazix','doug','diane'].includes(person)) personSel.value = person;
+  else { personSel.value = 'custom'; personCustom.style.display = 'inline-block'; personCustom.value = person; }
+})();
+personSel.addEventListener('change', () => {
+  if (personSel.value === 'custom'){ personCustom.style.display = 'inline-block'; personCustom.focus(); }
+  else { personCustom.style.display = 'none'; applyPerson(personSel.value); }
+});
+personCustom.addEventListener('change', () => {
+  const v = personCustom.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+  if (v) applyPerson(v);
+});
+
+/* export log as markdown */
+$('#export').addEventListener('click', () => {
+  const today = new Date().toISOString().slice(0, 10);
+  let md = `## Install log — ${person} — ${today}\n\n| Gate | Status | Time | Notes |\n|---|---|---|---|\n`;
+  STEPS.forEach(x => {
+    const s = st(x.id);
+    md += `| ${x.id} ${x.title} | ${s.done ? '✓' : '—'} | ${s.ts || ''} | ${(s.note || '').replace(/\n/g, ' ').replace(/\|/g, '\\|')} |\n`;
+  });
+  const shots = document.querySelectorAll('.tray img[src]');
+  md += `\nScreenshots: docs/install-guide/shots/${person}/ (${shots.length} on disk when exported)\n`;
+  copyText(md, $('#export'));
+  toast('log copied as markdown — paste into people/' + person + '.md');
+});
+
+/* helpers */
+function copyText(text, btn){
+  const done = () => { if (btn){ btn.classList.add('ok'); const old = btn.textContent; btn.textContent = '✓'; setTimeout(() => { btn.classList.remove('ok'); btn.textContent = old; }, 1200); } };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); done(); }catch(e){}
+  ta.remove();
+}
+let toastTimer = null;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+}
+
+render();
+</script>
+</body>
+</html>
