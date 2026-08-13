@@ -166,3 +166,10 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   Telegram. Worth a real debug pass before offering WhatsApp to cohort installs (Diane/
   Laurie likely prefer it). Wizard is safely resumable; check bridge npm install + creds.json
   path in ~/.hermes when picking this back up. [state]
+## 2026-08-13 session tg-diagnose (cont.)
+- **OpenRouter wired into Oz's install.** Key found in all-in-one-business-app/.env (valid,
+  paid tier, $20 credits / ~$15.8 remaining), added to ~/.hermes/.env, gateway restarted.
+  Hermes's env reader resolves it; zero auxiliary payment/credit warnings post-restart
+  (this morning's spam was pre-restart noise — docker logs spans the day, use --since).
+  Auxiliary lane (smart approvals, curation) + fallback provider now live. Nous still
+  unauthenticated — fine, OpenRouter covers the fallback role. [state]
