@@ -1,7 +1,7 @@
 # Mazíx Mahalel
 
-**Status:** not installed — **first install, do this one first**
-**Platform:** <macOS / Windows — confirm> · **Installed:** —
+**Status:** INSTALLING — started 2026-08-13 (Oz on-site, Claude driving on her machine)
+**Platform:** macOS (confirmed — Homebrew install) · **Installed:** in progress 2026-08-13
 
 > No secrets in this file. Names of things, not values.
 
@@ -61,4 +61,4 @@ Pinecone on her own account regardless. It costs nothing and it's the right defa
 
 | Date | What |
 |---|---|
-| — | Not yet installed |
+| 2026-08-13 | Install started: Homebrew + Docker in, OpenRouter key + Telegram bot token configured, allowed users = Oz + Mazíx, container pulling. |
