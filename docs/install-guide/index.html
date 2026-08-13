@@ -14,6 +14,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>Hermes Install Gate Card</title>
 <style>
   :root{
@@ -119,6 +120,8 @@
     background:var(--term-bg);color:var(--term-fg);font-family:var(--mono);font-size:.8rem;
     line-height:1.5;padding:.8rem .95rem;border-radius:5px;overflow-x:auto;white-space:pre;
   }
+  .cmd.claude pre{background:#EDF2F7;color:var(--ink);border:1.5px solid var(--ink);white-space:pre-wrap}
+  .cmd.claude .cmd-label{color:var(--ink)}
   .copy{border:1px solid var(--rule);background:var(--paper);color:var(--ink);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;border-radius:3px}
   .copy:hover{background:var(--ink);color:var(--paper)}
   .copy.ok{background:var(--stamp);border-color:var(--stamp);color:#fff}
@@ -217,15 +220,21 @@
 /* ══ Step definitions — mirrors docs/02-runbook-mac.md. <NAME> / <USER> substituted live. ══ */
 const STEPS = [
 { id:'00', title:'Before install day', mins:'prep',
-  intro:`Sort these out in advance — discovering them mid-install is what turns 90 minutes into a Saturday.`,
+  intro:`Sort these out in advance — discovering them mid-install is what turns 90 minutes into a Saturday. Full account details (whose account, cost, what breaks without it): <a href="accounts.html">accounts &amp; connections</a>. The install itself is <b>Claude-driven</b>: Claude Code runs on their machine and you paste each gate's prompt into it.`,
   subchecks:[
     `Their machine stays on and awake — display off is fine, <b>sleep is not</b> (check laptop Energy settings)`,
     `A model subscription in <b>their</b> name (ChatGPT Plus is the smoothest path) — they log in themselves at gate 06`,
-    `A GitHub account — theirs or yours, decided now (see 07-operator-notes.md)`,
-    `A Pinecone account — free tier, <b>theirs</b>`,
-    `Their four buckets, decided, in their words (doc 00)`,
+    `GitHub decided: qrcteam pattern (family/friends, say the consent sentence) or <b>their own account</b> (paying clients — Diane pattern)`,
+    `A Pinecone account — free tier, <b>theirs</b>, they sign up at app.pinecone.io before or during`,
+    `Telegram bot token + numeric user IDs collected (gate 02 — can be done the day before)`,
+    `Their four-or-five buckets, decided, in their words (doc 00)`,
+    `<b>Claude Code installed and logged in on their machine</b> — it drives the install`,
     `45 minutes of their time booked for the SOUL interview`,
   ],
+  cmds:[
+    {label:'clone the kit onto their machine (first thing, in their terminal or via Claude)', code:`git clone https://github.com/qrcteam/hermes-kit.git ~/hermes-kit\n# private repo — use your GitHub auth; then keep it fresh:\ncd ~/hermes-kit && git pull`},
+  ],
+  prompt:`You are driving a Hermes install for <NAME> on this machine, using the kit at ~/hermes-kit (private repo qrcteam/hermes-kit — clone it first if missing, git pull if present). The runbook is ~/hermes-kit/docs/02-runbook-mac.md; follow it gate by gate as I paste you prompts. Rules: never put the vault under Desktop/Documents/Downloads; never store keys in the agent environment; the vault mount is always :ro; pause and ask whenever a step needs a human (bucket words, account signups, QR scans, model login). Open ~/hermes-kit/docs/install-guide/index.html (person: <NAME>) and stamp gates + log deviations as we go. Confirm the kit is present and pull the latest, then wait for my next prompt.`,
   shotHint:`Energy / Lock Screen settings pane`,
 },
 { id:'01', title:'Install the software', mins:'~10 min',
@@ -235,12 +244,14 @@ const STEPS = [
     {label:'verify docker is up', code:`docker --version && docker ps`},
   ],
   verify:`A version number and an empty container table. If <code>docker ps</code> errors, Docker Desktop isn't up yet.`,
+  prompt:`Gate 01: install Docker Desktop and Obsidian via brew casks (see runbook gate 1). Open Docker Desktop and wait for it to finish starting, then verify with docker --version && docker ps and show me the output. Don't continue past a docker ps error — tell me instead.`,
   shotHint:`Terminal: docker ps showing the empty table`,
 },
 { id:'02', title:'Make their Telegram bot', mins:'~5 min',
   intro:`On <b>their phone</b>, in Telegram: message <b>@BotFather</b> → <code>/newbot</code>. Name it something they'll recognise; the username must end in <code>bot</code>. Copy the token. Then message <b>@userinfobot</b> for their numeric user ID.`,
   gotcha:{t:'This is the lock on the door', d:`The numeric user ID is the only thing standing between a stranger and their memory. Get it right, and treat the token like a password.`},
   verify:`Two strings in hand: a bot token (<code>8123456789:AAF…</code>) and a numeric user ID.`,
+  prompt:`Gate 02 is phone work, no commands: we're creating the bot with @BotFather and getting the numeric user ID from @userinfobot on <NAME>'s phone. Stand by — when I paste you the token and user ID(s), hold them for gate 05's .env and treat the token as a secret (never echo it, never commit it).`,
   shotHint:`BotFather reply (crop the token out!)`,
 },
 { id:'03', title:'Build the vault', mins:'~10 min',
@@ -252,6 +263,7 @@ const STEPS = [
     {label:'verify buckets', code:`ls "$VAULT/wiki/topics"`},
   ],
   verify:`The skeleton on GitHub and the repo marked <b>Private</b> — if it says Public, stop and fix it now. Locally: their four bucket folders, each containing <code>_manual.md</code>.`,
+  prompt:`Gate 03: build the vault. VAULT=~/Memory/<NAME>-vault — exactly there, never Desktop/Documents/Downloads. Copy the kit's templates/vault-skeleton in, rename gitignore.template to .gitignore, chmod +x scripts/pinecone-sync. STOP and ask me for <NAME>'s bucket words before running the bucket loop — use exactly what they chose, not the template's four. Build each bucket folder + _manual.md, remove the template, create wiki/people wiki/reference raw/sessions, git init -b main and commit. Then connect the EMPTY PRIVATE repo <OWNER>/<NAME>-vault (create it if it doesn't exist yet), push -u origin main, and show me: ls of wiki/topics, and confirmation the GitHub page says Private. If push auth fails, tell me — don't improvise credentials.`,
   shotHint:`GitHub repo page showing the Private badge`,
 },
 { id:'04', title:'Create their Pinecone index', mins:'~5 min',
@@ -262,6 +274,7 @@ const STEPS = [
   ],
   gotcha:{t:'Why a file', d:`The promoter needs a key that can <b>write</b> to the index; the agent only ever needs to <b>search</b>. Keeping it out of the agent's environment means a prompt injection can't exfiltrate a credential that could wipe the index.`},
   verify:`JSON with <code>"name": "<NAME>-vault"</code> and a <code>host</code>. "Already exists" is fine — carry on.`,
+  prompt:`Gate 04: Pinecone. Pause first: <NAME> signs up at app.pinecone.io with THEIR email (free tier) and creates an API key — ask me for the key when we have it. Then create the index <NAME>-vault with the runbook's curl (gate 4), show me the JSON response, store the key at ~/.hermes/secrets/pinecone.key mode 600, and unset it from the environment. The key never goes in .env or the agent environment — that's the injection-can't-wipe-the-index design.`,
   shotHint:`Terminal: the JSON response`,
 },
 { id:'05', title:'Configure Hermes', mins:'~5 min',
@@ -271,6 +284,7 @@ const STEPS = [
     {label:'scripts + capture skill', code:`K=~/Documents/Projects/hermes/templates\n\ncp "$K/promote.sh"        ~/.hermes/promote.sh\ncp "$K/vault-health.sh"   ~/.hermes/scripts/vault-health.sh\nchmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh\n\nmkdir -p ~/.hermes/skills/note-taking/vault-capture\ncp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md`},
   ],
   verify:`<code>~/.hermes/.env</code> holds real values (no <code>&lt;placeholders&gt;</code>), mode 600.`,
+  prompt:`Gate 05: configure. mkdir -p ~/.hermes/{inbox,scripts,secrets}; copy the kit's templates/env.template to ~/.hermes/.env mode 600 and fill in the bot token and allowed user IDs I gave you at gate 02. Install promote.sh and vault-health.sh from the kit templates (chmod +x), and the vault-capture skill to ~/.hermes/skills/note-taking/vault-capture/SKILL.md. Show me the .env keys (NAMES ONLY, never values) so I can confirm nothing's missing.`,
   shotHint:`.env open in TextEdit (redact the token)`,
 },
 { id:'06', title:'Start Hermes', mins:'~15 min',
@@ -283,6 +297,7 @@ const STEPS = [
     {label:'status', code:`docker exec hermes hermes status`},
   ],
   verify:`Gateway running, Telegram ✓ configured, a model with a logged-in provider. <b>Then the real test:</b> they text their bot "hello" and get a reply. Silence → 06-troubleshooting.md → <i>The bot is silent</i>, before continuing.`,
+  prompt:`Gate 06: start Hermes. Run the runbook's docker run — the vault mount MUST be -v ~/Memory/<NAME>-vault:/vault:ro (if the container already exists from earlier, docker rm -f hermes and re-run so the mount is present; the :ro is the safety model, confirm it with docker inspect). Pin the three settings: database.journal_mode delete, approvals.mode smart, approvals.cron_mode deny. Also set display.platforms.telegram.tool_progress off (quiet bot — no tool chrome in chat). Restart. Then PAUSE for the model login: <NAME> types docker exec -it hermes hermes model THEMSELVES and logs in with THEIR account — never the operator's. When done, show me hermes status, then we test by texting the bot "hello".`,
   shotHint:`hermes status output + the first bot reply on their phone`,
 },
 { id:'07', title:'Write their SOUL.md', mins:'~45 min',
@@ -293,6 +308,7 @@ const STEPS = [
   ],
   gotcha:{t:'Placeholders become beliefs', d:`Any <code>&lt;placeholder&gt;</code> left in the file is something the agent will confidently reason from as if it were true. Strip every HTML comment and every angle bracket.`},
   verify:`<code>grep -c '&lt;'</code> returns a low number — ideally <code>0</code>.`,
+  prompt:`Gate 07: SOUL.md. I've just done the interview with <NAME> (doc 04) — here are my notes: [PASTE NOTES]. Copy the kit's templates/SOUL.md.template to ~/.hermes/SOUL.md and write it up in plain prose — briefing notes for a new chief of staff who starts Monday, not a Q&A dump. Quote their exact words where they said it well. Strip EVERY HTML comment and every <angle-bracket> placeholder — anything left in becomes something the agent believes. Show me the draft for approval before saving, then docker restart hermes and show me grep -c '<' ~/.hermes/SOUL.md (want 0).`,
   shotHint:`n/a — the SOUL is private; screenshot the grep count if anything`,
 },
 { id:'08', title:'Turn on the promoter', mins:'~10 min',
@@ -302,6 +318,7 @@ const STEPS = [
     {label:'manual proof run', code:`VAULT_ROOT=~/Memory/<NAME>-vault \\\nPINECONE_INDEX=<NAME>-vault \\\nPINECONE_STATE=~/.hermes/pinecone-state.json \\\nPINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \\\nPINECONE_SYNC=~/Memory/<NAME>-vault/scripts/pinecone-sync \\\nbash ~/.hermes/promote.sh\n\ncat ~/.hermes/promote-state.json`},
   ],
   verify:`launchd line ends in exit status <code>0</code> (a <code>78</code> = malformed plist, a <code>1</code> = wrong path). Manual run: <code>"status": "ok"</code> — anything else, the message says what's wrong.`,
+  prompt:`Gate 08: the promoter — the piece that actually writes their memory. Fill the kit's templates/com.hermeskit.vault-promote.plist (<USER> = whoami, <NAME> = <NAME>), install to ~/Library/LaunchAgents/, plutil -lint, launchctl unload-then-load, and show me launchctl list | grep vault-promote (want exit 0). Then the MANUAL proof run with the runbook gate-8 env block, and show me ~/.hermes/promote-state.json — must say "status": "ok". Finally an end-to-end proof: echo a one-line test note into a bucket folder, run promote.sh again, confirm the commit landed on GitHub, then remove the test note and push clean.`,
   shotHint:`Terminal: launchctl list line + status ok`,
 },
 { id:'09', title:'Watchdog + digest', mins:'~5 min',
@@ -313,6 +330,7 @@ const STEPS = [
     {label:'verify', code:`docker exec hermes hermes cron list`},
   ],
   verify:`Both jobs listed.`,
+  prompt:`Gate 09: watchdog + digest. Create the vault-health watchdog cron exactly per the runbook. For the digest, ask me first — the hour is UTC (check <NAME>'s timezone) and the flavor is per-person: business installs get the what's-open-what's-owed briefing; creative installs get the one-idea-you-never-came-back-to variant from doc 05, or skip the digest for the first fortnight. Then show me hermes cron list.`,
   shotHint:`cron list output`,
 },
 { id:'10', title:'Smoke test — proves it all works', mins:'~20 min',
@@ -329,6 +347,7 @@ const STEPS = [
     `They text <i>"who's on Henderson?"</i> — the answer comes back right`,
   ],
   verify:`<b>All three must pass.</b> If the third fails but the first two pass, their memory is safe — recall is just degraded to literal search. Fix it, but don't panic.`,
+  prompt:`Gate 10: smoke test. <NAME> has just texted the bot the "remember I switched the Henderson job…" style message and got a confirmation. Run the promoter manually (gate-8 env), then verify all three legs and show me each: (1) the note exists on disk in a bucket folder, (2) git log + status show it committed and pushed clean, (3) pinecone-sync search finds it by MEANING with a query that shares no keywords with the note. Then <NAME> texts a recall question and we check the answer comes back right. Report each leg pass/fail — no summarizing over a failure.`,
   shotHint:`the three passing checks + the bot's answer`,
 },
 { id:'11', title:'Hand it over', mins:'~10 min',
@@ -343,6 +362,7 @@ const STEPS = [
     `Export this page's log (top right) into people/<NAME>.md`,
   ],
   verify:`They can use it without you in the room.`,
+  prompt:`Gate 11: hand-over. Open the vault in Obsidian (open -a Obsidian ~/Memory/<NAME>-vault — "open folder as vault", trust it, no Sync, no plugins). Fill in the kit's people/<NAME>.md while it's fresh: paths, bot handle, index name, git remote, whose model account, install date, and every deviation we logged — NO secrets in that file — then commit and push the kit repo. Last: remind me to export this gate card's log (top-right button) into people/<NAME>.md, and to hand <NAME> their onboarding doc and nothing else.`,
   shotHint:`Obsidian open on their vault`,
 },
 ];
@@ -358,7 +378,10 @@ function loadState(){ try{ state = JSON.parse(localStorage.getItem(skey())) || {
 function saveState(){ localStorage.setItem(skey(), JSON.stringify(state)); }
 function st(id){ return state[id] || (state[id] = {done:false, ts:null, note:'', subs:[]}); }
 
-function subName(text){ return text.replaceAll('<NAME>', person).replaceAll('<OWNER>', 'qrcteam'); }
+/* Repo owner is per-person: family/friends ride qrcteam (operator-supported);
+   paying clients (Diane pattern) own their vault repo outright. */
+const OWNERS = { mazix:'qrcteam', doug:'qrcteam', diane:'<HER-GITHUB-USERNAME>' };
+function subName(text){ return text.replaceAll('<NAME>', person).replaceAll('<OWNER>', OWNERS[person] || '<OWNER>'); }
 function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 /* ══ render ══ */
@@ -396,6 +419,12 @@ function render(){
         <button class="copy" data-copy="${step.id}:${i}">Copy</button></div>
         <pre id="code-${step.id}-${i}">${esc(code)}</pre></div>`;
     });
+
+    if (step.prompt){
+      inner += `<div class="cmd claude"><div class="cmd-head"><span class="cmd-label">🅒 paste to Claude on their machine</span>
+        <button class="copy" data-copy="${step.id}:p">Copy prompt</button></div>
+        <pre id="code-${step.id}-p">${esc(subName(step.prompt))}</pre></div>`;
+    }
 
     if (step.subchecks){
       inner += `<ul class="subchecks">` + step.subchecks.map((t, i) =>
