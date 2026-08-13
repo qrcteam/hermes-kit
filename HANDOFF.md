@@ -173,3 +173,9 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   (this morning's spam was pre-restart noise — docker logs spans the day, use --since).
   Auxiliary lane (smart approvals, curation) + fallback provider now live. Nous still
   unauthenticated — fine, OpenRouter covers the fallback role. [state]
+- **Gate card is now the full operator guide**: per-gate "paste to Claude" prompt blocks
+  (Claude-driven install is the real method — runbook 02 stays canon for the commands),
+  kit-clone preflight, per-person repo OWNER (mazix/doug→qrcteam, diane→HER OWN GitHub per
+  people/diane.md boundary). Hosted noindexed at beautiful-possibilities.com/kit/install/
+  (snapshot in bp-promo/public/kit/install/ — re-copy on changes). Flagged to Oz: his own
+  ruling says Diane installs LAST/debugged-twice; he's planning her tomorrow — his call. [decision]
