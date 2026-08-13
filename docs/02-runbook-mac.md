@@ -118,7 +118,7 @@ ls "$VAULT/wiki/topics"
 
 ## 4 · Create their Pinecone index
 
-Sign in at [app.pinecone.io](https://app.pinecone.io) with **their** account, make an API key,
+Sign up at [app.pinecone.io/?sessionType=signup](https://app.pinecone.io/?sessionType=signup) with **their** account (free tier), make an API key,
 then:
 
 ```bash

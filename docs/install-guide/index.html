@@ -272,7 +272,7 @@ const STEPS = [
   shotHint:`GitHub repo page showing the Private badge`,
 },
 { id:'04', title:'Create their Pinecone index', mins:'~5 min',
-  intro:`Sign in at app.pinecone.io with <b>their</b> account, make an API key, then create the index and store the key in a file.`,
+  intro:`They sign up at <a href="https://app.pinecone.io/?sessionType=signup">app.pinecone.io/?sessionType=signup</a> (their email, free tier), make an API key, then create the index and store the key in a file.`,
   cmds:[
     {label:'create index', code:`export PC_KEY=<paste their pinecone key>\n\ncurl -s "https://api.pinecone.io/indexes/create-for-model" \\\n  -H "Api-Key: $PC_KEY" -H "Content-Type: application/json" \\\n  -H "X-Pinecone-API-Version: 2025-04" \\\n  -d '{\n    "name": "'"$NAME"'-vault",\n    "cloud": "aws",\n    "region": "us-east-1",\n    "embed": { "model": "llama-text-embed-v2", "field_map": { "text": "text" } }\n  }' | python3 -m json.tool`},
     {label:'key goes in a file, not the environment', code:`mkdir -p ~/.hermes/secrets\nprintf '%s' "$PC_KEY" > ~/.hermes/secrets/pinecone.key\nchmod 600 ~/.hermes/secrets/pinecone.key\nunset PC_KEY`},
