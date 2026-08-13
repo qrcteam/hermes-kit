@@ -147,3 +147,13 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   State is localStorage per person; page is offline/file:// safe, zero deps. Tested via
   playwright (render + stamp flow). Mirrors the Mac runbook only — Windows installs still
   go through 03 raw. [decision]
+- **The offer now has a working document: `docs/08-the-offer.md`.** Journey = 6 months in
+  3 phases (Initiate ~6wk install/connect · Investigate ~6wk map/learn · Innovate ~3mo
+  zone-of-genius automation) + phase-4 "-ate" ongoing tier riffed at $500/mo cap 25 (name
+  candidates: Elevate/Cultivate/Iterate/Accelerate — undecided). Reference copy of the offer
+  = the Laurie email "Here it is in writing", SENT 2026-08-12 16:23Z, Gmail 19ff6c9a67b62e72,
+  $1,500 founder price, decision due Mon 08-17. Founder cohort = 5 installs (Mazíx, Diane,
+  Doug presumed, Laurie offered, 1 open). Question-stack lives in that doc — every prospect
+  question the kit can't answer gets a dated row. Pricing there is DRAFT; canon moves to
+  bp-promo offers.json when live. Vault notes: bp-business/ai-os-six-month-journey +
+  laurie-ai-os-founding-offer (updated to SENT). [decision]
