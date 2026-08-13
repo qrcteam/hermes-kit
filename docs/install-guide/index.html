@@ -65,7 +65,7 @@
   }
   .progress{font-family:var(--display);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.3rem}
   .bar{height:6px;background:var(--rule);border-radius:3px;margin-bottom:1.1rem;overflow:hidden}
-  .bar i{display:block;height:100%;width:0;background:var(--stamp);transition:width .35s}
+  .bar i{display:block;height:100%;width:100%;background:var(--stamp);transform:scaleX(0);transform-origin:left;transition:transform .35s}
   .gate{
     display:flex;align-items:center;gap:.6rem;width:100%;text-align:left;
     background:none;border:none;padding:.42rem .35rem;border-radius:4px;color:var(--ink);
@@ -108,7 +108,7 @@
 
   .gotcha{
     margin:.9rem 0 0;padding:.7rem .9rem .7rem 1rem;background:var(--amber-soft);
-    border-left:4px solid var(--amber);border-radius:0 4px 4px 0;font-size:.94rem;max-width:66ch;
+    border:1px solid #DCC49A;border-radius:4px;font-size:.94rem;max-width:66ch;
   }
   .gotcha b{font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;color:var(--amber);display:block;margin-bottom:.15rem}
 
@@ -455,7 +455,7 @@ let openId = null;
 function updateProgress(){
   const done = STEPS.filter(x => st(x.id).done).length;
   $('#progress').textContent = `${done} / ${STEPS.length} gates`;
-  $('#bar-fill').style.width = (done / STEPS.length * 100) + '%';
+  $('#bar-fill').style.transform = `scaleX(${done / STEPS.length})`;
 }
 
 /* screenshots: try step-<id>-1..6.png under shots/<person>/ */
