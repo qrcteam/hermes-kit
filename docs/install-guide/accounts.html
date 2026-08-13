@@ -1,0 +1,224 @@
+<!doctype html>
+<!--
+  Hermes Kit · Accounts & Connections — companion reference to the install gate card.
+  What has to exist for memory + Hermes to be alive, and everything it can grow into.
+  Open locally (file://). No network, no dependencies. Check marks persist per person
+  in this browser's localStorage.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hermes Accounts &amp; Connections</title>
+<style>
+  :root{
+    --paper:#F7F8F6; --card:#FFFFFF; --ink:#16283C; --ink-soft:#4A5A6B;
+    --rule:#D6DBD2; --stamp:#2E6B4F; --stamp-soft:#E4EFE8;
+    --amber:#A8620A; --amber-soft:#F7EDDD; --amber-line:#DCC49A;
+    --display:"Avenir Next Condensed","Avenir Next",-apple-system,"Segoe UI",sans-serif;
+    --body:Charter,"Iowan Old Style",Georgia,serif;
+    --mono:"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+  body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+  a{color:var(--ink)}
+  :focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+  header{
+    display:flex;align-items:baseline;gap:1.2rem;flex-wrap:wrap;
+    padding:1.1rem 1.6rem .9rem;border-bottom:3px solid var(--ink);background:var(--card);
+    position:sticky;top:0;z-index:30;
+  }
+  header h1{font-family:var(--display);font-weight:600;font-size:1.35rem;letter-spacing:.14em;text-transform:uppercase}
+  header .sub{color:var(--ink-soft);font-size:.9rem;font-style:italic}
+  header .spacer{flex:1}
+  .who{display:flex;align-items:center;gap:.45rem;font-family:var(--display);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
+  .who select{font-family:var(--mono);font-size:.85rem;padding:.3rem .5rem;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);border-radius:3px}
+
+  main{max-width:880px;margin:0 auto;padding:1.8rem 1.6rem 6rem}
+  .lede{max-width:64ch;color:var(--ink-soft);font-style:italic;margin-bottom:2rem}
+  .lede b{color:var(--ink);font-style:normal}
+
+  h2{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;
+     margin:2.4rem 0 .3rem;display:flex;align-items:baseline;gap:.7rem}
+  h2 .tally{font-family:var(--mono);font-size:.75rem;color:var(--stamp);letter-spacing:0;text-transform:none}
+  .sectionnote{color:var(--ink-soft);font-size:.92rem;max-width:64ch;margin-bottom:1rem}
+
+  /* account cards */
+  .acct{border:1.5px solid var(--rule);border-radius:6px;background:var(--card);margin-bottom:.8rem;padding:.95rem 1.1rem}
+  .acct.done{border-color:var(--stamp)}
+  .acct .head{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
+  .acct .name{font-family:var(--display);font-weight:600;font-size:1.02rem;letter-spacing:.07em;text-transform:uppercase}
+  .acct .meta{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft)}
+  .acct .meta b{color:var(--stamp);font-weight:600}
+  .acct .check{margin-left:auto;display:flex;align-items:center;gap:.4rem;font-family:var(--display);
+    font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;user-select:none}
+  .acct .check input{accent-color:var(--stamp);width:1.05rem;height:1.05rem;cursor:pointer}
+  .acct.done .check{color:var(--stamp)}
+  .acct .what{margin:.45rem 0 0;max-width:66ch}
+  .acct .without{margin:.35rem 0 0;font-size:.88rem;color:var(--ink-soft);max-width:66ch}
+  .acct .without b{color:var(--amber)}
+  .acct code{font-family:var(--mono);font-size:.85em;background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:.05em .3em}
+
+  .gotcha{margin:1.1rem 0;padding:.7rem .9rem;background:var(--amber-soft);
+    border:1px solid var(--amber-line);border-radius:4px;font-size:.94rem;max-width:68ch}
+  .gotcha b{font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;color:var(--amber);display:block;margin-bottom:.15rem}
+
+  /* horizon table */
+  .horizon{width:100%;border-collapse:collapse;font-size:.93rem;margin-top:.6rem}
+  .horizon th{font-family:var(--display);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-soft);text-align:left;padding:.45rem .6rem;border-bottom:2px solid var(--ink)}
+  .horizon td{padding:.5rem .6rem;border-bottom:1px solid var(--rule);vertical-align:top}
+  .horizon td:first-child{font-family:var(--display);font-weight:600;font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+  .horizon .needs{font-family:var(--mono);font-size:.74rem;color:var(--ink-soft)}
+  .tag{display:inline-block;font-family:var(--display);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+    border:1px solid currentColor;border-radius:3px;padding:.06rem .4rem;white-space:nowrap}
+  .tag.now{color:var(--stamp)}
+  .tag.later{color:var(--amber)}
+  .tag.maybe{color:var(--ink-soft)}
+  .keyline{margin-top:.8rem;font-size:.85rem;color:var(--ink-soft)}
+  .keyline .tag{margin-right:.35rem}
+
+  .foot{margin-top:2.6rem;color:var(--ink-soft);font-size:.85rem;font-style:italic;max-width:64ch}
+  @media (max-width:680px){
+    .horizon thead{display:none}
+    .horizon, .horizon tbody, .horizon tr, .horizon td{display:block;width:100%}
+    .horizon tr{border:1.5px solid var(--rule);border-radius:6px;margin-bottom:.7rem;background:var(--card);padding:.4rem .2rem}
+    .horizon td{border:none;padding:.3rem .6rem}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Accounts &amp; Connections</h1>
+  <span class="sub">companion to the <a href="index.html">install gate card</a></span>
+  <span class="spacer"></span>
+  <div class="who">
+    <label for="person">For</label>
+    <select id="person">
+      <option value="mazix">mazix</option>
+      <option value="doug">doug</option>
+      <option value="diane">diane</option>
+    </select>
+  </div>
+</header>
+
+<main>
+  <p class="lede">Hermes is four jobs wearing one trench coat: a <b>doorway</b> (how you reach it),
+  a <b>brain</b> (the model that thinks), a <b>memory</b> (the vault + what makes it findable and
+  unloseable), and <b>hands</b> (the things it can act on). Every account below serves one of
+  those jobs. The minimum set makes it alive; the horizon list is what it can grow into.</p>
+
+  <h2>The minimum <span class="tally" id="tally"></span></h2>
+  <p class="sectionnote">Six pieces. Three are free, one is the model subscription they already
+  have or need anyway, and two aren't accounts at all. Check them off as they exist.</p>
+
+  <div id="minimum"></div>
+
+  <div class="gotcha"><b>⚠ Whose account matters more than which account</b>
+  The model login and Pinecone belong to <i>them</i> — their email, their password. The vault
+  repo can live on the operator's GitHub (that's the qrcteam pattern) but say out loud that you
+  can read it: consent, not assumption. The one thing you never share across installs is a paid
+  key quietly landing on somebody else's bill — if a loaner key gets things running today, write
+  it in the gate card's deviation notes and swap it out later.</div>
+
+  <h2>The horizon — what Hermes can connect to</h2>
+  <p class="sectionnote">Everything below is real, supported capability — not roadmap poetry.
+  None of it is required on day one. Add a connection when the person keeps asking for the thing
+  it does; a creative install (see <code>people/mazix.md</code>) wants capture and voice first
+  and may never want half this table. That's correct, not incomplete.</p>
+
+  <table class="horizon">
+    <thead><tr><th>Connection</th><th>What it does</th><th>Needs</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Voice notes in</td><td>They send a voice note; Hermes hears it and answers. For most people this becomes the main way in — thoughts arrive faster than thumbs.</td><td class="needs">nothing — built in (local STT)</td><td><span class="tag now">day one</span></td></tr>
+      <tr><td>Voice replies out</td><td>Hermes speaks its answer back as an audio message (free TTS voices, configurable per bot).</td><td class="needs">nothing — built in</td><td><span class="tag now">day one</span></td></tr>
+      <tr><td>Morning digest</td><td>A daily cron: reads the vault, briefs them on what's open and owed. <i>Skip or soften for creatives</i> — the one-idea-you-never-came-back-to variant beats a status report.</td><td class="needs">nothing — <code>hermes cron</code></td><td><span class="tag now">day one</span></td></tr>
+      <tr><td>Vault watchdog</td><td>A silent daily health check that only speaks when memory stops flowing — backup broken, promoter stuck, index stale.</td><td class="needs">nothing — ships with the kit</td><td><span class="tag now">day one</span></td></tr>
+      <tr><td>Web search</td><td>Hermes looks things up instead of guessing from training data.</td><td class="needs">search API key</td><td><span class="tag later">when asked</span></td></tr>
+      <tr><td>Browser</td><td>Reads pages, checks a site, fills the gap between "search" and "go look at it".</td><td class="needs">nothing extra in-container</td><td><span class="tag later">when asked</span></td></tr>
+      <tr><td>Email + calendar</td><td>Triage the inbox, draft replies for approval, know what today looks like before the digest.</td><td class="needs">mail/calendar access (per provider)</td><td><span class="tag later">when asked</span></td></tr>
+      <tr><td>Their business system</td><td>CRM, booking, store — Hermes reads it and answers "what's in there?", proposes changes for approval. (GoHighLevel for coaches, Airtable for ops-minded, etc.)</td><td class="needs">that system's API key</td><td><span class="tag later">when asked</span></td></tr>
+      <tr><td>Claude Code delegation</td><td>Hermes hands heavy jobs (site audits, builds, reports) to Claude Code on the operator's machine via a drop-box, relays the result back. The assistant gains a workshop.</td><td class="needs">kit's claude-bridge + operator machine</td><td><span class="tag later">operator-side</span></td></tr>
+      <tr><td>More doorways</td><td>WhatsApp (personal bridge or Business API), Discord, Slack, Matrix, Mattermost — same brain and memory, reachable where they already live.</td><td class="needs">per-platform pairing/token</td><td><span class="tag maybe">if they live there</span></td></tr>
+      <tr><td>Image generation</td><td>Make and edit images from chat.</td><td class="needs">image API key (e.g. BFL)</td><td><span class="tag maybe">creative installs</span></td></tr>
+      <tr><td>Vision</td><td>Send it a photo — a whiteboard, a screenshot, a form — and it reads what's there.</td><td class="needs">vision-capable model</td><td><span class="tag maybe">nice to have</span></td></tr>
+      <tr><td>MCP servers</td><td>The universal adapter: anything with an MCP server (thousands of tools) can become a Hermes capability.</td><td class="needs">per-server config</td><td><span class="tag maybe">advanced</span></td></tr>
+      <tr><td>Webhooks + automations</td><td>Outside events (a form submit, a sale, a calendar change) wake Hermes to act — the step past "answers when spoken to".</td><td class="needs">per-integration setup</td><td><span class="tag maybe">phase 3 territory</span></td></tr>
+    </tbody>
+  </table>
+
+  <p class="keyline">
+    <span class="tag now">day one</span> already in the kit ·
+    <span class="tag later">when asked</span> add when the person keeps wanting it ·
+    <span class="tag maybe">maybe</span> real, but earn its keep first
+  </p>
+
+  <p class="foot">The order of operations is the offer's phases in miniature: the minimum set is
+  <b>Initiate</b>. Living with it and noticing what they reach for is <b>Investigate</b>. The
+  horizon table is <b>Innovate</b> — pulled by the person, never pushed by the installer.</p>
+</main>
+
+<script>
+'use strict';
+const ACCOUNTS = [
+  { id:'telegram', name:'Telegram bot', meta:'free · <b>their doorway</b> · @BotFather',
+    what:`The doorway. A bot of their own, locked to their numeric user ID (plus the operator's during setup). Made in two minutes on their phone — gate 02 on the card.`,
+    without:`Without it: <b>no way in.</b> Hermes runs but nobody can talk to it.` },
+  { id:'model', name:'Model subscription', meta:'~$20/mo · <b>THEIR account</b> · ChatGPT Plus or Claude',
+    what:`The brain. They log in themselves at gate 06 (<code>hermes model</code>, device-flow link) — it's their account and their relationship with the model.`,
+    without:`Without it: <b>nothing thinks.</b> And on the operator's account instead: their private life bills to your card and reads as yours. Never.` },
+  { id:'github', name:'GitHub', meta:'free · operator-owned repo is fine (qrcteam pattern)',
+    what:`The unloseable part. The vault pushes to a <b>private</b> repo (<code>qrcteam/&lt;name&gt;-vault</code>) every time memory changes. Laptop dies → they lose a laptop, not a mind.`,
+    without:`Without it: memory lives on one disk. The Laurie email named this exact fear — "everything you have taught AI about you is sitting on one laptop."` },
+  { id:'pinecone', name:'Pinecone', meta:'free tier · <b>THEIR account</b> · app.pinecone.io',
+    what:`Recall by meaning. The index lets "who's doing the Henderson work?" find a note that never says Henderson-adjacent keywords. Key goes in a file (<code>~/.hermes/secrets/pinecone.key</code>, mode 600), never the agent's environment.`,
+    without:`Without it: memory still saves and backs up — recall just degrades to literal keyword search. Safe, but noticeably dumber.` },
+  { id:'obsidian', name:'Obsidian', meta:'free app · NO account needed',
+    what:`Not an account — just the window. It opens the vault folder so they can <i>see</i> their own memory as pages and links. Handing this over is gate 11's moment.`,
+    without:`Without it: memory works fine but stays invisible — and invisible memory is memory they won't trust.` },
+  { id:'openrouter', name:'OpenRouter', meta:'~$10 credits · optional but recommended',
+    what:`The understudy brain. Background tasks (approval guardian, curation) and the fallback if their main model's API has a bad day. Pennies a month in practice.`,
+    without:`Without it: works — but background features silently skip, and a model outage means a mute assistant. <b>Loaner-key warning:</b> if the operator's key gets it running today, log the deviation and swap to theirs later.` },
+];
+
+const $ = s => document.querySelector(s);
+let person = localStorage.getItem('hermes-accounts:who') || 'mazix';
+const skey = () => `hermes-accounts:${person}`;
+let state = {};
+function load(){ try{ state = JSON.parse(localStorage.getItem(skey())) || {}; }catch(e){ state = {}; } }
+function save(){ localStorage.setItem(skey(), JSON.stringify(state)); }
+
+function render(){
+  load();
+  const wrap = $('#minimum'); wrap.innerHTML = '';
+  ACCOUNTS.forEach(a => {
+    const done = !!state[a.id];
+    const el = document.createElement('div');
+    el.className = 'acct' + (done ? ' done' : '');
+    el.innerHTML = `<div class="head">
+        <span class="name">${a.name}</span>
+        <span class="meta">${a.meta}</span>
+        <label class="check"><input type="checkbox" data-acct="${a.id}" ${done ? 'checked' : ''}> ${done ? 'exists' : 'set up'}</label>
+      </div>
+      <p class="what">${a.what}</p>
+      <p class="without">${a.without}</p>`;
+    wrap.appendChild(el);
+  });
+  const n = ACCOUNTS.filter(a => state[a.id]).length;
+  $('#tally').textContent = `${n} / ${ACCOUNTS.length} in place`;
+}
+document.addEventListener('change', ev => {
+  if (ev.target.dataset && ev.target.dataset.acct){
+    state[ev.target.dataset.acct] = ev.target.checked; save(); render();
+  }
+  if (ev.target.id === 'person'){
+    person = ev.target.value; localStorage.setItem('hermes-accounts:who', person); render();
+  }
+});
+(function(){ if(['mazix','doug','diane'].includes(person)) $('#person').value = person; render(); })();
+</script>
+</body>
+</html>
