@@ -277,6 +277,28 @@ docker exec hermes hermes status    # look at the provider line
 docker exec hermes hermes model    # lists what their credential can actually reach
 ```
 
+### "not a valid model ID" right after adding an OpenRouter key
+
+Happened live 2026-08-13, on the reference install. With `model.provider: auto`, adding
+`OPENROUTER_API_KEY` to `.env` can flip provider resolution: the **main** model suddenly
+routes to OpenRouter carrying its ChatGPT-backend model ID, OpenRouter answers
+`400 — openai-codex/… is not a valid model ID`, and 400s don't retry — the bot just says
+the provider failed. The bot goes from working to mute *because a key was added*.
+
+The rule: **whenever you add a second provider key, pin the primary and declare the
+fallback explicitly** — never leave `auto` to guess with two credentials in reach:
+
+```bash
+docker exec hermes hermes config set model.provider openai-codex
+docker exec hermes hermes config set fallback_providers \
+  '[{"provider":"openrouter","model":"anthropic/claude-sonnet-4.5"}]'
+docker restart hermes
+docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"   # proof, not vibes
+```
+
+Now the primary is theirs-and-explicit, and OpenRouter is what it was meant to be: the
+understudy that steps in on rate-limits, overloads, and outages.
+
 ---
 
 ## Rebuilding from scratch

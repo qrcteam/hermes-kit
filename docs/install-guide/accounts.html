@@ -187,7 +187,7 @@ const ACCOUNTS = [
     without:`Without it: memory works fine but stays invisible — and invisible memory is memory they won't trust.` },
   { id:'openrouter', name:'OpenRouter', meta:'~$10 credits · optional but recommended',
     what:`The understudy brain. Background tasks (approval guardian, curation) and the fallback if their main model's API has a bad day. Pennies a month in practice.`,
-    without:`Without it: works — but background features silently skip, and a model outage means a mute assistant. <b>Loaner-key warning:</b> if the operator's key gets it running today, log the deviation and swap to theirs later.` },
+    without:`Without it: works — but background features silently skip, and a model outage means a mute assistant. <b>Loaner-key warning:</b> if the operator's key gets it running today, log the deviation and swap to theirs later. <b>After adding the key, pin the primary</b> — <code>hermes config set model.provider &lt;primary&gt;</code> + an explicit <code>fallback_providers</code> entry, or provider "auto" may hijack the MAIN model onto OpenRouter and 400 (see 06-troubleshooting.md).` },
 ];
 
 const $ = s => document.querySelector(s);
