@@ -92,7 +92,7 @@ clear problems, with a very clear offer, agreement and path."* — Oz, 2026-08-1
 | 2 | Diane | not installed | — | has seen the map ([people/diane.md](../people/diane.md)) |
 | 3 | Doug | not installed | — | ([people/doug.md](../people/doug.md)) — presumed one of the email's "two other clients", confirm |
 | 4 | Laurie | **offered 2026-08-12, $1,500** — answer due Mon 08-17 | — | the first written offer (above) |
-| 5 | *(open)* | — | — | |
+| 5 | Trenton | confirmed slot #5 (2026-08-13) — SOUL starter to send | — | ([people/trenton.md](../people/trenton.md)) |
 
 Track per-install: offer date, price paid, install date, phase transitions, and every
 deviation. The gate card (`install-guide/index.html`) logs the install day itself;

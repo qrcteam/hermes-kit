@@ -37,3 +37,4 @@ Curated as they prove useful; add sparingly, date each.
 | Resource | What it's for | Added |
 |---|---|---|
 | [How to Use Google NotebookLM (Full Tutorial)](https://youtu.be/uSVBfyHBiDU) — Kevin Stratvert | The NotebookLM layer: when a client (or the operator) is ready for the delight tier — audio overviews / podcasts from their vault notes, mind maps. Horizon material, not install-day: send it when they've been capturing for a few weeks and want more out of what they've saved. | 2026-08-13 |
+| [Jack Roberts — SOUL.md Hermes template (Notion)](https://app.notion.com/p/soul-md-Hermes-template-360e8d6bd13781de88bac5e9beef2c6f) | Source of the prefill-first SOUL approach (copy page → AI fills from memory → interview the gaps). Our productized version: /kit/install/soul + templates/soul-self-interview-prompt.md. From his Hermes Masterclass ch.1. | 2026-08-13 |

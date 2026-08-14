@@ -53,7 +53,11 @@ best lines in the finished SOUL.
 all 27 questions inline, one-at-a-time rules, voice-dictation encouraged (the 🎤 mic key:
 they talk, no audio files, no transcription step — Claude cannot hear audio files, so
 dictation IS the voice path), and it ends by producing the SOUL draft to send back.
-Works in claude.ai, ChatGPT, or a Claude Code session. The Laurie pattern, productized.
+Works in claude.ai, ChatGPT, or a Claude Code session. **Prefill-first (the Jack
+Roberts pattern):** the prompt has their own AI fill the template from its existing
+memory of them BEFORE interviewing — months of chat history become a head start, and
+the interview shrinks to the gaps. Person-facing hosted version to send by text:
+**beautiful-possibilities.com/kit/install/soul**.
 
 **D · Hermes runs it, in Telegram (re-interviews especially).** Send the bot:
 *"Run my SOUL re-interview. Ask me one question per message and wait for my answer —

@@ -1,0 +1,119 @@
+<!doctype html>
+<!-- Hermes Kit · SOUL Starter — the person-facing page. Send this link to someone
+     getting an assistant; they paste one prompt into their own AI and send back the
+     draft it produces. Hosted at beautiful-possibilities.com/kit/install/soul -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Your Assistant's First Briefing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+  :root{
+    --paper:#F5F5F5; --card:#FFFFFF; --ink:#080808; --ink-soft:#555555;
+    --rule:#E4E4E4; --blue:#188BF6; --blue-soft:#E8F3FE;
+    --gold:#9A6C00; --gold-soft:#FFF6DF; --gold-line:#FFD666;
+    --sans:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
+    --mono:"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6}
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  main{max-width:720px;margin:0 auto;padding:2.5rem 1.4rem 6rem}
+  h1{font-weight:800;font-size:1.9rem;letter-spacing:-.01em;line-height:1.2}
+  .lede{color:var(--ink-soft);margin:.8rem 0 2rem;max-width:56ch}
+  h2{font-weight:700;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase;margin:2.2rem 0 .6rem}
+  ol.steps{margin:.5rem 0 0 1.2rem}
+  ol.steps li{margin:.6rem 0;max-width:58ch}
+  ol.steps b{font-weight:600}
+  .tip{margin:1.4rem 0;padding:.8rem 1rem;background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:6px;font-size:.95rem;max-width:60ch}
+  .tip b{color:var(--gold);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.2rem}
+  .promptbox{position:relative;margin-top:.8rem}
+  .promptbox pre{
+    background:var(--blue-soft);border:1.5px solid var(--blue);border-radius:8px;
+    padding:1.1rem 1.2rem;font-family:var(--mono);font-size:.78rem;line-height:1.55;
+    white-space:pre-wrap;max-height:430px;overflow-y:auto;
+  }
+  .copybtn{
+    position:sticky;display:block;margin:0 0 .6rem auto;
+    background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;
+    font-family:var(--sans);font-weight:700;font-size:.9rem;letter-spacing:.04em;
+    padding:.65rem 1.4rem;
+  }
+  .copybtn:hover{background:#0F6FD0}
+  .copybtn.ok{background:#0B8A44}
+  .foot{margin-top:2.6rem;color:var(--ink-soft);font-size:.9rem;max-width:56ch}
+</style>
+</head>
+<body>
+<main>
+  <h1>Your assistant's first briefing</h1>
+  <p class="lede">You're getting a personal AI assistant — one that lives on your own
+  computer, remembers you, and texts with you like a friend. Before it wakes up, it
+  needs to know who it's working for. This page gets that done in one sitting, using
+  the AI you already talk to.</p>
+
+  <h2>Three steps, ~15–40 minutes</h2>
+  <ol class="steps">
+    <li><b>Open the ChatGPT or Claude you use most.</b> The one that already knows you —
+      it will fill in a lot before asking you anything.</li>
+    <li><b>Copy the prompt below and paste it in.</b> It fills in what it already knows,
+      then interviews you for the rest, one question at a time. <b>Talk, don't type</b> —
+      press the 🎤 microphone key on your keyboard and just answer out loud. Say
+      "skip" to skip anything, "pause" to finish later.</li>
+    <li><b>Send back what it produces.</b> It ends with a draft titled "SOUL DRAFT —
+      your name." Copy the whole thing and send it to Oz. Done.</li>
+  </ol>
+
+  <div class="tip"><b>Honesty beats polish</b>
+  This isn't a form to look good in — it's a briefing for someone on your side. "Revenue
+  is zero right now" is more useful to your assistant than "growing steadily." It can
+  only take care of what it truly knows.</div>
+
+  <h2>The prompt</h2>
+  <div class="promptbox">
+    <button class="copybtn" id="copy">Copy the whole prompt</button>
+    <pre id="prompt">You are helping me create my SOUL.md — the briefing file that teaches a personal AI assistant who I am, so it works like a chief of staff instead of a generic chatbot. Work in exactly three steps.
+
+STEP 1 — Fill in what you already know. From our entire conversation history, your memory of me, and anything else you genuinely know about me, fill in as much of the template below as you can. Rules: mark every line you filled from memory with (unconfirmed). Mark everything you can't fill with ⟨ASK⟩. Never invent or guess — a blank beats a plausible invention. Show me the prefilled draft.
+
+STEP 2 — Interview me for the rest. Go through the ⟨ASK⟩ gaps and the (unconfirmed) lines, one question at a time, waiting for my answer. I'll answer by voice dictation, so expect loose sentences — my exact words are the point; quote me verbatim. One short follow-up allowed when my answer is vague or an aside sounds important. Push past vague: if I say "I want to be organised," ask what disorganisation cost me this week. I can say "skip", "skip section", or "pause" (summarize progress so I can resume later). Ask first: is this assistant for work + life, or just life? If just life, drop the WORK section.
+
+The template:
+
+- WHO I AM — what I actually do all day (not my title) · my working style in my own phrase · where I live + timezone
+- THE ONE JOB — if this assistant works perfectly, what does it do for me? ONE sentence. (Interview me hard on this even if you think you know — it shapes everything.)
+- MISSION — what I'm making happen in the next few months (numbers + dates) · the one thing that must not slip · what I've decided NOT to do · what everyone tells me to do that I'm deliberately not doing
+- WORK (work+life only) — what I sell and how money actually works · where things honestly stand (revenue, costs, runway) · who else is involved
+- VOICE — what an assistant did the last time one annoyed me · long or short replies, answer-first or reasoning-first · do I want to be told when I'm wrong · casual or formal · should it acknowledge before starting work · voice notes in? spoken replies back? (two different answers) · if it drafts things I send others: banned words/punctuation
+- RHYTHM — when I'm sharpest · my day-shape · when it must never ping me · the one habit that holds everything up · what actually helps when things go badly
+- HARD NOS — what it must never do, each with the consequence that makes the rule real
+- PEOPLE — who I'll mention that it must know instantly: name, relationship, the one thing that matters
+- LEARNED THE HARD WAY — with the cost attached
+- SETTLED DECISIONS — dated, so they don't get reopened
+
+STEP 3 — Produce the draft. Write "SOUL DRAFT — [my name] — [today's date]" as flowing prose — briefing notes for a new chief of staff who starts Monday, NOT a Q&A dump. My exact words quoted where I said something well. Everything still unknown stays marked ⟨ASK⟩. Every fact that changes over time gets a date. Two pages max. Then tell me: "Copy everything above and send it to Oz — that's the whole job."
+
+Begin with STEP 1 now.</pre>
+  </div>
+
+  <h2>What happens next</h2>
+  <p class="foot">Your draft becomes your assistant's starting knowledge on install day.
+  It's a living file — about once a month, your assistant will check in and ask what it's
+  gotten wrong or what's changed, and the briefing gets sharper. Round one doesn't need
+  to be perfect; it needs to be honest.</p>
+</main>
+<script>
+'use strict';
+document.getElementById('copy').addEventListener('click', function(){
+  const t = document.getElementById('prompt').textContent;
+  const done = () => { this.classList.add('ok'); this.textContent = '✓ Copied — now paste it into your AI'; setTimeout(() => { this.classList.remove('ok'); this.textContent = 'Copy the whole prompt'; }, 2600); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done.bind(this));
+  else { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done.call(this); }
+});
+</script>
+</body>
+</html>
