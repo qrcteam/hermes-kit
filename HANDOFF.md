@@ -186,3 +186,14 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   fallback_providers=[{openrouter, anthropic/claude-sonnet-4.5}]. Documented in
   06-troubleshooting + accounts page card; hosted snapshot redeployed. RULE for installs:
   second provider key ⇒ pin primary + explicit fallback, never leave auto. [gotcha]
+- **SOUL starter shipped** — Jack Roberts' prefill-first pattern productized: person's own
+  ChatGPT/Claude fills the template from its existing memory of them, then interviews only
+  the gaps. `templates/soul-self-interview-prompt.md` (v2) + person-facing hosted page
+  **beautiful-possibilities.com/kit/install/soul** (send by text; they paste, talk via
+  dictation, send the draft back). NOTE: Claude cannot hear audio files — dictation IS the
+  voice path; recorder-file flow needs local whisper. Jack's Notion template bookmarked in
+  onboarding/README. [decision]
+- **Trenton = cohort slot #5** (Oz confirmed 2026-08-13). people/trenton.md created —
+  relationship + boundary pattern (qrcteam vs own-account) still ⟨ASK OZ⟩. Offer doc
+  tracker updated. SOUL starters to send: Diane, Doug, Trenton (+ Mazíx if sit-down
+  doesn't happen). [state]
