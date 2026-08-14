@@ -10,15 +10,17 @@
 > *<Fill in from his SOUL interview — send him the SOUL starter first:
 > beautiful-possibilities.com/kit/install/soul>*
 
-<Relationship / context: ⟨ASK OZ⟩ — who is Trenton to Oz, and which boundary pattern
-applies: family/friend (qrcteam) or client (own-account, Diane pattern)?>
+Oz's son. Family for support and consent — but **his own GitHub account**, so the vault
+repo lives there, not in qrcteam: his memory, his account, from day one. Oz joins as a
+collaborator for support only if Trenton wants that (say it out loud — consent, not
+assumption; he can remove Oz in one click).
 
 ## Paths
 
 | | |
 |---|---|
 | Vault | `~/Memory/trenton-vault` |
-| Git remote | <qrcteam or his own — decide per boundary above> `trenton-vault` (private) |
+| Git remote | **his own GitHub account**, `trenton-vault` (private) |
 | Pinecone index | `trenton-vault` — **his own account** |
 | Bot | `@<tbd>` |
 | Model | **his own** subscription |
@@ -36,4 +38,4 @@ applies: family/friend (qrcteam) or client (own-account, Diane pattern)?>
 
 | Date | What |
 |---|---|
-| 2026-08-13 | Confirmed as cohort slot #5. SOUL starter to be sent. |
+| 2026-08-13 | Confirmed as cohort slot #5 (Oz's son; own GitHub). SOUL starter to be sent. |
