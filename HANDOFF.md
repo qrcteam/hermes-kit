@@ -202,3 +202,12 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   the architecture facts: kit repo = source of truth, bp-promo copies = snapshots (sync +
   runbook-link rewrite + full deploy motion), e2m design system is deliberate, page JS is
   load-bearing, offline/file:// constraint stands. [state]
+- **/kit/install restyle SHIPPED** (projects-ce session, 2026-08-13) — all three
+  docs/install-guide pages restyled from the e2m palette into BP's Concourse system per Oz
+  ("match /proposal"): Fira Sans (Google Fonts link swapped, system fallback offline), BP
+  yellow #FFCC00 + ink #0D0D0D, green #12813F for every done/confirm state, BP twin-spark
+  lockup navbar. Functional distinction kept: black = terminal, yellow keyline =
+  paste-to-Claude, amber = gotcha, green dashed = verify. Values-only CSS — no JS, IDs,
+  data-attributes, or localStorage keys touched; verified on local serve (switcher, tallies,
+  copy, trays). Synced to bp-promo/public/kit/install/ (runbook link rewritten) and deployed
+  (bp-promo 3c39cc8). Hands-off hold can lift. [state]

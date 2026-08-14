@@ -18,17 +18,20 @@
 <title>Hermes Install Gate Card</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;700;800&display=swap">
 <style>
-  /* Palette + type lifted from e2mtech.com/apollo (Oz, 2026-08-13): Inter,
-     black/white high contrast, electric blue #188bf6, gold #ffb600. */
+  /* Restyled into BP's Concourse system (Oz, 2026-08-13 — match /proposal):
+     Fira Sans, BP yellow #FFCC00 + black #0D0D0D, green #12813F for done/confirm
+     states (Concourse rule: green is confirmation only). Functional distinction
+     kept: black blocks = terminal, yellow keyline blocks = paste-to-Claude. */
   :root{
-    --paper:#F5F5F5; --card:#FFFFFF; --ink:#080808; --ink-soft:#555555;
-    --rule:#E4E4E4; --stamp:#188BF6; --stamp-soft:#E8F3FE;
+    --paper:#F5F5F2; --card:#FFFFFF; --ink:#0D0D0D; --ink-soft:#5C6067;
+    --rule:#E5E5E5; --stamp:#12813F; --stamp-soft:#E9F4EE;
+    --yellow:#FFCC00; --yellow-soft:#FFF7D9;
     --amber:#9A6C00; --amber-soft:#FFF6DF;
-    --term-bg:#080808; --term-fg:#EDEDED;
-    --display:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
-    --body:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
+    --term-bg:#0D0D0D; --term-fg:#EDEDED;
+    --display:"Fira Sans",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
+    --body:"Fira Sans",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
     --mono:"SF Mono",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -37,28 +40,40 @@
   body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
   a{color:var(--ink)}
   button{font-family:var(--display);cursor:pointer}
-  :focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 
-  /* ── top bar ─────────────────────────────────────── */
+  /* ── top bar — BP funnel-nav treatment (PublicLayout .funnel-nav) ── */
   header{
-    display:flex;align-items:baseline;gap:1.2rem;flex-wrap:wrap;
-    padding:1.1rem 1.6rem .9rem;border-bottom:3px solid var(--ink);background:var(--card);
+    display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+    padding:.85rem 1.6rem;border-bottom:1.5px solid var(--rule);
+    background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
     position:sticky;top:0;z-index:30;
   }
-  header h1{font-family:var(--display);font-weight:700;font-size:1.35rem;letter-spacing:.14em;text-transform:uppercase}
+  .bp-lockup{display:inline-flex;align-items:center;gap:9px;flex:none}
+  .bp-mark{display:block;flex:0 0 auto;color:var(--ink)}
+  .bp-word{font-size:1.0625rem;line-height:1;letter-spacing:-.01em;white-space:nowrap}
+  .bp-w1{font-weight:500;color:var(--ink-soft)}
+  .bp-w2{font-weight:800;color:var(--ink)}
+  @keyframes bpCW{to{transform:rotate(360deg)}}
+  @keyframes bpCCW{to{transform:rotate(-360deg)}}
+  .s-main{transform-box:fill-box;transform-origin:center;animation:bpCW 20s linear infinite}
+  .s-twk{transform-box:fill-box;transform-origin:center;animation:bpCCW 15s linear infinite}
+  .s-twk2{transform-box:fill-box;transform-origin:center;animation:bpCW 12s linear infinite}
+  @media (prefers-reduced-motion: reduce){.s-main,.s-twk,.s-twk2{animation:none}}
+  header h1{font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink);padding-left:1rem;border-left:1.5px solid var(--rule)}
   header .sub{color:var(--ink-soft);font-size:.9rem;font-style:italic}
   header .spacer{flex:1}
   .who{display:flex;align-items:center;gap:.45rem;font-family:var(--display);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
   .who select,.who input{
     font-family:var(--mono);font-size:.85rem;padding:.3rem .5rem;border:1.5px solid var(--ink);
-    background:var(--paper);color:var(--ink);border-radius:3px;
+    background:var(--card);color:var(--ink);border-radius:6px;
   }
   .who input{width:7.5rem;display:none}
   .btn{
-    border:1.5px solid var(--ink);background:var(--card);color:var(--ink);
-    padding:.35rem .8rem;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;border-radius:3px;
+    border:1.5px solid var(--ink);background:var(--card);color:var(--ink);font-weight:700;
+    padding:.35rem .8rem;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;
   }
-  .btn:hover{background:var(--ink);color:var(--paper)}
+  .btn:hover{background:var(--yellow)}
 
   /* ── layout ──────────────────────────────────────── */
   .wrap{display:grid;grid-template-columns:230px 1fr;gap:0;max-width:1120px;margin:0 auto}
@@ -125,9 +140,9 @@
     background:var(--term-bg);color:var(--term-fg);font-family:var(--mono);font-size:.8rem;
     line-height:1.5;padding:.8rem .95rem;border-radius:5px;overflow-x:auto;white-space:pre;
   }
-  .cmd.claude pre{background:#E8F3FE;color:var(--ink);border:1.5px solid var(--stamp);white-space:pre-wrap}
+  .cmd.claude pre{background:var(--yellow-soft);color:var(--ink);border:2px solid var(--yellow);white-space:pre-wrap}
   .cmd.claude .cmd-label{color:var(--ink)}
-  .copy{border:1px solid var(--rule);background:var(--paper);color:var(--ink);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;border-radius:3px}
+  .copy{border:1px solid var(--rule);background:var(--card);color:var(--ink);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;border-radius:6px}
   .copy:hover{background:var(--ink);color:var(--paper)}
   .copy.ok{background:var(--stamp);border-color:var(--stamp);color:#fff}
 
@@ -167,11 +182,12 @@
   .note textarea:focus{border-color:var(--ink)}
   .gate-action{margin-top:1.2rem;display:flex;align-items:center;gap:.9rem}
   .stampbtn{
-    border:2px solid var(--stamp);background:var(--card);color:var(--stamp);
-    padding:.5rem 1.2rem;font-size:.85rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border-radius:4px;
+    border:2px solid var(--ink);background:var(--yellow);color:var(--ink);
+    padding:.5rem 1.2rem;font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;
   }
-  .stampbtn:hover{background:var(--stamp);color:#fff}
-  .step.done .stampbtn{background:var(--stamp);color:#fff;transform:rotate(-1.5deg)}
+  .stampbtn:hover{background:#ffd633}
+  .step.done .stampbtn{border-color:var(--stamp)}
+  .step.done .stampbtn{background:var(--stamp);color:#fff;transform:rotate(-1.5deg);border-color:var(--stamp)}
   .gate-action .next{font-size:.85rem;color:var(--ink-soft);font-style:italic}
 
   /* lightbox */
@@ -192,6 +208,14 @@
 <body>
 
 <header>
+  <span class="bp-lockup" aria-hidden="true">
+    <svg class="bp-mark" viewBox="0 0 64 64" width="30" height="30" fill="currentColor" focusable="false">
+      <path class="s-main" d="M30 17 L34.5 29.5 L47 34 L34.5 38.5 L30 51 L25.5 38.5 L13 34 L25.5 29.5 Z"/>
+      <path class="s-twk" d="M44 14 L46 19 L51 21 L46 23 L44 28 L42 23 L37 21 L42 19 Z"/>
+      <path class="s-twk2" d="M49 40 L50.4 43.1 L53.5 44.5 L50.4 45.9 L49 49 L47.6 45.9 L44.5 44.5 L47.6 43.1 Z"/>
+    </svg>
+    <span class="bp-word"><span class="bp-w1">Beautiful</span> <span class="bp-w2">Possibilities</span></span>
+  </span>
   <h1>Hermes · Install Gate Card</h1>
   <span class="sub">companion to <a href="../02-runbook-mac.md">02-runbook-mac.md</a> · <a href="accounts.html">accounts &amp; connections</a> · <a href="soul.html">SOUL starter</a> · ~90 min</span>
   <span class="spacer"></span>

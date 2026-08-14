@@ -10,18 +10,38 @@
 <title>Your Assistant's First Briefing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;700;800&display=swap">
 <style>
+  /* Restyled into BP's Concourse system (Oz, 2026-08-13 — match /proposal):
+     Fira Sans, BP yellow #FFCC00 + black #0D0D0D, green for confirm states. */
   :root{
-    --paper:#F5F5F5; --card:#FFFFFF; --ink:#080808; --ink-soft:#555555;
-    --rule:#E4E4E4; --blue:#188BF6; --blue-soft:#E8F3FE;
+    --paper:#F5F5F2; --card:#FFFFFF; --ink:#0D0D0D; --ink-soft:#5C6067;
+    --rule:#E5E5E5; --yellow:#FFCC00; --yellow-soft:#FFF7D9; --green:#12813F;
     --gold:#9A6C00; --gold-soft:#FFF6DF; --gold-line:#FFD666;
-    --sans:"Inter",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
+    --sans:"Fira Sans",-apple-system,"Segoe UI","Helvetica Neue",sans-serif;
     --mono:"SF Mono",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6}
-  :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  :focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+  /* ── BP navbar (PublicLayout .funnel-nav treatment) ── */
+  header{
+    display:flex;align-items:center;gap:1rem;padding:.85rem 1.4rem;
+    border-bottom:1.5px solid var(--rule);background:rgba(255,255,255,.92);
+    backdrop-filter:blur(10px);position:sticky;top:0;z-index:30;
+  }
+  .bp-lockup{display:inline-flex;align-items:center;gap:9px;flex:none}
+  .bp-mark{display:block;flex:0 0 auto;color:var(--ink)}
+  .bp-word{font-size:1.0625rem;line-height:1;letter-spacing:-.01em;white-space:nowrap}
+  .bp-w1{font-weight:500;color:var(--ink-soft)}
+  .bp-w2{font-weight:800;color:var(--ink)}
+  @keyframes bpCW{to{transform:rotate(360deg)}}
+  @keyframes bpCCW{to{transform:rotate(-360deg)}}
+  .s-main{transform-box:fill-box;transform-origin:center;animation:bpCW 20s linear infinite}
+  .s-twk{transform-box:fill-box;transform-origin:center;animation:bpCCW 15s linear infinite}
+  .s-twk2{transform-box:fill-box;transform-origin:center;animation:bpCW 12s linear infinite}
+  @media (prefers-reduced-motion: reduce){.s-main,.s-twk,.s-twk2{animation:none}}
   main{max-width:720px;margin:0 auto;padding:2.5rem 1.4rem 6rem}
   h1{font-weight:800;font-size:1.9rem;letter-spacing:-.01em;line-height:1.2}
   .lede{color:var(--ink-soft);margin:.8rem 0 2rem;max-width:56ch}
@@ -33,22 +53,32 @@
   .tip b{color:var(--gold);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:.2rem}
   .promptbox{position:relative;margin-top:.8rem}
   .promptbox pre{
-    background:var(--blue-soft);border:1.5px solid var(--blue);border-radius:8px;
+    background:var(--yellow-soft);border:2px solid var(--yellow);border-radius:8px;
     padding:1.1rem 1.2rem;font-family:var(--mono);font-size:.78rem;line-height:1.55;
     white-space:pre-wrap;max-height:430px;overflow-y:auto;
   }
   .copybtn{
     position:sticky;display:block;margin:0 0 .6rem auto;
-    background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;
+    background:var(--yellow);color:var(--ink);border:1.5px solid var(--ink);border-radius:6px;cursor:pointer;
     font-family:var(--sans);font-weight:700;font-size:.9rem;letter-spacing:.04em;
     padding:.65rem 1.4rem;
   }
-  .copybtn:hover{background:#0F6FD0}
-  .copybtn.ok{background:#0B8A44}
+  .copybtn:hover{background:#ffd633}
+  .copybtn.ok{background:var(--green);border-color:var(--green);color:#fff}
   .foot{margin-top:2.6rem;color:var(--ink-soft);font-size:.9rem;max-width:56ch}
 </style>
 </head>
 <body>
+<header>
+  <span class="bp-lockup" aria-hidden="true">
+    <svg class="bp-mark" viewBox="0 0 64 64" width="30" height="30" fill="currentColor" focusable="false">
+      <path class="s-main" d="M30 17 L34.5 29.5 L47 34 L34.5 38.5 L30 51 L25.5 38.5 L13 34 L25.5 29.5 Z"/>
+      <path class="s-twk" d="M44 14 L46 19 L51 21 L46 23 L44 28 L42 23 L37 21 L42 19 Z"/>
+      <path class="s-twk2" d="M49 40 L50.4 43.1 L53.5 44.5 L50.4 45.9 L49 49 L47.6 45.9 L44.5 44.5 L47.6 43.1 Z"/>
+    </svg>
+    <span class="bp-word"><span class="bp-w1">Beautiful</span> <span class="bp-w2">Possibilities</span></span>
+  </span>
+</header>
 <main>
   <h1>Your assistant's first briefing</h1>
   <p class="lede">You're getting a personal AI assistant — one that lives on your own
