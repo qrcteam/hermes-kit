@@ -254,3 +254,17 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
 - REMAINING: Google OAuth sitting (oz@beautiful-possibilities.com +
   team@quantumrealitycreators.com; gmail read+drafts-only, calendar rw, drive read) —
   plan: host-side Workspace MCP + hermes connects via host.docker.internal. [state]
+- **Google wired (both accounts) — the sitting is DONE.** workspace-mcp (uvx, taylorwilsdon)
+  on the HOST as LaunchAgent com.hermeskit.workspace-mcp (wrapper ~/.hermes/workspace-mcp.sh
+  reads OAuth client id/secret from ~/.hermes/secrets/google-oauth-*), streamable-http :8000,
+  hermes connects via url http://host.docker.internal:8000/mcp (config entry hand-inserted —
+  `hermes mcp add --url` NEVER accepts piped Y, unlike stdio adds). Permissions:
+  gmail:DRAFTS tier (no send tool registered), calendar:full, drive:readonly.
+  oz@beautiful-possibilities.com + team@quantumrealitycreators.com both consented (app
+  published-unverified so refresh tokens persist). VERIFIED live: calendars both accounts,
+  inbox read, and calendar WRITE (create+delete round trip). [state]
+- Gotchas: OAuth state tokens expire in ~minutes — generate the auth URL and click
+  IMMEDIATELY. GCP consent app must be PUBLISHED (not Testing) or logins die weekly.
+  uvx server takes ~30s to come up — don't diagnose before that. Google-scope caveat
+  (told Oz): the OAuth grant includes gmail.compose/modify; drafts-only is enforced by the
+  server's tool tier, not the Google scope. [gotcha]
