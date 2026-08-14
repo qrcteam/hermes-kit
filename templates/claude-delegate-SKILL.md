@@ -59,3 +59,21 @@ mounted at `/opt/data/handoffs/`.
 - One task per file. Never write outside `inbox/`; never edit `outbox/` files.
 - If no result after 30 min, tell the owner it looks stuck rather than silently waiting.
 - Don't delegate what you can do yourself (answering questions, memory, email drafts).
+
+## Vault writes (person notes, wiki edits, memory promotions)
+
+The vault at `/vault` is read-only BY DESIGN — that never changes. When you need
+something WRITTEN there (a person note, a wiki page, an update to an existing note),
+delegate it exactly like any other task:
+
+```bash
+cat > /opt/data/handoffs/inbox/vault-write-person-laurie.md <<'TASK'
+Vault write request from Hermes. Create/update wiki/people/laurie.md in Oz's vault
+(~/OzLuv) with: [the content, complete and final]. Follow the vault README
+conventions, cross-link related notes, commit and push.
+TASK
+```
+
+Claude Code holds the write key to the vault and applies its conventions
+(frontmatter, cross-links, commit format). Result lands in outbox/ as usual.
+Never ask for a writable vault mount — the one-way door is the safety model.
