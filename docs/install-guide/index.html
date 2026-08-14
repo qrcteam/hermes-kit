@@ -77,7 +77,9 @@
 
   /* ── layout ──────────────────────────────────────── */
   .wrap{display:grid;grid-template-columns:230px 1fr;gap:0;max-width:1120px;margin:0 auto}
-  @media (max-width:820px){ .wrap{grid-template-columns:1fr} nav.rail{position:static;max-height:none;border-right:none;border-bottom:1.5px solid var(--rule);display:flex;overflow-x:auto} nav.rail .gate{min-width:150px} }
+  /* (Phone layout overrides live at the BOTTOM of this stylesheet — they must
+     come after the base header/nav.rail rules or the base sticky wins the
+     cascade, which was the original floating-menu-over-content bug.) */
 
   /* ── gate rail ───────────────────────────────────── */
   nav.rail{
@@ -203,6 +205,25 @@
     visibility:hidden;
   }
   .toast.show{transform:translateX(-50%) translateY(0);visibility:visible}
+
+  /* ── phone ───────────────────────────────────────────
+     The wrapped multi-row header and the gate rail must NOT stay sticky on a
+     phone — sticky chrome with no solid backdrop floats on top of the content
+     while scrolling (Oz, 2026-08-13). Static chrome can't overlap anything;
+     the gate rail becomes a horizontal strip. This block sits LAST on purpose:
+     it must out-cascade the base header/nav.rail sticky rules above. */
+  @media (max-width:820px){
+    header{position:static;padding:.75rem 1rem}
+    header h1{border-left:none;padding-left:0}
+    .wrap{grid-template-columns:1fr}
+    /* min-width:0 on the grid item + width:auto on the gates are load-bearing:
+       without them the flex strip widens the grid track and the whole page
+       scrolls sideways (each 100%-width gate compounds inside the flex row). */
+    nav.rail{position:static;max-height:none;overflow-y:visible;border-right:none;border-bottom:1.5px solid var(--rule);padding:.9rem .9rem 1rem;background:var(--card);min-width:0}
+    #rail{display:flex;overflow-x:auto;gap:.15rem;padding-bottom:.35rem;-webkit-overflow-scrolling:touch;max-width:100%}
+    nav.rail .gate{min-width:150px;width:auto;flex:none}
+    main{padding:1.3rem 1rem 5rem}
+  }
 </style>
 </head>
 <body>

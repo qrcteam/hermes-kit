@@ -211,3 +211,11 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   data-attributes, or localStorage keys touched; verified on local serve (switcher, tallies,
   copy, trays). Synced to bp-promo/public/kit/install/ (runbook link rewritten) and deployed
   (bp-promo 3c39cc8). Hands-off hold can lift. [state]
+- **/kit/install mobile fix** (projects-ce, 2026-08-13 follow-up) — Oz reported the gate
+  menu floating over content on phones. Root causes BOTH pre-dated the restyle: the ≤820px
+  nav.rail override sat before the base sticky rule so the base won the cascade (rail stayed
+  sticky, no backdrop → floated over content); and the horizontal gate strip lacked
+  min-width:0 on the grid item + width:auto on gates, blowing the page to 1855px sideways.
+  Phone overrides now live LAST in index.html's stylesheet (load-bearing position — don't
+  move them up), header+rail go static ≤820px, rail scrolls internally. accounts.html header
+  also static ≤820px. Verified at 390px. Synced + deployed (bp-promo e352d95). [gotcha]

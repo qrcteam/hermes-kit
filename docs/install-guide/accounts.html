@@ -100,6 +100,12 @@
   .keyline .tag{margin-right:.35rem}
 
   .foot{margin-top:2.6rem;color:var(--ink-soft);font-size:.85rem;font-style:italic;max-width:64ch}
+  /* Phone: the wrapped multi-row header must not stay sticky (same overlap fix
+     as the gate card, Oz 2026-08-13). */
+  @media (max-width:820px){
+    header{position:static;padding:.75rem 1rem}
+    header h1{border-left:none;padding-left:0}
+  }
   @media (max-width:680px){
     .horizon thead{display:none}
     .horizon, .horizon tbody, .horizon tr, .horizon td{display:block;width:100%}
