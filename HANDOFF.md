@@ -219,3 +219,38 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   Phone overrides now live LAST in index.html's stylesheet (load-bearing position — don't
   move them up), header+rail go static ≤820px, rail scrolls internally. accounts.html header
   also static ≤820px. Verified at 390px. Synced + deployed (bp-promo e352d95). [gotcha]
+
+## 2026-08-14 session tg-diagnose (cont.) — Oz's install: the great wiring
+- **Oz's Hermes now reads: Projects (filtered mirror), Claude OS, 6 Supabase DBs, GitHub,
+  Cloudflare.** Architecture rule established with Oz: READS wide and direct; WRITES only
+  through gates (claude-bridge, approvals, drafts-not-sends). [decision]
+- Projects: sidecar container `hermes-projects-mirror` rsyncs ~/Documents/Projects →
+  ~/Memory/hermes-projects-mirror every 15min with secret-file excludes
+  (~/.hermes/projects-mirror-excludes.txt) — mounted :ro at /projects. Sidecar exists
+  BECAUSE launchd can't read ~/Documents (TCC) but Docker can. Residual risk (told Oz):
+  secrets hardcoded in source are still visible. [decision]
+- ~/.claude-os mounted :ro at /claude-os with its dev-token masked via
+  `-v /dev/null:/claude-os/dev-token:ro`. [state]
+- **GOTCHA — container recreate MUST pass explicit cmd `hermes gateway run`**: image
+  default CMD runs the interactive CLI, which exits with no TTY → 39-restart crash loop
+  after an mcp add triggered a service restart. Oz's original was legacy-cmd style. [gotcha]
+- Supabase: NO PATs (account-wide power, Oz rejected on the dashboard warning — correctly).
+  Instead per-project Postgres role `hermes_ro` (SELECT-only, password in transcript-safe
+  blocks) + @modelcontextprotocol/server-postgres via npx, one MCP server per DB ×6
+  (ozmazixhq, bp-old-admin, mazix/oz-bp/doug/diane foundations). [decision]
+- **GOTCHAS (supabase wiring):** direct db hosts are IPv6-only — containers need the
+  pooler (user `hermes_ro.<ref>`), and region must be probed (they landed on 4 different
+  pooler hosts). Node pg rejects Supabase CA → `?sslmode=no-verify` (still TLS). npx cold
+  start can exceed agent tool timeout — pre-warm with a direct run. And `hermes mcp add`
+  through a bash function mangled interpolated conn strings — ALWAYS inline them;
+  verify with `grep 'hermes_ro\.\.' config.yaml`. Adds need `printf 'Y\n' | docker exec -i`
+  (interactive tool-enable prompt). [gotcha]
+- GitHub: fine-grained PAT (Contents/Issues/PRs read-only, all repos, auth=qrcteam,
+  write-403-verified) in ~/.hermes/secrets/github-readonly.pat → official npx
+  server-github MCP (26 tools; writes enforced-blocked at token). [state]
+- Cloudflare: custom read token (Zone/DNS/Analytics/Workers read, 12 zones,
+  write-403-verified) in ~/.hermes/secrets/cloudflare-readonly.token + new Hermes skill
+  infra/cloudflare-readonly (curl recipes, delegate-writes rule). [state]
+- REMAINING: Google OAuth sitting (oz@beautiful-possibilities.com +
+  team@quantumrealitycreators.com; gmail read+drafts-only, calendar rw, drive read) —
+  plan: host-side Workspace MCP + hermes connects via host.docker.internal. [state]
