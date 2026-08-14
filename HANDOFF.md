@@ -275,3 +275,18 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   (user-modified skills are never re-seeded; deleting the image copy does nothing — it
   re-seeds each start) + Operational note pinned in SOUL.md. Verified: agent self-describes
   the MCP route. [gotcha]
+- **Quo (phone) wired via its official OAuth MCP (mcp.quo.com/mcp).** Tools allowlisted to 12:
+  tasks create/update, contacts create/update, reads (messages/transcripts/missed calls) —
+  all three send-message tools EXCLUDED via config `tools.include` (RAW hyphenated server
+  names — hermes displays underscores, include-list must use the server's real names) and
+  the OAuth grant carries no send scope anyway. Task-creation verified live. [state]
+- **THE pattern for OAuth MCP servers from inside docker — use the PASTE flow:** loopback
+  callbacks are netns-private and every port-publish/relay scheme raced or bound wrong
+  (4 attempts). What works: one-off container `--entrypoint /opt/hermes/.venv/bin/hermes
+  mcp login <name>` with -i and NO ports (entrypoint bypass also stops the image's s6 from
+  starting a gateway that steals the Telegram poller); user clicks the printed URL, the
+  browser's failed redirect still carries ?code=&state= in the address bar; pipe that URL
+  into `docker attach` — the login CLI accepts pasted redirects by design. Wait for
+  ~/.hermes/mcp-tokens/<name>.json BEFORE teardown (killing early loses the exchange).
+  Oz asked if docker is worth this friction — ruled YES, the box is the product; friction
+  is one-time and now documented. [gotcha]
