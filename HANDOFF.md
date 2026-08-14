@@ -197,3 +197,8 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   relationship + boundary pattern (qrcteam vs own-account) still ⟨ASK OZ⟩. Offer doc
   tracker updated. SOUL starters to send: Diane, Doug, Trenton (+ Mazíx if sit-down
   doesn't happen). [state]
+- **/kit/install styling CLAIMED by another session** (Oz, 2026-08-13) — this session is
+  HANDS OFF docs/install-guide/*.html until Oz says done. Sent the claimant (projects-ce)
+  the architecture facts: kit repo = source of truth, bp-promo copies = snapshots (sync +
+  runbook-link rewrite + full deploy motion), e2m design system is deliberate, page JS is
+  load-bearing, offline/file:// constraint stands. [state]
