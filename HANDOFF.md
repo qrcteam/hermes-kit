@@ -268,3 +268,10 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   uvx server takes ~30s to come up — don't diagnose before that. Google-scope caveat
   (told Oz): the OAuth grant includes gmail.compose/modify; drafts-only is enforced by the
   server's tool tier, not the Google scope. [gotcha]
+- **GOTCHA — builtin google-workspace skill hijacks Google asks**: Hermes ships a bundled
+  token-based google skill (wants /opt/data/google_token.json) that the agent may pick over
+  the MCP tools → NOT_AUTHENTICATED in chat while MCP works fine. Fix: overwrite the ACTIVE
+  copy at ~/.hermes/skills/productivity/google-workspace/SKILL.md with a redirect stub
+  (user-modified skills are never re-seeded; deleting the image copy does nothing — it
+  re-seeds each start) + Operational note pinned in SOUL.md. Verified: agent self-describes
+  the MCP route. [gotcha]
