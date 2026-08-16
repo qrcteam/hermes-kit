@@ -134,6 +134,31 @@ docker exec hermes hermes config set approvals.cron_mode deny
 docker restart hermes
 ```
 
+### Pairing WhatsApp on Windows
+
+Identical to macOS — the pairing runs inside the container, so the host OS doesn't matter:
+
+```powershell
+docker exec -it hermes hermes whatsapp
+```
+
+Two Windows-specific notes:
+
+- **Run it from Windows Terminal, not the old `cmd.exe` console.** The QR code is drawn with
+  Unicode block characters; the legacy console renders it as garbage and there is nothing to
+  scan. Windows Terminal or PowerShell 7 in a window at least 60 columns wide.
+- **`.env` is not enough** — same trap as everywhere else. The `platforms.whatsapp` block from
+  `templates/config.yaml.template` has to be in their `config.yaml`, and on Windows make sure
+  you edited the copy the *container* reads (see the two-directories section immediately
+  below — this is exactly the kind of thing that gets edited in the wrong one).
+
+```powershell
+docker exec hermes hermes config get platforms.whatsapp.enabled   # want: true
+```
+
+The rest — self-chat mode, the allowlist format, the session folder being a credential — is
+the same as [`02-runbook-mac.md`](02-runbook-mac.md) step 6.
+
 ### Two `~/.hermes` directories — read this twice
 
 This is the single most confusing thing about the Windows install.

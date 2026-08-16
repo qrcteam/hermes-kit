@@ -68,6 +68,91 @@ launchctl list | grep telegram-kick
 
 Windows doesn't need this — it's macOS-specific.
 
+### Two gateways fighting over one bot token
+
+**Symptom:** `Conflict: terminated by other getUpdates request; make sure that only one bot
+instance is running`, on repeat, for days. The kick watchdog fires every 5 minutes and never
+wins, because this isn't the cold-start wedge — there really are two pollers.
+
+Cause: a **native** Hermes gateway running on the host alongside the container. Both read the
+same `~/.hermes` (it's bind-mounted), so they share the config, the state DB, the WhatsApp
+session and the *same Telegram token* — and Telegram allows exactly one poller per bot.
+
+```bash
+ps aux | grep "[h]ermes_cli.main gateway"     # want: nothing
+launchctl list | grep -i hermes.gateway        # macOS: want: nothing
+```
+
+Fix — the container is the install this kit builds; the host one is the interloper:
+
+```bash
+launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist
+docker restart hermes
+```
+
+Telegram can take a minute to release the old long-poll. Watch for the recovery line:
+
+```bash
+grep "\[Telegram\] Connected" ~/.hermes/logs/gateway.log | tail -1
+```
+
+> Two gateways writing one SQLite state dir is also a plausible route to
+> *"database disk image is malformed"* — see that section below if you've been running
+> this way for a while.
+
+---
+
+## "WhatsApp doesn't reply"
+
+Telegram working and WhatsApp silent is almost always one of two things, in this order.
+
+**1. It isn't switched on — even though `.env` says it is.**
+
+This is the one that eats an afternoon. `WHATSAPP_ENABLED=true` in `.env` is *not* what
+starts the platform. Hermes only starts platforms listed under `platforms:` in
+`config.yaml`. Miss it and everything looks right — the bridge pairs, the phone shows a
+linked device, `.env` is correct — and no message is ever collected.
+
+```bash
+docker exec hermes hermes config get platforms.whatsapp.enabled   # want: true
+docker logs hermes 2>&1 | grep -ci whatsapp                       # 0 = never started
+```
+
+Fix — add the block from `templates/config.yaml.template`, then `docker restart hermes`.
+
+**2. The bridge is running in the wrong place.**
+
+The adapter talks to its bridge on `http://127.0.0.1:<bridge_port>`, and that host is
+hardcoded — only the port is configurable. So the bridge must live *inside the container*.
+A bridge started on the host is unreachable, and you cannot work around it by pointing
+Hermes at `host.docker.internal`: the bridge rejects any request whose Host header isn't
+loopback.
+
+```bash
+# want: connected, from INSIDE the container
+docker exec hermes curl -s http://127.0.0.1:3000/health
+# want: nothing — a host bridge will fight the container one over the same session
+ps aux | grep "[b]ridge.js"
+```
+
+Fix — kill any host bridge, then re-pair inside the container:
+
+```bash
+docker exec -it hermes hermes whatsapp
+```
+
+**Still silent after both?**
+
+| Check | Command | Fix |
+|---|---|---|
+| Number allowed? | `grep WHATSAPP_ALLOWED ~/.hermes/.env` | Country code, digits only, no `+` — `15551234567` |
+| Bridge paired? | `ls ~/.hermes/whatsapp/session/creds.json` | Missing → re-run `hermes whatsapp` |
+| Session broken? | `docker logs hermes \| grep -i whatsapp \| tail` | Phone reset or WhatsApp unlinked it → re-pair |
+
+WhatsApp periodically changes its Web protocol, which breaks third-party bridges until Hermes
+ships an updated one. If it dies right after a WhatsApp update and nothing above applies,
+update Hermes and re-pair.
+
 ---
 
 ## "It says it saved something but it's not there"

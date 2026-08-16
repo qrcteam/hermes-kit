@@ -14,9 +14,14 @@
 
 # Your assistant
 
-You've got an assistant living in Telegram. Here's everything you need to know.
+You've got an assistant you text like a person. Here's everything you need to know.
 
-**Text it here:** <@their_bot_username>
+**Text it here:** <@their_bot_username> on Telegram
+
+<!-- If you set up WhatsApp too, keep the line below. If you didn't, delete it. -->
+**Or on WhatsApp:** message *yourself* — your own name at the top of your chat list. Anything
+you send there, the assistant answers. Same assistant, same memory, either place; use
+whichever you already have open.
 
 ---
 

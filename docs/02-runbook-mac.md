@@ -67,6 +67,23 @@ On their phone, in Telegram:
 
 That user ID is the only thing standing between a stranger and their memory. Get it right.
 
+### Also ask them about WhatsApp
+
+Most people want WhatsApp too, and for a lot of them it's the one they'll actually use —
+it's already where they message everyone else, so the agent sits in the same list as their
+friends instead of in an app they opened for this. Run **self-chat mode**: they message
+*themselves* on their own number and the agent answers in that thread. No second phone
+number, nothing new to install.
+
+Nothing to do now — WhatsApp pairing needs the container running, so it happens in step 6.
+Just find out now whether they want it, and get their number in the form `15551234567`
+(country code, digits only, no `+`).
+
+> **Worth saying out loud to them:** the WhatsApp bridge emulates WhatsApp Web rather than
+> using Meta's official Business API. Meta doesn't sanction it. For personal, conversational
+> use it's fine, and that's what self-chat is. Don't put a *client's* business number on it
+> and don't automate outbound messages from it.
+
 ---
 
 ## 3 · Build the vault
@@ -222,6 +239,47 @@ docker exec hermes hermes status
 > **They should get a reply.** If nothing comes back, go to
 > [`06-troubleshooting.md`](06-troubleshooting.md) → *The bot is silent* before continuing.
 
+### Pair WhatsApp — skip if they only want Telegram
+
+Telegram has to be working before you start this. Two channels failing at once is twice the
+diagnosis.
+
+Confirm the `platforms.whatsapp` block from `config.yaml.template` is in their config —
+**this is the step everything hinges on.** `WHATSAPP_ENABLED=true` in `.env` is not enough
+on its own; Hermes only starts platforms listed under `platforms:`:
+
+```bash
+docker exec hermes hermes config get platforms.whatsapp.enabled   # want: true
+```
+
+Then pair. **Inside the container** — the bridge only ever listens on the container's own
+loopback, so pairing anywhere else produces a bridge Hermes cannot reach:
+
+```bash
+docker exec -it hermes hermes whatsapp
+```
+
+It installs the bridge dependencies on first run (~30s, looks like a hang — wait), asks for
+the mode (**self-chat**), then prints a QR code. On their phone: **WhatsApp → Settings →
+Linked Devices → Link a Device**, and point the camera at the terminal.
+
+> Garbled QR? The terminal needs to be at least 60 columns and Unicode-capable.
+
+```bash
+docker restart hermes
+docker logs hermes 2>&1 | grep -i whatsapp | tail -3
+```
+> **You should see** `[Whatsapp] Bridge ready (status: connected)`.
+
+**Test it.** Have them message *themselves* on WhatsApp — their own name at the top of the
+chat list — and say "hello".
+> **They should get a reply in that same thread.** If not:
+> [`06-troubleshooting.md`](06-troubleshooting.md) → *WhatsApp doesn't reply*.
+
+The pairing lives in `~/.hermes/whatsapp/session` and survives restarts, so this is a
+one-time step. That folder is a full credential to their WhatsApp account — it must never be
+copied to another machine, committed, or included in a backup that leaves the laptop.
+
 ---
 
 ## 7 · Write their SOUL.md
@@ -359,6 +417,9 @@ model account. **No secrets in that file.**
 - [ ] Container running with **`:ro`** on the vault mount
 - [ ] `journal_mode: delete` set
 - [ ] Model logged in **on their own account**
+- [ ] If they want WhatsApp: `platforms.whatsapp.enabled: true` **in config.yaml**, paired
+      from inside the container, and they got a reply in their own self-chat
+- [ ] Exactly one gateway running — container only, no native `hermes gateway` on the host
 - [ ] `SOUL.md` written, no `<placeholders>` left
 - [ ] launchd job loaded, manual run returns `"status": "ok"`
 - [ ] Watchdog + digest cron jobs created

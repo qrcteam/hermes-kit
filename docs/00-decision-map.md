@@ -126,6 +126,7 @@ it *cannot break*.
 | `SOUL.md` | **Mandatory** | Without it you have a generic chatbot. See doc 04 |
 | Git | **Mandatory** | Undo, and the only backup. A disk dies and the memory is gone otherwise |
 | Hermes + Telegram | **Mandatory** | It's the thing they talk to |
+| WhatsApp as well | Optional, and usually wanted | Self-chat: they message themselves, no second number. For a lot of people it's the channel they'll actually use, because it's already where they message everyone else. Runs alongside Telegram, not instead of it |
 | The promoter | **Mandatory** | Nothing gets remembered without it |
 | Pinecone | Optional under ~200 notes | Recall by meaning. Nice early, necessary later |
 | Obsidian | Optional | Purely a human convenience |

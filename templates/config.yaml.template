@@ -70,9 +70,31 @@ telemetry:
   shared_metrics:
     enabled: false
 
+# ── PLATFORMS — the list Hermes actually starts ──────────────────────────────
+#
+# THIS BLOCK IS THE ON/OFF SWITCH. A platform that is not listed here does not
+# run, no matter what its variables in .env say. This bit them once already:
+# WHATSAPP_ENABLED=true was set, the bridge was paired and connected, and
+# WhatsApp still never answered — because `whatsapp:` was missing from here.
+# If a channel is silent, check this block before anything else.
+
 platforms:
   telegram:
+    enabled: true
     extra:
       # Fallback IPs for Telegram's API. Works around DNS flakiness that
       # otherwise looks like "the bot is dead". Harmless to leave in.
       fallback_ips: 149.154.166.110,149.154.167.220
+
+  whatsapp:
+    # Delete this whole block if they only want Telegram.
+    enabled: true
+    extra:
+      # The adapter starts its own Node bridge and talks to it on
+      # 127.0.0.1:<bridge_port> — INSIDE the container. That address is
+      # hardcoded; only the port is configurable. Which is why pairing has to be
+      # run inside the container too (`docker exec -it hermes hermes whatsapp`),
+      # and why running the bridge on the host and pointing Hermes at it does
+      # not work: the bridge refuses any request whose Host header isn't
+      # loopback, and `host.docker.internal` isn't.
+      bridge_port: 3000

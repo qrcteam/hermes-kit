@@ -306,3 +306,40 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   change to one silently leaves the other stale. Verified soul.html identical across both
   before adding the new page to each. Also note soul.html still pulls Fira Sans from the
   Google Fonts CDN while the rest of the site self-hosts from `/fonts` — worth aligning. [gotcha]
+- **WhatsApp is now a first-class channel in the kit (self-chat alongside Telegram).** Wired
+  live on Oz's box this session and documented across the kit: `templates/env.template`
+  (WHATSAPP_ENABLED/MODE/ALLOWED_USERS), `templates/config.yaml.template` (the
+  `platforms.whatsapp` block), `02-runbook-mac.md` step 2 (ask them) + step 6 (pair),
+  `03-runbook-windows.md` (same, plus the Windows Terminal QR note),
+  `06-troubleshooting.md` (new "WhatsApp doesn't reply"), `00-decision-map.md`, and the
+  onboarding template. [state]
+- **THE WhatsApp gotcha — `.env` is NOT the on/off switch.** `WHATSAPP_ENABLED=true` was
+  already set on Oz's install and WhatsApp had never once replied. Hermes only starts a
+  platform that is listed under `platforms:` in config.yaml; anything missing from that map
+  is off no matter what .env says. The failure is silent and convincing — the bridge pairs,
+  the phone shows a linked device, `hermes auth`/`.env` all look right, and no message is
+  ever collected. `docker logs hermes | grep -ci whatsapp` returning 0 is the tell. The
+  official Nous docs omit this (they describe the .env-only path). [gotcha]
+- **The bridge must run INSIDE the container.** `plugins/platforms/whatsapp/adapter.py`
+  hardcodes `http://127.0.0.1:{bridge_port}` for every call — only the port is configurable,
+  never the host. So pair with `docker exec -it hermes hermes whatsapp`. You CANNOT run the
+  bridge on the host and point hermes at `host.docker.internal`: the bridge rejects any
+  request whose Host header isn't loopback (`Invalid Host header. Bridge accepts loopback
+  hosts only`). Verified both ways — spoofing `-H "Host: localhost:3000"` makes the identical
+  request succeed. [gotcha]
+- **No QR needed if a pairing already exists.** Session lives at `~/.hermes/whatsapp/session`
+  (legacy path; newer installs use `platforms/whatsapp/session`) and `creds.json` there is the
+  paired marker. Since `~/.hermes` is mounted rw at `/opt/data`, the container reuses a
+  host-made pairing as-is. That folder is a full credential to the WhatsApp account — never
+  copy it to another machine, commit it, or back it up off-laptop. [gotcha]
+- **ROOT CAUSE of the long-running Telegram conflict: TWO gateways.** A native host gateway
+  (launchd `ai.hermes.gateway`, RunAtLoad+KeepAlive, installed 2026-08-14 22:10) was running
+  alongside the container. Both read the same bind-mounted `~/.hermes`, so they shared config,
+  state DB, WhatsApp session and the *same Telegram bot token* — Telegram permits one poller,
+  hence `Conflict: terminated by other getUpdates request` since Aug 14 and 435 logged
+  telegram-kick fires. Killing the host bridge alone never stuck because the host gateway
+  respawned it. Fix: `launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist`.
+  **The container is canonical** — proven, not preferred: `mcp_servers.google.url` is
+  `http://host.docker.internal:8000/mcp`, which resolves only inside a container (verified it
+  fails to resolve on the host). Suspect this also contributed to the recurring
+  `database disk image is malformed` FTS corruption. [gotcha]
