@@ -290,3 +290,19 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   ~/.hermes/mcp-tokens/<name>.json BEFORE teardown (killing early loses the exchange).
   Oz asked if docker is worth this friction — ruled YES, the box is the product; friction
   is one-time and now documented. [gotcha]
+- **SOUL interview now has a HUMAN/operator page, not just the self-interview prompt.**
+  `templates/soul-interview.src.html` is the SOURCE OF TRUTH; `templates/build-soul-interview-web.py`
+  emits two builds from it — (a) the Claude artifact (fonts inlined as base64, because the
+  artifact CSP blocks font CDNs, light+dark) and (b) the web page
+  `docs/install-guide/soul-interview.html`, mirrored into bp-promo at
+  `public/kit/install/soul-interview.html` (fonts from `/fonts/*.woff2` per PublicLayout's
+  convention, light-only to match its sibling soul.html, noindex). **Edit the .src.html and
+  re-run the builder — never hand-edit either output.** Content is `docs/04-soul-interview.md`
+  verbatim; the six ESSENTIAL questions (4, 7, 12, 20, 24, 26) are exactly the ones that doc
+  flags with superlatives. Committed but NOT yet live — bp-promo held a concurrent session's
+  in-flight proposals work at the time and wrangler ships worker+dist together. [state]
+- **Gotcha — the two install-guide copies are hand-synced.** `hermes/docs/install-guide/*.html`
+  and `bp-promo/public/kit/install/*.html` are byte-identical copies with no sync script; a
+  change to one silently leaves the other stale. Verified soul.html identical across both
+  before adding the new page to each. Also note soul.html still pulls Fira Sans from the
+  Google Fonts CDN while the rest of the site self-hosts from `/fonts` — worth aligning. [gotcha]

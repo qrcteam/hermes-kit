@@ -1,0 +1,917 @@
+<title>The SOUL Interview</title>
+<style>
+@font-face{font-family:"Fira Sans";font-style:normal;font-weight:400;font-display:swap;src:url(data:font/woff2;base64,__F400__) format("woff2")}
+@font-face{font-family:"Fira Sans";font-style:normal;font-weight:500;font-display:swap;src:url(data:font/woff2;base64,__F500__) format("woff2")}
+@font-face{font-family:"Fira Sans";font-style:normal;font-weight:700;font-display:swap;src:url(data:font/woff2;base64,__F700__) format("woff2")}
+@font-face{font-family:"Fira Sans";font-style:normal;font-weight:800;font-display:swap;src:url(data:font/woff2;base64,__F800__) format("woff2")}
+
+/* ── Tokens · BP Concourse, extended for a field guide ───────────────────── */
+:root{
+  --paper:#F5F5F2; --card:#FFFFFF; --sunk:#EFEEEA;
+  --ink:#0D0D0D; --ink-soft:#5C6067; --ink-faint:#8A8D93;
+  --rule:#E3E2DD; --rule-soft:#EDECE8;
+  --yellow:#FFCC00; --yellow-soft:#FFF7D9; --yellow-line:#FFD666;
+  --gold:#8A6000; --gold-soft:#FFF6DF; --gold-line:#F0D49B;
+  --green:#12813F; --green-soft:#EAF4EE; --green-line:#BCDCC7;
+  --shadow:0 1px 2px rgba(13,13,13,.05), 0 8px 24px -12px rgba(13,13,13,.14);
+  --sans:"Fira Sans",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+  --col:34rem;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#131210; --card:#1C1A17; --sunk:#191714;
+    --ink:#F2F0EA; --ink-soft:#A8A49B; --ink-faint:#7C7871;
+    --rule:#2F2B25; --rule-soft:#262319;
+    --yellow:#FFCC00; --yellow-soft:#2A230C; --yellow-line:#5C4B0A;
+    --gold:#E8B44E; --gold-soft:#241D10; --gold-line:#4A3A18;
+    --green:#4FC983; --green-soft:#142218; --green-line:#28472F;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131210; --card:#1C1A17; --sunk:#191714;
+  --ink:#F2F0EA; --ink-soft:#A8A49B; --ink-faint:#7C7871;
+  --rule:#2F2B25; --rule-soft:#262319;
+  --yellow:#FFCC00; --yellow-soft:#2A230C; --yellow-line:#5C4B0A;
+  --gold:#E8B44E; --gold-soft:#241D10; --gold-line:#4A3A18;
+  --green:#4FC983; --green-soft:#142218; --green-line:#28472F;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:17px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;border-radius:2px}
+
+/* ── Sticky section bar ──────────────────────────────────────────────────── */
+.railnav{
+  position:sticky; top:0; z-index:40;
+  background:color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+/* The bar is a utility strip, not body text — it gets more room than the
+   reading column so the lockup and all eight jumps fit without clipping. */
+.railnav-inner{
+  max-width:calc(var(--col) + 26rem); margin:0 auto;
+  display:flex; align-items:center; gap:1.25rem;
+  padding:.6rem 1.5rem; overflow-x:auto; scrollbar-width:none;
+}
+.railnav-inner::-webkit-scrollbar{display:none}
+.railnav .mark{display:flex;align-items:center;gap:.5rem;flex:none;color:var(--ink);text-decoration:none}
+.railnav .mark svg{display:block}
+.railnav .mark b{font-weight:800;font-size:.9rem;letter-spacing:-.01em;white-space:nowrap}
+.jumps{display:flex;gap:.15rem;flex:none;margin-left:auto}
+.jumps a{
+  flex:none; text-decoration:none; color:var(--ink-soft);
+  font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+  padding:.4rem .6rem; border-radius:5px; white-space:nowrap;
+  transition:color .15s ease, background .15s ease;
+}
+.jumps a:hover{color:var(--ink);background:var(--sunk)}
+.jumps a.on{color:var(--ink);background:var(--yellow)}
+
+@keyframes spinCW{to{transform:rotate(360deg)}}
+.s-main{transform-box:fill-box;transform-origin:center;animation:spinCW 22s linear infinite}
+@media (prefers-reduced-motion:reduce){.s-main{animation:none}}
+
+/* ── Shell ───────────────────────────────────────────────────────────────── */
+main{max-width:calc(var(--col) + 12rem); margin:0 auto; padding:0 1.5rem 7rem}
+.wrap{max-width:var(--col); margin-left:5.25rem}
+section{scroll-margin-top:4.5rem}
+
+/* ── Masthead ────────────────────────────────────────────────────────────── */
+.masthead{padding:3.75rem 0 0}
+.eyebrow{
+  font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold); margin:0 0 1rem;
+}
+h1{
+  font-weight:800; font-size:clamp(2.1rem,6vw,3.05rem); line-height:1.04;
+  letter-spacing:-.028em; text-wrap:balance; margin:0;
+}
+.lede{color:var(--ink-soft);font-size:1.075rem;margin:1.1rem 0 0;max-width:33rem}
+.lede b{color:var(--ink);font-weight:600}
+
+.facts{
+  display:flex; flex-wrap:wrap; gap:0; margin:2rem 0 0;
+  border-top:2px solid var(--ink); border-bottom:1px solid var(--rule);
+}
+.fact{padding:.85rem 1.5rem .85rem 0;margin-right:1.5rem;border-right:1px solid var(--rule)}
+.fact:last-child{border-right:0;margin-right:0;padding-right:0}
+.fact dt{
+  font-size:.68rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 .15rem;
+}
+.fact dd{margin:0;font-weight:600;font-size:.95rem;font-variant-numeric:tabular-nums}
+
+/* ── Generic blocks ──────────────────────────────────────────────────────── */
+h2{
+  font-weight:800;font-size:1.5rem;letter-spacing:-.018em;line-height:1.15;
+  margin:0; text-wrap:balance;
+}
+.sectionhead{margin:4.25rem 0 0;display:flex;align-items:baseline;gap:.85rem;flex-wrap:wrap}
+.sectionhead .budget{
+  font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-faint);font-variant-numeric:tabular-nums;
+}
+.sectionhead + .subhead{color:var(--ink-soft);font-size:.95rem;margin:.5rem 0 0;max-width:31rem}
+.hr{height:1px;background:var(--rule);border:0;margin:1.4rem 0 0}
+
+/* ── Prep list ───────────────────────────────────────────────────────────── */
+.prep{list-style:none;padding:0;margin:1.6rem 0 0;display:flex;flex-direction:column;gap:1.15rem}
+.prep li{display:grid;grid-template-columns:1.6rem 1fr;gap:.85rem;align-items:start}
+.prep .tick{
+  width:1.6rem;height:1.6rem;border-radius:50%;background:var(--ink);color:var(--paper);
+  display:grid;place-items:center;font-size:.9rem;font-weight:700;flex:none;margin-top:.05rem;
+}
+.prep b{display:block;font-weight:700;font-size:1rem}
+.prep span{color:var(--ink-soft);font-size:.94rem}
+
+/* ── The two rules ───────────────────────────────────────────────────────── */
+.rules{display:grid;gap:1rem;margin:1.6rem 0 0}
+.rule{
+  background:var(--card);border:1px solid var(--rule);
+  border-radius:8px;padding:1.15rem 1.3rem;box-shadow:var(--shadow);
+}
+.rule h3{margin:0;font-size:1.02rem;font-weight:700;letter-spacing:-.01em}
+.rule p{margin:.4rem 0 0;color:var(--ink-soft);font-size:.94rem}
+.rule .vs{margin:.7rem 0 0;font-size:.9rem;display:flex;flex-direction:column;gap:.3rem}
+.rule .vs i{font-style:normal;display:flex;gap:.5rem;align-items:baseline}
+.rule .vs i::before{font-weight:700;flex:none;font-size:.95rem}
+.rule .vs .good::before{content:"✓";color:var(--green)}
+.rule .vs .bad::before{content:"✕";color:var(--ink-faint)}
+.rule .vs .good{color:var(--ink)}
+.rule .vs .bad{color:var(--ink-faint)}
+
+/* ── Shortlist ───────────────────────────────────────────────────────────── */
+.shortlist{
+  margin:1.6rem 0 0;background:var(--yellow-soft);
+  border:1px solid var(--yellow-line);border-radius:10px;padding:1.3rem 1.4rem;
+}
+.shortlist p{margin:0 0 .9rem;font-size:.94rem;color:var(--ink-soft)}
+.shortlist ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+.shortlist li{display:grid;grid-template-columns:2.1rem 1fr;gap:.6rem;align-items:baseline;font-size:.96rem}
+.shortlist a{color:var(--ink);text-decoration:none;font-weight:600;border-bottom:1.5px solid var(--yellow-line)}
+.shortlist a:hover{border-bottom-color:var(--ink)}
+.shortlist .n{
+  font-weight:800;font-size:.78rem;color:var(--gold);font-variant-numeric:tabular-nums;
+  letter-spacing:.04em;
+}
+
+/* ── Skip banner ─────────────────────────────────────────────────────────── */
+.skipband{
+  margin:1.15rem 0 0;padding:.7rem .95rem;border-radius:7px;
+  background:var(--sunk);border:1px dashed var(--rule);
+  font-size:.88rem;color:var(--ink-soft);
+}
+.skipband b{color:var(--ink);font-weight:700}
+
+/* ── Questions ───────────────────────────────────────────────────────────── */
+.qlist{display:flex;flex-direction:column;gap:0;margin:1.5rem 0 0}
+.q{
+  display:grid;grid-template-columns:3.5rem 1fr;gap:1.75rem;
+  padding:1.5rem 0;border-top:1px solid var(--rule-soft);
+}
+.q:first-child{border-top:0;padding-top:.35rem}
+.qnum{
+  font-size:.82rem;font-weight:800;color:var(--ink-faint);
+  font-variant-numeric:tabular-nums;letter-spacing:.05em;
+  text-align:right;padding-top:.28rem;
+}
+.q.key .qnum{color:var(--gold)}
+.ask{
+  margin:0;font-size:1.3rem;line-height:1.32;font-weight:500;
+  letter-spacing:-.015em;text-wrap:pretty;color:var(--ink);
+}
+.q.key .ask{font-weight:700}
+.note{margin:.6rem 0 0;color:var(--ink-soft);font-size:.945rem;text-wrap:pretty}
+.note b{color:var(--ink);font-weight:600}
+
+.chip{
+  display:inline-block;margin:0 0 .55rem;
+  font-size:.63rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  background:var(--yellow);color:#0D0D0D;padding:.22rem .5rem;border-radius:3px;
+}
+.q.key{
+  background:var(--card);border-radius:10px;border:1px solid var(--rule);
+  padding:1.4rem 1.4rem 1.5rem 1.2rem;margin:.8rem 0;box-shadow:var(--shadow);
+  grid-template-columns:2.9rem 1fr;gap:1.15rem;
+}
+/* Priority rides the number rail — the device you already scan to find your
+   place — instead of a separate accent bar bolted to the card edge. */
+.q.key .qnum{
+  color:#0D0D0D;background:var(--yellow);
+  padding:.32rem 0 .3rem;border-radius:5px;text-align:center;align-self:start;
+}
+.q.key + .q{border-top:0}
+
+/* worked examples */
+.eg{
+  margin:.95rem 0 0;padding:.8rem 1rem;border-radius:7px;
+  background:var(--gold-soft);border:1px solid var(--gold-line);
+}
+.eg .lbl{
+  display:block;font-size:.63rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--gold);margin:0 0 .45rem;
+}
+.eg ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.4rem}
+.eg li{font-size:.945rem;line-height:1.45;color:var(--ink)}
+.eg cite{font-style:normal;color:var(--gold);font-weight:700;font-size:.86rem}
+.eg .why{margin:.6rem 0 0;font-size:.88rem;color:var(--ink-soft);font-style:italic}
+
+.always{
+  margin:.95rem 0 0;padding:.85rem 1rem;border-radius:7px;
+  background:var(--sunk);border:1px solid var(--rule);
+}
+.always .lbl{
+  display:block;font-size:.63rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 .45rem;
+}
+.always ul{margin:0;padding-left:1.05rem;display:flex;flex-direction:column;gap:.28rem}
+.always li{font-size:.92rem;color:var(--ink-soft)}
+
+/* ── After ───────────────────────────────────────────────────────────────── */
+.warn{
+  margin:1.5rem 0 0;padding:1rem 1.15rem;border-radius:8px;
+  background:var(--sunk);border:1px solid var(--rule);
+}
+.warn b{font-weight:700}
+.warn p{margin:0;font-size:.95rem;color:var(--ink-soft)}
+.warn p + p{margin-top:.5rem}
+pre{
+  margin:1rem 0 0;padding:.95rem 1.1rem;border-radius:8px;overflow-x:auto;
+  background:var(--sunk);border:1px solid var(--rule);
+  font-family:var(--mono);font-size:.8rem;line-height:1.65;color:var(--ink);
+}
+code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em .35em;border-radius:3px}
+
+.checks{list-style:none;margin:1.5rem 0 0;padding:0;display:flex;flex-direction:column;gap:.8rem}
+.checks li{display:grid;grid-template-columns:1.15rem 1fr;gap:.75rem;align-items:start;font-size:.955rem}
+.checks li::before{
+  content:"";width:1.15rem;height:1.15rem;border:2px solid var(--ink-faint);
+  border-radius:3.5px;margin-top:.22rem;
+}
+.checks b{font-weight:700}
+.checks span{display:block;color:var(--ink-soft);font-size:.9rem;margin-top:.1rem}
+
+.roundtwo{
+  margin:1.6rem 0 0;background:var(--green-soft);border:1px solid var(--green-line);
+  border-radius:10px;padding:1.3rem 1.4rem;
+}
+.roundtwo h3{margin:0;font-size:1.05rem;font-weight:800;letter-spacing:-.012em}
+.roundtwo p{margin:.45rem 0 0;font-size:.94rem;color:var(--ink-soft)}
+.roundtwo ol{margin:.9rem 0 0;padding-left:1.15rem;display:flex;flex-direction:column;gap:.42rem}
+.roundtwo li{font-size:.94rem}
+.roundtwo li b{font-weight:700}
+
+.colophon{
+  margin:4.5rem 0 0;padding-top:1.4rem;border-top:2px solid var(--ink);
+  font-size:.87rem;color:var(--ink-faint);max-width:31rem;
+}
+.colophon b{color:var(--ink-soft);font-weight:600}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width:760px){
+  body{font-size:16px}
+  .wrap{margin-left:0}
+  main{padding:0 1.15rem 5rem}
+  .q,.q.key{grid-template-columns:1fr;gap:.45rem;padding-left:0;padding-right:0}
+  .q.key{padding:1.15rem 1.1rem 1.25rem}
+  .qnum{text-align:left;padding-top:0;font-size:.72rem}
+  .q.key .qnum{justify-self:start;width:2.5rem;text-align:center;padding:.25rem 0 .22rem}
+  .ask{font-size:1.16rem}
+  .facts{display:grid;grid-template-columns:1fr 1fr}
+  .fact{border-right:0;margin-right:0;padding-right:0}
+  .jumps{display:none}
+}
+
+/* ── Print — some interviewers carry paper ───────────────────────────────── */
+@media print{
+  :root{--paper:#fff;--card:#fff;--sunk:#f6f6f4;--shadow:none}
+  .railnav{display:none}
+  body{font-size:11pt}
+  .q,.q.key,.rule,.shortlist,.roundtwo,.eg{break-inside:avoid}
+  .sectionhead{break-after:avoid}
+  main{padding:0}
+  .wrap{margin-left:0;max-width:none}
+}
+</style>
+
+<nav class="railnav">
+  <div class="railnav-inner">
+    <a class="mark" href="#top">
+      <svg viewBox="0 0 64 64" width="22" height="22" fill="currentColor" aria-hidden="true" focusable="false">
+        <path class="s-main" d="M30 17 L34.5 29.5 L47 34 L34.5 38.5 L30 51 L25.5 38.5 L13 34 L25.5 29.5 Z"></path>
+      </svg>
+      <b>SOUL Interview</b>
+    </a>
+    <div class="jumps">
+      <a href="#identity">Identity</a>
+      <a href="#mission">Mission</a>
+      <a href="#work">Work</a>
+      <a href="#voice">Voice</a>
+      <a href="#rhythm">Rhythm</a>
+      <a href="#nos">Hard nos</a>
+      <a href="#people">People</a>
+      <a href="#after">After</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+
+    <header class="masthead">
+      <p class="eyebrow">Hermes Kit · Operator's script</p>
+      <h1>The SOUL Interview</h1>
+      <p class="lede">Forty-five minutes of questions whose answers become someone's
+      assistant. You ask, they talk, the recorder runs. <b>This is the actual work</b> —
+      the install is plumbing, an afternoon of mostly waiting for Docker. This is what
+      separates an assistant that knows someone from a chatbot wearing their name.</p>
+
+      <dl class="facts">
+        <div class="fact"><dt>Length</dt><dd>~45 min</dd></div>
+        <div class="fact"><dt>Questions</dt><dd>27</dd></div>
+        <div class="fact"><dt>Must-ask</dt><dd>6</dd></div>
+        <div class="fact"><dt>Capture</dt><dd>Recorded</dd></div>
+      </dl>
+    </header>
+
+    <section id="before">
+      <div class="sectionhead"><h2>Before you sit down</h2></div>
+      <hr class="hr">
+      <ul class="prep">
+        <li><span class="tick">1</span><div>
+          <b>Sit with them.</b>
+          <span>A phone call is fine. Texting is not. You need the tangents — the aside
+          they add after answering is usually better than the answer.</span>
+        </div></li>
+        <li><span class="tick">2</span><div>
+          <b>Ask permission, then start recording.</b>
+          <span>A voice memo on the table is enough. You are not transcribing while they
+          talk — you are listening for the sharp specific line you will quote later.</span>
+        </div></li>
+        <li><span class="tick">3</span><div>
+          <b>Don't ask all 27.</b>
+          <span>Ask what fits the person in front of you. A short honest briefing beats a
+          padded one, and question 4 matters more than 12 through 18 combined.</span>
+        </div></li>
+        <li><span class="tick">4</span><div>
+          <b>Write it up afterwards, in your own prose.</b>
+          <span>Not a Q&amp;A dump — briefing notes for a new chief of staff who starts
+          Monday. Quote them directly where they said it well; their words beat your
+          summary every time.</span>
+        </div></li>
+      </ul>
+    </section>
+
+    <section id="rules">
+      <div class="sectionhead"><h2>The two rules that make it good</h2></div>
+      <hr class="hr">
+      <div class="rules">
+        <div class="rule">
+          <h3>Specific beats complete</h3>
+          <p>Five sharp facts outperform forty vague ones.</p>
+          <div class="vs">
+            <i class="good">“Mornings are calls and admin, afternoons are for making things.”</i>
+            <i class="bad">“Values work–life balance.”</i>
+          </div>
+        </div>
+        <div class="rule">
+          <h3>True beats flattering</h3>
+          <p>The assistant calibrates every suggestion off what it believes. If it thinks
+          they're comfortable, it will propose expensive things. Write what's true, and
+          date it.</p>
+          <div class="vs">
+            <i class="good">“Revenue is $0/mo.”</i>
+            <i class="bad">“Growing steadily.”</i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="shortlist">
+      <div class="sectionhead"><h2>If you only get fifteen minutes</h2></div>
+      <hr class="hr">
+      <div class="shortlist">
+        <p>These six carry most of the weight. Ask them in this order and you have a
+        usable briefing even if the conversation ends early.</p>
+        <ol>
+          <li><span class="n">04</span><a href="#q4">If this thing works perfectly, what does it do for you?</a></li>
+          <li><span class="n">07</span><a href="#q7">What have you already decided <em>not</em> to do?</a></li>
+          <li><span class="n">12</span><a href="#q12">When an assistant annoys you, what did it just do?</a></li>
+          <li><span class="n">20</span><a href="#q20">What does your day shape look like?</a></li>
+          <li><span class="n">24</span><a href="#q24">What must it never, ever do?</a></li>
+          <li><span class="n">26</span><a href="#q26">What have you learned the hard way?</a></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ── IDENTITY ─────────────────────────────────────────────────────── -->
+    <section id="identity">
+      <div class="sectionhead"><h2>Identity</h2><span class="budget">~6 min · Q1–4</span></div>
+      <p class="subhead">Who am I talking to?</p>
+      <hr class="hr">
+      <div class="qlist">
+
+        <article class="q" id="q1">
+          <div class="qnum">01</div>
+          <div>
+            <p class="ask">What do you actually do all day?</p>
+            <p class="note">Not their title. What the hours go into.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q2">
+          <div class="qnum">02</div>
+          <div>
+            <p class="ask">How would you describe your own working style?</p>
+            <p class="note">Push for <b>their phrase</b>, not a category.</p>
+            <div class="eg">
+              <span class="lbl">From a real briefing</span>
+              <ul><li>“Self-described: messy creative. The systems around him exist to
+                organize without adding friction.”</li></ul>
+              <p class="why">That one line permanently changes how the assistant proposes things.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="q" id="q3">
+          <div class="qnum">03</div>
+          <div>
+            <p class="ask">Where are you, and what's your timezone?</p>
+            <p class="note">Drives every “today”, every “tomorrow”, and the hour their daily
+            digest lands. Get it exactly right.</p>
+          </div>
+        </article>
+
+        <article class="q key" id="q4">
+          <div class="qnum">04</div>
+          <div>
+            <span class="chip">Most important question in the interview</span>
+            <p class="ask">If this thing works perfectly, what does it do for you?</p>
+            <p class="note">One sentence. It goes at the top of the file and shapes
+            everything else. <b>Don't accept “help me be organised”</b> — ask what being
+            disorganised actually cost them this week.</p>
+            <div class="eg">
+              <span class="lbl">Two real answers</span>
+              <ul>
+                <li>“I want to know what I was working on.” — <cite>Doug</cite></li>
+                <li>“I want ideas caught before they evaporate.” — <cite>Mazíx</cite></li>
+              </ul>
+              <p class="why">These lead to two very different assistants.</p>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── MISSION ──────────────────────────────────────────────────────── -->
+    <section id="mission">
+      <div class="sectionhead"><h2>Mission</h2><span class="budget">~8 min · Q5–8</span></div>
+      <p class="subhead">What are they pushing at?</p>
+      <hr class="hr">
+      <div class="qlist">
+
+        <article class="q" id="q5">
+          <div class="qnum">05</div>
+          <div>
+            <p class="ask">What are you trying to make happen in the next few months?</p>
+            <p class="note">With a number and a date, if there is one.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q6">
+          <div class="qnum">06</div>
+          <div>
+            <p class="ask">What's the one thing that, if it slipped, would matter most?</p>
+          </div>
+        </article>
+
+        <article class="q key" id="q7">
+          <div class="qnum">07</div>
+          <div>
+            <span class="chip">The section people skip</span>
+            <p class="ask">What have you already decided <em>not</em> to do?</p>
+            <p class="note">The most valuable answers in the whole interview. Every “no”
+            here is a suggestion the assistant won't waste their time with, and a debate
+            they won't have to have twice.</p>
+            <div class="eg">
+              <span class="lbl">Real answers</span>
+              <ul>
+                <li>“No paid ads until three case studies exist.”</li>
+                <li>“No new features unless a paying client needs them.”</li>
+                <li>“The old ten-clients-in-six-weeks target is dead.”</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="q" id="q8">
+          <div class="qnum">08</div>
+          <div>
+            <p class="ask">What does everyone keep telling you to do that you're
+            deliberately not doing?</p>
+            <p class="note">Question 7 asked sideways. It often gets the better answer —
+            ask it even if they already answered 7.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── WORK ─────────────────────────────────────────────────────────── -->
+    <section id="work">
+      <div class="sectionhead"><h2>Work</h2><span class="budget">~6 min · Q9–11</span></div>
+      <p class="subhead">The situation, honestly.</p>
+      <div class="skipband"><b>Skip this whole block</b> if the assistant is for personal
+      life only.</div>
+      <hr class="hr">
+      <div class="qlist">
+
+        <article class="q" id="q9">
+          <div class="qnum">09</div>
+          <div>
+            <p class="ask">What do you sell, and how does money actually work?</p>
+            <p class="note">If prices change, ask <b>where the real answer lives</b>. A rule
+            like “read the file, never quote from memory” belongs in the briefing verbatim.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q10">
+          <div class="qnum">10</div>
+          <div>
+            <p class="ask">Where do things actually stand right now — revenue, costs, runway?</p>
+            <p class="note">Be blunt with them about why you're asking: an assistant that
+            thinks they're flush will suggest expensive things.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q11">
+          <div class="qnum">11</div>
+          <div>
+            <p class="ask">Who else is involved?</p>
+            <p class="note">“Strictly solo — there is nobody to delegate to” changes every
+            proposal the assistant makes.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── VOICE ────────────────────────────────────────────────────────── -->
+    <section id="voice">
+      <div class="sectionhead"><h2>Voice</h2><span class="budget">~9 min · Q12–18</span></div>
+      <p class="subhead">How to talk to them. Get this wrong and they'll stop using it inside a week.</p>
+      <hr class="hr">
+      <div class="qlist">
+
+        <article class="q key" id="q12">
+          <div class="qnum">12</div>
+          <div>
+            <span class="chip">Ask it exactly like this</span>
+            <p class="ask">When an assistant annoys you, what did it just do?</p>
+            <p class="note">The best question in this section. Asking it the abstract way
+            (“what tone do you prefer?”) gets you nothing.</p>
+            <div class="eg">
+              <span class="lbl">Answers that became rules</span>
+              <ul>
+                <li>“Never ask me to confirm an obvious next step.”</li>
+                <li>“One question at a time. Don't stack them.”</li>
+                <li>“Short by default. No bullet walls.”</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="q" id="q13">
+          <div class="qnum">13</div>
+          <div>
+            <p class="ask">Long or short? Answer first, or reasoning first?</p>
+          </div>
+        </article>
+
+        <article class="q" id="q14">
+          <div class="qnum">14</div>
+          <div>
+            <p class="ask">Do you want to be told when you're wrong?</p>
+            <p class="note">Some people genuinely don't. Believe them.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q15">
+          <div class="qnum">15</div>
+          <div>
+            <p class="ask">Casual or formal?</p>
+            <p class="note">Match their register. If they say “dude” during the interview,
+            write that down.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q16">
+          <div class="qnum">16</div>
+          <div>
+            <p class="ask">You're often away from your phone — should it acknowledge a
+            message before it starts working?</p>
+            <p class="note">Silence reads as broken to most people.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q17">
+          <div class="qnum">17</div>
+          <div>
+            <p class="ask">Do you send voice notes? And do you want spoken replies back?</p>
+            <p class="note"><b>Two separate questions — ask both.</b> Most people send voice
+            constantly once they realise they can. Far fewer want audio coming back. Don't
+            assume the answer to one is the answer to the other.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q18">
+          <div class="qnum">18</div>
+          <div>
+            <p class="ask">Will it ever draft anything you send to someone else?</p>
+            <p class="note">If yes: spelling, case, banned punctuation, and the words they
+            hate.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── RHYTHM ───────────────────────────────────────────────────────── -->
+    <section id="rhythm">
+      <div class="sectionhead"><h2>Rhythm</h2><span class="budget">~7 min · Q19–23</span></div>
+      <p class="subhead">When to speak, and when to shut up.</p>
+      <hr class="hr">
+      <div class="qlist">
+
+        <article class="q" id="q19">
+          <div class="qnum">19</div>
+          <div>
+            <p class="ask">When are you sharpest?</p>
+            <p class="note">The block to protect.</p>
+          </div>
+        </article>
+
+        <article class="q key" id="q20">
+          <div class="qnum">20</div>
+          <div>
+            <span class="chip">Best value per minute in the interview</span>
+            <p class="ask">What does your day shape look like?</p>
+            <p class="note">No other single line does more for a daily digest.</p>
+            <div class="eg">
+              <span class="lbl">A real answer</span>
+              <ul><li>“Mornings are calls and admin; afternoons and evenings are creative work.”</li></ul>
+              <p class="why">The assistant then puts phone-and-form tasks in the morning and
+              judgment tasks in the afternoon.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="q" id="q21">
+          <div class="qnum">21</div>
+          <div>
+            <p class="ask">When should it absolutely not ping you?</p>
+            <p class="note">Quiet hours. Non-negotiable, and the fastest way to get an
+            assistant muted forever.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q22">
+          <div class="qnum">22</div>
+          <div>
+            <p class="ask">Is there one habit that, if it slips, everything slips?</p>
+            <p class="note">If they have one, that's the single nudge worth making. Write it
+            down as exactly that.</p>
+          </div>
+        </article>
+
+        <article class="q" id="q23">
+          <div class="qnum">23</div>
+          <div>
+            <p class="ask">What do you do when it's going badly?</p>
+            <p class="note">So the assistant can say “go for a walk” instead of offering
+            another tactic.</p>
+            <div class="eg">
+              <span class="lbl">A real answer</span>
+              <ul><li>“Recovery is getting out of the house. If he's been at the screen all
+                day and things are grinding, that's the suggestion — not another tactic.”</li></ul>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── HARD NOS ─────────────────────────────────────────────────────── -->
+    <section id="nos">
+      <div class="sectionhead"><h2>Hard nos</h2><span class="budget">~3 min · Q24</span></div>
+      <p class="subhead">The rules with consequences attached.</p>
+      <hr class="hr">
+      <div class="qlist">
+
+        <article class="q key" id="q24">
+          <div class="qnum">24</div>
+          <div>
+            <span class="chip">Push for the consequence, not the rule</span>
+            <p class="ask">What must it never, ever do?</p>
+            <p class="note">A rule with evidence attached gets followed — and the assistant
+            generalises correctly to the cases you didn't list. So don't stop at the rule.
+            Ask what happened.</p>
+            <div class="eg">
+              <span class="lbl">A real answer, with its receipt</span>
+              <ul><li>“Never fetch a <code>/go/</code> link — every request records a real
+                click and corrupts his prospect stats. Four false opens already on record.”</li></ul>
+              <p class="why">The receipt is what makes it stick.</p>
+            </div>
+            <div class="always">
+              <span class="lbl">Always include these, whatever they say</span>
+              <ul>
+                <li>Never paste secrets into chat, never commit personal information.</li>
+                <li>Never claim a fact they haven't shared — say “I don't know” instead.</li>
+                <li>Never guarantee an outcome on their behalf.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── PEOPLE ───────────────────────────────────────────────────────── -->
+    <section id="people">
+      <div class="sectionhead"><h2>People &amp; history</h2><span class="budget">~6 min · Q25–27</span></div>
+      <p class="subhead">The names it will hear, and the lessons it should already know.</p>
+      <hr class="hr">
+      <div class="qlist">
+
+        <article class="q" id="q25">
+          <div class="qnum">25</div>
+          <div>
+            <p class="ask">Who will you mention that it needs to know instantly?</p>
+            <p class="note">Name, relationship, and <b>the one thing that matters</b> — not
+            a biography.</p>
+          </div>
+        </article>
+
+        <article class="q key" id="q26">
+          <div class="qnum">26</div>
+          <div>
+            <span class="chip">Only exists if you ask</span>
+            <p class="ask">What have you learned the hard way?</p>
+            <p class="note">Often the best content in the whole file. Get the cost attached
+            — the number is what makes it land.</p>
+            <div class="eg">
+              <span class="lbl">A real answer</span>
+              <ul><li>“13 audits, 0 closes on the ownership pitch. Ownership was never why
+                anyone said yes.”</li></ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="q" id="q27">
+          <div class="qnum">27</div>
+          <div>
+            <p class="ask">What decisions are settled that you don't want reopened?</p>
+            <p class="note">Date them. It stops the assistant relitigating the same question
+            every few weeks.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ── AFTER ────────────────────────────────────────────────────────── -->
+    <section id="after">
+      <div class="sectionhead"><h2>After the interview</h2></div>
+      <p class="subhead">The recording was scaffolding. The write-up is the product.</p>
+      <hr class="hr">
+
+      <div class="warn">
+        <p><b>Transcribe on your own machine.</b> This recording is the most personal
+        artifact in the kit — it never goes to a cloud transcriber.</p>
+      </div>
+
+      <pre>ffmpeg -i interview.m4a -ar 16000 -ac 1 /tmp/interview.wav
+whisper-cli -m ~/.cache/whisper/ggml-small.en.bin -f /tmp/interview.wav -nt &gt; interview.txt</pre>
+
+      <div class="warn">
+        <p>No <code>whisper-cli</code>? <code>brew install whisper-cpp</code>, then download
+        the <code>small.en</code> model once.</p>
+        <p>Raw audio without a transcript is a last resort — you will never scrub through
+        45 minutes again. The transcript is what you actually write from. <b>Once the
+        write-up is done, delete the audio.</b></p>
+      </div>
+
+      <div class="sectionhead" style="margin-top:2.6rem"><h2>The write-up checklist</h2></div>
+      <hr class="hr">
+      <ul class="checks">
+        <li><div><b>Every placeholder and comment removed.</b>
+          <span>A placeholder left in is something the assistant will confidently reason
+          from as though it were true.</span></div></li>
+        <li><div><b>Unknowns marked ⟨ASK⟩, not guessed.</b>
+          <span>A blank the assistant asks about beats a plausible invention.</span></div></li>
+        <li><div><b>Volatile facts dated</b>, so a stale one is visibly stale.</div></li>
+        <li><div><b>Their words quoted</b> where they said it well.</div></li>
+        <li><div><b>Read it aloud.</b>
+          <span>If a section sounds like a form, rewrite it as a sentence.</span></div></li>
+        <li><div><b>Show it to them.</b>
+          <span>They'll correct one thing you got importantly wrong. They always do. Worth
+          ten minutes.</span></div></li>
+      </ul>
+
+      <div class="warn" style="margin-top:1.6rem">
+        <p>Then restart the assistant and test it with something only a well-briefed one
+        could get right — <b>“should I call Scott today or tomorrow?”</b> A generic answer
+        means the briefing is thin.</p>
+      </div>
+
+      <div class="roundtwo">
+        <h3>Round two is the good one</h3>
+        <p>The first version is always half-blind: it captures what someone <em>says</em>
+        about themselves before the assistant has lived with them. Two to three weeks of
+        real use is the best interview prep that exists. Book round two then — about 20
+        minutes, and different questions:</p>
+        <ol>
+          <li><b>What did it get wrong about you?</b> Every irritation is a missing or wrong line.</li>
+          <li><b>Which blanks can we now fill?</b></li>
+          <li><b>What dated facts have changed?</b> Revenue, targets, decisions — update and re-date.</li>
+          <li><b>What rule do you wish it had?</b> They'll have one by now. Get the consequence attached.</li>
+        </ol>
+        <p>Revise, don't rewrite. Keep every line that use has proven true; fix what use
+        disproved. After round two, a yearly pass is usually enough.</p>
+      </div>
+
+      <p class="colophon"><b>A note on decay.</b> This briefing is the file that goes stale
+      fastest, because it holds exactly the facts that change. A stale one is worse than a
+      short one, because the assistant trusts it completely. Everything else grows on its
+      own — this file only changes if a human changes it.</p>
+    </section>
+
+  </div>
+</main>
+
+<script>
+'use strict';
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.jumps a'));
+  var map = {};
+  var targets = links.map(function (a) {
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+  if (!targets.length) { return; }
+
+  var scroller = document.querySelector('.railnav-inner');
+  var OFFSET = 96;          // just below the sticky bar
+  var active = null;
+  var queued = false;
+
+  function update() {
+    queued = false;
+    // The current section is the LAST one whose top has passed the bar —
+    // picking the first *visible* one lets a tall previous section win.
+    var current = null;   // still in the masthead — highlight nothing
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i].getBoundingClientRect().top <= OFFSET) { current = targets[i]; }
+    }
+    // Past the end of the last section, nothing is current.
+    var last = targets[targets.length - 1];
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+      current = last;
+    }
+    if (current === active) { return; }
+    active = current;
+    links.forEach(function (a) { a.classList.remove('on'); });
+    if (!current) { return; }
+    var link = map[current.id];
+    if (!link) { return; }
+    link.classList.add('on');
+    // Keep the active chip in view only when the bar actually scrolls.
+    if (scroller && scroller.scrollWidth > scroller.clientWidth + 2) {
+      var lr = link.getBoundingClientRect();
+      var sr = scroller.getBoundingClientRect();
+      if (lr.left < sr.left) { scroller.scrollLeft -= (sr.left - lr.left) + 16; }
+      else if (lr.right > sr.right) { scroller.scrollLeft += (lr.right - sr.right) + 16; }
+    }
+  }
+
+  function onScroll() {
+    if (queued) { return; }
+    queued = true;
+    window.requestAnimationFrame(update);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  update();
+})();
+</script>
