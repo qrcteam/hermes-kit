@@ -179,7 +179,7 @@ chmod 600 ~/.hermes/.env
 open -e ~/.hermes/.env    # paste the bot token and their numeric user ID
 ```
 
-Install the two scripts and the capture skill:
+Install the two scripts and the two memory skills:
 
 ```bash
 K=~/Documents/Projects/hermes/templates
@@ -190,7 +190,21 @@ chmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh
 
 mkdir -p ~/.hermes/skills/note-taking/vault-capture
 cp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md
+
+mkdir -p ~/.hermes/skills/note-taking/session-log
+cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md
 ```
+
+**The two skills do different halves of memory, and they need each other:**
+
+- `vault-capture` saves **facts**, the moment they're said — *"Henderson moved to the Tuesday
+  crew."*
+- `session-log` saves **what they did**, once, at the end of a working conversation —
+  *"rescheduled Henderson, sent the Ruiz quote, waiting on Trenton."*
+
+Facts alone answer "what do I know?" but not "what was I working on?", which is the question
+most people actually ask a week later. The log also records **where they stopped**, which is the
+line they'll reread most.
 
 ---
 
@@ -417,6 +431,8 @@ model account. **No secrets in that file.**
 - [ ] Container running with **`:ro`** on the vault mount
 - [ ] `journal_mode: delete` set
 - [ ] Model logged in **on their own account**
+- [ ] Both memory skills installed — `vault-capture` **and** `session-log`
+- [ ] Session log tested: said "log my work", a `<date>-log.md` reached the vault
 - [ ] If they want WhatsApp: `platforms.whatsapp.enabled: true` **in config.yaml**, paired
       from inside the container, and they got a reply in their own self-chat
 - [ ] Exactly one gateway running — container only, no native `hermes gateway` on the host

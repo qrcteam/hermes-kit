@@ -39,7 +39,7 @@ back to something after a week.">
 
 ---
 
-## Three things to do this week
+## Four things to do this week
 
 **1. Tell it things.** Just text it like you'd text a person.
 
@@ -61,6 +61,16 @@ You don't have to say "remember" — it usually works it out — but saying it m
 
 It'll fix its notes. **Please actually do this** — most people just sigh and move on, and then
 the wrong thing stays wrong forever.
+
+**4. Tell it when you're done for the day.**
+
+> *wrap up*
+> *log my work*
+> *that's me for today*
+
+It writes down what you actually did — and, more usefully, **where you stopped**. That's what
+makes question 2 above work: you can't ask *"what was I working on?"* unless something wrote it
+down. Ten seconds at the end of the day, and next Monday stops being a guess.
 
 ---
 
