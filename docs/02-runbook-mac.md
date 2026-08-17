@@ -375,7 +375,20 @@ docker exec hermes hermes cron list
 
 ## 10 · Smoke test — the one that proves it all works
 
-Have them text their bot:
+**First, check the wiring in one command** — it walks every item on the checklist at the
+bottom of this doc so you don't have to hold it in your head:
+
+```bash
+bash ~/Documents/Projects/hermes/templates/install-verify.sh
+```
+
+Read-only; it reports and never fixes. Every `FAIL` prints its own fix underneath. Exit code
+is non-zero while anything is still red, so you can re-run it after each fix until it's clean.
+
+Get it green **before** the live test below — a failing smoke test on top of a half-finished
+install tells you nothing about which of the two is broken.
+
+Then have them text their bot:
 
 > *remember I switched the Henderson job to the Tuesday crew because Thursday's tied up on Ruiz*
 
@@ -422,6 +435,9 @@ model account. **No secrets in that file.**
 ---
 
 ## Checklist
+
+**`bash templates/install-verify.sh` checks everything below except the last three by
+itself.** Run it first; work this list only for whatever it can't see.
 
 - [ ] Docker Desktop installed and running; machine set to never sleep
 - [ ] Bot created, token and numeric user ID in `~/.hermes/.env` (mode 600)

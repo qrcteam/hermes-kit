@@ -343,3 +343,28 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   `http://host.docker.internal:8000/mcp`, which resolves only inside a container (verified it
   fails to resolve on the host). Suspect this also contributed to the recurring
   `database disk image is malformed` FTS corruption. [gotcha]
+- **`templates/install-verify.sh` — one command that walks the whole runbook checklist.**
+  Read-only, runs on the HOST (not in the container — half the checks are things the
+  container can't see: Docker itself, the launchd/Task Scheduler job, the vault's git remote,
+  and whether a second gateway is competing). 31 checks across environment, mounts, settings,
+  credentials, memory pipeline, vault, SOUL.md and channels. Non-zero exit while anything is
+  red, so you can re-run after each fix. Wired into runbook step 10 (before the smoke test)
+  and the checklist header. [state]
+- **Deliberately NOT a client build of Claude OS.** Claude OS is Jack Roberts' software —
+  the licence permits modifying it for your own use but forbids redistributing or repackaging
+  it, so a stripped-down copy installed on Diane's or Laurie's laptop is out. It also reads
+  ~/.claude sessions / Obsidian / OpenRouter, none of which a client install has. This script
+  is original and covers the actual need. [gotcha]
+- **THREE bugs found only by running it against a live install — worth knowing if you write
+  anything similar.** (1) `docker inspect` returns Docker Desktop's INTERNAL bind-mount path,
+  `/host_mnt/Users/...` on macOS and `/run/desktop/mnt/host/...` on Windows; testing that
+  against the host filesystem makes every vault check silently SKIP. Strip the prefix.
+  (2) Grepping SOUL.md for a bare `<` false-positives on legitimate inline code paths like
+  `/go/<slug>` and `topics/<bucket>/_manual.md` that appear in every finished SOUL. The
+  working regex is `<[A-Z][A-Z_]*>|<[^>]* [^>]*>` — caps tokens or prose-with-a-space —
+  verified to catch 35 real placeholders in SOUL.md.template and 0 in a finished one.
+  (3) The newest `[Telegram]` log line is usually routine traffic ("Sending response"), not a
+  verdict; filter to LIFECYCLE lines only, same as the telegram-kick watchdog does. [gotcha]
+- **Running it on the OPERATOR's Mac correctly fails the whole Memory-pipeline section** —
+  no inbox, no promote.sh, no promoter job — because on that machine Claude Code writes the
+  vault and Hermes only reads. Not a bug; noted in the script header. [gotcha]
