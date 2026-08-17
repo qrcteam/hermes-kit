@@ -6,11 +6,21 @@
 # Docker itself, the launchd/Task Scheduler job, the vault's git remote, and
 # whether a second gateway is fighting the first).
 #
-#   bash install-verify.sh
+#   bash install-verify.sh          check and report — changes NOTHING
+#   bash install-verify.sh --fix    also apply the safe repairs
 #
-# READ-ONLY. It inspects and reports; it never starts, stops, writes or fixes
-# anything. You can run it as many times as you like, at any point during an
-# install, and it will not change the outcome.
+# Without --fix it is strictly read-only: run it as often as you like, at any
+# point during an install, and it cannot change the outcome.
+#
+# --fix applies only repairs that are idempotent, reversible and cannot lose
+# data — making a directory, fixing a mode, copying a skill file, loading a
+# launchd job, starting a stopped container, setting a config key. Anything that
+# needs a human decision, someone's account, an interactive prompt, or the
+# container recreated stays report-only BY DESIGN. Notably NOT auto-fixed:
+# re-creating the container (mounts are fixed at `docker run`), moving the vault,
+# `git init` on the vault, logging in a model, pairing WhatsApp, editing SOUL.md,
+# and unloading a competing host gateway — that last one is someone's LaunchAgent
+# and the call is theirs, not this script's.
 #
 # Exit codes:  0 = everything required passed   1 = at least one FAIL
 #
@@ -32,9 +42,29 @@ set -uo pipefail
 
 CONTAINER="${CONTAINER:-hermes}"
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+KIT="${KIT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+
+FIX=0
+case "${1:-}" in
+  --fix)  FIX=1 ;;
+  -h|--help)
+    printf 'usage: %s [--fix]\n\n' "$(basename "$0")"
+    printf '  (no flag)  check everything and report. Changes nothing.\n'
+    printf '  --fix      additionally apply the SAFE repairs — the ones that are\n'
+    printf '             idempotent, reversible and cannot lose data. Anything\n'
+    printf '             needing a human, an account, or the container recreated\n'
+    printf '             stays report-only and is listed as "fix by hand".\n'
+    exit 0 ;;
+  "") ;;
+  *)  printf 'unknown option: %s (try --help)\n' "$1"; exit 2 ;;
+esac
 
 pass=0; fail=0; warn=0; skip=0
 FAILED_LINES=""
+# Newline-delimited "description|||command". A plain string rather than an array
+# because `set -u` + bash 3.2 (still what macOS ships) errors on empty-array
+# expansion, and this script must run on a stock Mac with nothing installed.
+FIXES=""
 
 if [[ -t 1 ]] && [[ -z "${NO_COLOR:-}" ]]; then
   G=$'\033[32m'; R=$'\033[31m'; Y=$'\033[33m'; D=$'\033[2m'; B=$'\033[1m'; Z=$'\033[0m'
@@ -44,9 +74,20 @@ fi
 
 section() { printf '\n%s%s%s\n' "$B" "$1" "$Z"; }
 ok()   { printf '  %sPASS%s  %s\n' "$G" "$Z" "$1"; pass=$((pass+1)); }
-bad()  { printf '  %sFAIL%s  %s\n' "$R" "$Z" "$1"; [[ -n "${2:-}" ]] && printf '        %s↳ %s%s\n' "$D" "$2" "$Z"
+# bad "<what's wrong>" "<how to fix by hand>" ["<safe command --fix may run>"]
+# Only pass a third argument when the command is idempotent, reversible and
+# cannot lose data. Everything else stays a hand fix, on purpose.
+bad()  { printf '  %sFAIL%s  %s\n' "$R" "$Z" "$1"
+         [[ -n "${2:-}" ]] && printf '        %s↳ %s%s\n' "$D" "$2" "$Z"
+         if [[ -n "${3:-}" ]]; then
+           FIXES="${FIXES}$1|||$3"$'\n'
+           (( FIX )) || printf '        %s↳ --fix can repair this one%s\n' "$D" "$Z"
+         fi
          fail=$((fail+1)); FAILED_LINES="${FAILED_LINES}  • $1"$'\n'; }
-soft() { printf '  %sWARN%s  %s\n' "$Y" "$Z" "$1"; [[ -n "${2:-}" ]] && printf '        %s↳ %s%s\n' "$D" "$2" "$Z"; warn=$((warn+1)); }
+soft() { printf '  %sWARN%s  %s\n' "$Y" "$Z" "$1"
+         [[ -n "${2:-}" ]] && printf '        %s↳ %s%s\n' "$D" "$2" "$Z"
+         [[ -n "${3:-}" ]] && FIXES="${FIXES}$1|||$3"$'\n'
+         warn=$((warn+1)); }
 nope() { printf '  %sSKIP%s  %s\n' "$D" "$Z" "$1"; skip=$((skip+1)); }
 
 dex() { docker exec "$CONTAINER" "$@" 2>/dev/null; }
@@ -83,7 +124,7 @@ case "$state" in
   running) ok "Container '$CONTAINER' is running" ;;
   missing) bad "Container '$CONTAINER' does not exist" "Runbook step 6 — the 'docker run' block was never executed."
            printf '\n%sStopping — the rest of the checks need a container.%s\n' "$R" "$Z"; exit 1 ;;
-  *)       bad "Container '$CONTAINER' exists but is '$state'" "docker logs --tail 50 $CONTAINER   # usually a malformed .env or a bad mount path"
+  *)       bad "Container '$CONTAINER' exists but is '$state'" "docker logs --tail 50 $CONTAINER   # usually a malformed .env or a bad mount path" "docker start $CONTAINER"
            printf '\n%sStopping — the rest of the checks need it running.%s\n' "$R" "$Z"; exit 1 ;;
 esac
 
@@ -124,15 +165,15 @@ section "Settings"
 jm="$(dex hermes config get database.journal_mode | tr -d '\r\n')"
 [[ "$jm" == "delete" ]] \
   && ok "journal_mode = delete" \
-  || bad "journal_mode = '${jm:-unset}' (must be 'delete')" "SQLite's WAL corrupts across a Docker bind mount. Expect 'database disk image is malformed' within a week. Fix: docker exec $CONTAINER hermes config set database.journal_mode delete && docker restart $CONTAINER"
+  || bad "journal_mode = '${jm:-unset}' (must be 'delete')" "SQLite's WAL corrupts across a Docker bind mount. Expect 'database disk image is malformed' within a week." "docker exec $CONTAINER hermes config set database.journal_mode delete"
 
 am="$(dex hermes config get approvals.mode | tr -d '\r\n')"
 [[ "$am" == "smart" ]] && ok "approvals.mode = smart" \
-  || soft "approvals.mode = '${am:-unset}' (expected 'smart')" "docker exec $CONTAINER hermes config set approvals.mode smart"
+  || soft "approvals.mode = '${am:-unset}' (expected 'smart')" "docker exec $CONTAINER hermes config set approvals.mode smart" "docker exec $CONTAINER hermes config set approvals.mode smart"
 
 cm="$(dex hermes config get approvals.cron_mode | tr -d '\r\n')"
 [[ "$cm" == "deny" ]] && ok "approvals.cron_mode = deny" \
-  || soft "approvals.cron_mode = '${cm:-unset}' (expected 'deny')" "Scheduled agent jobs could take actions with nobody awake to approve them."
+  || soft "approvals.cron_mode = '${cm:-unset}' (expected 'deny')" "Scheduled agent jobs could take actions with nobody awake to approve them." "docker exec $CONTAINER hermes config set approvals.cron_mode deny"
 
 # ── Credentials ──────────────────────────────────────────────────────────────
 section "Credentials"
@@ -144,7 +185,7 @@ else
   ok ".env exists"
   perm="$(stat -f '%A' "$ENVF" 2>/dev/null || stat -c '%a' "$ENVF" 2>/dev/null)"
   [[ "$perm" == "600" ]] && ok ".env is mode 600" \
-    || soft ".env is mode ${perm:-?} (want 600)" "chmod 600 \"$ENVF\"  — it holds their bot token."
+    || soft ".env is mode ${perm:-?} (want 600)" "it holds their bot token." "chmod 600 \"$ENVF\""
   for k in TELEGRAM_BOT_TOKEN TELEGRAM_ALLOWED_USERS; do
     v="$(grep -m1 "^${k}=" "$ENVF" 2>/dev/null | cut -d= -f2-)"
     [[ -n "$v" ]] && ok "$k is set" || bad "$k is empty or missing" "Without it the bot either won't start or will talk to strangers."
@@ -155,7 +196,7 @@ PKEY="$HERMES_HOME/secrets/pinecone.key"
 if [[ -f "$PKEY" ]]; then
   ok "Pinecone key present"
   perm="$(stat -f '%A' "$PKEY" 2>/dev/null || stat -c '%a' "$PKEY" 2>/dev/null)"
-  [[ "$perm" == "600" ]] || soft "pinecone.key is mode ${perm:-?} (want 600)" "chmod 600 \"$PKEY\""
+  [[ "$perm" == "600" ]] || soft "pinecone.key is mode ${perm:-?} (want 600)" "" "chmod 600 \"$PKEY\""
 else
   soft "No Pinecone key at $PKEY" "Optional under ~200 notes — recall stays keyword-only until it's added."
 fi
@@ -173,19 +214,23 @@ section "Memory pipeline"
 
 PROMOTE="$HERMES_HOME/promote.sh"
 if [[ -x "$PROMOTE" ]]; then ok "promote.sh is installed and executable"
-elif [[ -f "$PROMOTE" ]]; then bad "promote.sh is not executable" "chmod +x \"$PROMOTE\""
-else bad "promote.sh is missing" "Runbook step 5 — copy it from templates/."
+elif [[ -f "$PROMOTE" ]]; then bad "promote.sh is not executable" "" "chmod +x \"$PROMOTE\""
+else bad "promote.sh is missing" "Runbook step 5." "cp \"$KIT/promote.sh\" \"$PROMOTE\" && chmod +x \"$PROMOTE\""
 fi
 
 [[ -d "$HERMES_HOME/inbox" ]] && ok "Inbox directory exists" \
-  || bad "No inbox at $HERMES_HOME/inbox" "mkdir -p \"$HERMES_HOME/inbox\"  — the agent stages every note there."
+  || bad "No inbox at $HERMES_HOME/inbox" "the agent stages every note there." "mkdir -p \"$HERMES_HOME/inbox\""
 
 case "$(uname -s)" in
   Darwin)
     if launchctl list 2>/dev/null | grep -q 'vault-promote'; then
       ok "Promoter is scheduled (launchd job loaded)"
     else
-      bad "Promoter is NOT scheduled" "Nothing they tell the agent will ever reach the vault. Runbook step 8 — load com.hermeskit.vault-promote.plist."
+      # `launchctl load` of a MISSING plist exits 0 — so the naive fix reports
+      # success while doing nothing. Guard on the file, and prove the job is
+      # actually loaded afterwards, or this lies.
+      bad "Promoter is NOT scheduled" "Nothing they tell the agent will ever reach the vault. Runbook step 8 — the plist must exist at ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist first." \
+        "[ -f \"$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist\" ] && launchctl load -w \"$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist\" && launchctl list | grep -q vault-promote"
     fi ;;
   *)
     if command -v schtasks >/dev/null 2>&1; then
@@ -213,7 +258,7 @@ fi
 for s in vault-capture session-log; do
   [[ -f "$HERMES_HOME/skills/note-taking/$s/SKILL.md" ]] \
     && ok "Skill installed: $s" \
-    || bad "Skill missing: $s" "cp templates/${s}-SKILL.md $HERMES_HOME/skills/note-taking/$s/SKILL.md"
+    || bad "Skill missing: $s" "" "mkdir -p \"$HERMES_HOME/skills/note-taking/$s\" && cp \"$KIT/${s}-SKILL.md\" \"$HERMES_HOME/skills/note-taking/$s/SKILL.md\""
 done
 
 # ── The vault itself ─────────────────────────────────────────────────────────
@@ -309,6 +354,31 @@ if pgrep -f 'hermes_cli.main gateway' >/dev/null 2>&1; then
   bad "A second gateway is running on the host, competing with the container" "They share ~/.hermes and the same Telegram token, so both fail. macOS: launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist"
 else
   ok "Exactly one gateway (the container) — nothing competing on the host"
+fi
+
+# ── Apply the safe repairs (--fix only) ──────────────────────────────────────
+if (( FIX )) && [[ -n "$FIXES" ]]; then
+  section "Applying safe repairs"
+  applied=0; failed=0
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    desc="${line%%|||*}"; cmd="${line#*|||}"
+    if eval "$cmd" >/dev/null 2>&1; then
+      printf '  %sFIXED%s %s\n' "$G" "$Z" "$desc"; applied=$((applied+1))
+    else
+      printf '  %sCOULD NOT FIX%s %s\n' "$R" "$Z" "$desc"
+      printf '        %s↳ tried: %s%s\n' "$D" "$cmd" "$Z"; failed=$((failed+1))
+    fi
+  done <<< "$FIXES"
+
+  printf '\n  %d repaired, %d could not be\n' "$applied" "$failed"
+  if (( applied )); then
+    printf '  %sConfig changes need a restart to take effect:%s docker restart %s\n' "$D" "$Z" "$CONTAINER"
+    printf '  %sThen re-run without --fix to confirm what is left.%s\n' "$D" "$Z"
+  fi
+elif (( FIX )); then
+  section "Applying safe repairs"
+  printf '  Nothing to repair automatically.\n'
 fi
 
 # ── Verdict ──────────────────────────────────────────────────────────────────

@@ -368,3 +368,32 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
 - **Running it on the OPERATOR's Mac correctly fails the whole Memory-pipeline section** —
   no inbox, no promote.sh, no promoter job — because on that machine Claude Code writes the
   vault and Hermes only reads. Not a bug; noted in the script header. [gotcha]
+- **`install-verify.sh` gained `--fix`** (2026-08-17). Bare run is still strictly read-only.
+  `--fix` applies ONLY repairs that are idempotent, reversible and cannot lose data: mkdir
+  inbox, chmod modes, copy a missing skill from the kit, `chmod +x promote.sh`, load the
+  promoter launchd job, start a stopped container, set a drifted config key. Deliberately NOT
+  auto-fixed — re-creating the container (mounts are fixed at `docker run`), moving the vault,
+  `git init`, model login, WhatsApp pairing, SOUL.md edits, and **unloading a competing host
+  gateway** (someone's LaunchAgent; the call is theirs). Config fixes need `docker restart`
+  after. [state]
+- **GOTCHA that nearly shipped a lying fixer: `launchctl load` of a MISSING plist exits 0.**
+  The naive `launchctl load -w …` fix reported "FIXED Promoter is NOT scheduled" on a machine
+  where that plist does not exist and no job was loaded — a false success on the single check
+  whose failure means "nothing this person says will ever be saved". Every risky fix command is
+  now self-verifying: guard that the file exists, run it, then PROVE it (`launchctl list |
+  grep -q vault-promote`). Same discipline vault-capture demands of the agent. [gotcha]
+- **Hermes `state.db` corruption REPAIRED (2026-08-17).** `PRAGMA integrity_check` showed real
+  b-tree damage ("2nd reference to page 1766/1768"), not merely stale FTS. Repair: stop
+  container → back up → `sqlite3 state.db .recover | sqlite3 state.db.recovered` → verify →
+  swap → start. Result: integrity `ok`, 0 malformed errors since, FTS `MATCH` working again.
+  **Cost: 3 messages lost of 1,896** (ids 1150/1170/1171 — individually unreadable, they sat on
+  the damaged pages); everything else intact, and the apparent `system_prompts` 23→22 drop was
+  a duplicate removed, not a loss. Old files kept in
+  `~/.hermes/_quarantine-2026-08-17-state-db-corruption/`. NOTE `.recover` preserved the FTS5
+  virtual tables correctly — verify that (`sqlite_master … CREATE VIRTUAL`) if repeating, since
+  `.recover` can flatten them to plain tables. [state]
+- **Gotcha while verifying that repair: `docker logs` RESETS on container restart; the
+  persistent log is `~/.hermes/logs/gateway.log`.** Telegram looked wedged at "attempt 1/8" for
+  minutes because docker logs had lost the success line — gateway.log showed it had connected
+  11s in (via the `fallback_ips`, primary api.telegram.org being unreachable). Always judge
+  channel health from gateway.log, which is what telegram-kick and install-verify both read. [gotcha]

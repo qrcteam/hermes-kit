@@ -382,8 +382,23 @@ bottom of this doc so you don't have to hold it in your head:
 bash ~/Documents/Projects/hermes/templates/install-verify.sh
 ```
 
-Read-only; it reports and never fixes. Every `FAIL` prints its own fix underneath. Exit code
-is non-zero while anything is still red, so you can re-run it after each fix until it's clean.
+Read-only; it reports and never changes anything. Every `FAIL` prints its own fix underneath,
+and the ones it could repair itself say so. Exit code is non-zero while anything is red, so you
+can re-run after each fix until it's clean.
+
+To let it repair the mechanical ones — missing inbox, wrong file mode, uncopied skill,
+unloaded launchd job, stopped container, drifted config key:
+
+```bash
+bash ~/Documents/Projects/hermes/templates/install-verify.sh --fix
+docker restart hermes    # only if it changed a config key
+```
+
+`--fix` touches **only** what is idempotent, reversible and can't lose data. It deliberately
+will not re-create the container, move the vault, `git init` anything, log in a model, pair
+WhatsApp, edit `SOUL.md`, or unload a competing host gateway — those need a human, an account,
+or a decision that isn't a script's to make. Anything it can't repair it says so plainly and
+prints the command it tried.
 
 Get it green **before** the live test below — a failing smoke test on top of a half-finished
 install tells you nothing about which of the two is broken.
