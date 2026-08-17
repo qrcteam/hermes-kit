@@ -397,3 +397,29 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   minutes because docker logs had lost the success line — gateway.log showed it had connected
   11s in (via the `fallback_ips`, primary api.telegram.org being unreachable). Always judge
   channel health from gateway.log, which is what telegram-kick and install-verify both read. [gotcha]
+- **@ozbpclientbot was dark Aug 14 → Aug 17 because the hermes terminal was launched as
+  plain `claude`, not `tgclaude telegram-bp-client`.** The Claude Code channel bots are NOT
+  daemons — `bun server.ts` is a child of the interactive session, so no bound session means
+  no poller, and the bot is deaf AND mute while the chat looks identical to "nobody wrote".
+  Do not debug these from the Telegram side first: token/webhook/allowlist/409 were all clean.
+  The fast diagnostic is the transcript marker — grep a session's jsonl in
+  `~/.claude/projects/<proj>/` for `sender reads Telegram` (the channel's injected MCP
+  instruction). 1 = the session was bound, 0 = it never had the channel. That distinguished
+  the Aug 14 session (bound, 8 reply calls) from Aug 16 and Aug 17-until-12:53 (both 0).
+  Note this is separate from the Hermes CONTAINER's telegram bot (token 8210767160) — five
+  distinct bots, distinct tokens, no 409 between them. [gotcha]
+- **Watchdog added: `com.claude.telegram-watchdog`, every 600s, RunAtLoad** →
+  `~/.claude/bin/telegram-watchdog.sh` (git: qrcteam/claude-skills `bin/`, plist committed
+  beside it). Flags DARK (bot.pid names no live server.ts — cmd-matched, so pid reuse can't
+  fake it), WEDGED (process up but no :443 to Telegram on two consecutive passes), and stays
+  silent on DORMANT channels it has never once seen alive (telegram-mazix). One alert per
+  outage + one on recovery, never a repeating timer; 7d grace then quiet. Alerts are sent by
+  the HERMES bot on purpose — it's in Docker, so it can still speak when the thing that died
+  is a terminal-bound bot. `--status` is read-only; `TG_WATCHDOG_CHANNELS_DIR` +
+  `TG_WATCHDOG_DRY_RUN` drive it against a fixture (all 8 state transitions verified).
+  Caveat: it can't tell a deliberate shutdown from a crash, so closing a channel terminal on
+  purpose earns one alert. [state]
+- **Related: this session (pid 11008) was started WITHOUT `caffeinate`** — process tree was
+  `zsh → command claude`, whereas `tgclaude` wraps in `caffeinate -is`. Launched by hand with
+  the `--channels` flag rather than through the wrapper. Consequence: Mac sleep silently kills
+  the bot. Always start channel sessions via `tgclaude <channel>`. [gotcha]
