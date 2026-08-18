@@ -423,3 +423,39 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   `zsh → command claude`, whereas `tgclaude` wraps in `caffeinate -is`. Launched by hand with
   the `--channels` flag rather than through the wrapper. Consequence: Mac sleep silently kills
   the bot. Always start channel sessions via `tgclaude <channel>`. [gotcha]
+- **Hermes MCP: Airtable + Pinecone connected, Stripe staged (2026-08-17).** Both verified by a
+  live stdio probe, not just "the process started": `airtable` resolves to **Beautiful
+  Possibilities CRM** (`appgbY1GeuiGKzzoh`, 16 tools incl. `describe_table`/`search_records`) and
+  `pinecone` to the **`ozluv-vault`** index (llama-text-embed-v2, dim 1024) — so Hermes finally
+  has semantic recall over the vault instead of only path-guessing from `_manual.md`. `stripe`
+  (`@stripe/mcp`) is installed and configured but `enabled: false`: **no Stripe credential exists
+  anywhere on this machine** (checked .env, secrets/, keychain, .claude.json — Claude Code's
+  Stripe is an OAuth connector Hermes can't reuse). To finish: put a restricted read key in
+  `~/.hermes/.env` as `STRIPE_SECRET_KEY`, flip `enabled: true`, `docker restart hermes`. [state]
+- **GOTCHA that was silently degrading every MCP server: `npx` at boot races itself.** Each stdio
+  server ran `npx -y <pkg>`; all of them hit the one shared cache in `/opt/data/.npm` at once and
+  npm's cacache lock reported `ECOMPROMISED / Lock compromised`. Servers were retrying **49–60
+  times each per boot** and some never came up — and it varied per boot, which is why it never got
+  diagnosed. A single `npx` by hand always succeeds; the bug exists only under concurrency, so it
+  got worse each time a server was added. Fix: `npm install` all MCP packages once into
+  `/opt/data/mcp-node` (persistent rw mount, survives container recreate) and point every entry at
+  `node_modules/.bin/<bin>`. After: **0 npm errors, each server starts exactly once.** Predates
+  this session's changes — it was hitting supabase-mazix too. Written up in
+  `docs/06-troubleshooting.md`. [gotcha]
+- **Secrets moved out of `config.yaml`.** The 6 Supabase URLs had the same `hermes_ro` password in
+  plaintext; now `${SUPABASE_HERMES_RO_PW}` from `~/.hermes/.env`. Verified upstream-supported:
+  `tools/mcp_tool.py:_interpolate_env_vars` recurses dicts **and lists**, so it resolves inside
+  connection-string args, and an unset var keeps the literal placeholder (fails to auth, doesn't
+  crash). Prefer `env:` over `args` for keys — argv is readable by `ps` inside the container.
+  Backups: `config.yaml.bak-*-premcp` / `-prenpxfix` / `-prestripe`. [state]
+- **`skills/business/airtable-pipeline` rewritten off curl onto the MCP tools.** Note
+  `crm-task-coordination` never used curl — it's tool-agnostic and defers to the pipeline skill,
+  so it needed no change. **Hard rule 1 was materially weakened by this connection and now says
+  so:** the old text claimed "your token has no schema permissions, structural changes will fail
+  anyway", but the base reports `permissionLevel: create` and `delete_records` / `create_table` /
+  `create_field` are now live callable tools. The prose rule is the only guard left. [gotcha]
+- **`~/.hermes` and `~/.hermes/skills` are NOT git repos** — live runtime state, versioned only by
+  the dated `.bak-<ts>` convention. Anything durable has to be copied into a kit repo to survive.
+  The hermes CLI can't be run in the container either (`cli.py` needs `rich`, not installed), so
+  MCP servers are configured by hand-editing `config.yaml`; it has no comments and carries
+  `_config_version`, so a `yaml.safe_dump` round-trip with `sort_keys=False` is safe. [gotcha]

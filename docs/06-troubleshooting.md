@@ -405,6 +405,54 @@ thing people forget, and a missing watchdog is invisible until you need it.
 
 ---
 
+## "MCP servers fail at boot with npm ECOMPROMISED"
+
+Only applies to instances that have *added* MCP servers — the base kit ships without any.
+
+Symptom: `~/.hermes/logs/mcp-stderr.log` fills with `npm error code ECOMPROMISED` /
+`npm error Lock compromised`, and the same server is started over and over (50+ attempts each
+is normal to see). Some servers come up, others never do, and which ones varies per boot.
+
+Cause: every stdio server configured as `command: npx` runs its own `npx -y <package>` at
+gateway start. They all race on one shared npm cache in `/opt/data/.npm`, and npm's cacache
+lock detects the concurrent writes as corruption. A single `npx` run by hand always succeeds,
+which is what makes this look mysterious — the failure only exists under concurrency, so it
+scales with how many MCP servers you have.
+
+Fix — take `npx` out of the boot path by pre-resolving the packages once onto the persistent
+mount, then pointing each server at the resolved binary:
+
+```bash
+docker exec hermes sh -lc '
+  mkdir -p /opt/data/mcp-node && cd /opt/data/mcp-node
+  [ -f package.json ] || echo "{\"name\":\"hermes-mcp-node\",\"private\":true}" > package.json
+  npm install --no-audit --no-fund <every-mcp-package-you-use>
+  ls node_modules/.bin/'
+```
+
+Then in `config.yaml`, for each server, replace `command: npx` + the `-y <package>` args with
+the resolved binary and keep only the real arguments:
+
+```yaml
+  airtable:
+    command: /opt/data/mcp-node/node_modules/.bin/airtable-mcp-server
+    args: []
+    env:
+      AIRTABLE_API_KEY: ${AIRTABLE_API_KEY}
+```
+
+`docker restart hermes`, then confirm each server appears exactly **once** in
+`mcp-stderr.log` and that `ECOMPROMISED` count is zero. `/opt/data` is the rw mount, so the
+pre-installed packages survive a container recreate; boot is also faster, since nothing
+resolves a package over the network.
+
+**Secrets belong in `~/.hermes/.env`, never in `config.yaml`.** Values interpolate with
+`${VAR}` anywhere in a server entry — including inside connection-string args — and an unset
+var degrades to the literal placeholder rather than crashing the gateway. Prefer an `env:`
+block over passing a key in `args`: argv is visible to anything that can run `ps`.
+
+---
+
 ## Things that look broken and aren't
 
 | Looks wrong | Actually |
