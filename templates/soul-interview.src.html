@@ -235,11 +235,52 @@ h2{
 .always ul{margin:0;padding-left:1.05rem;display:flex;flex-direction:column;gap:.28rem}
 .always li{font-size:.92rem;color:var(--ink-soft)}
 
+/* Why this matters — one line, always visually secondary to the question */
+.reason{margin:.65rem 0 0;color:var(--ink-soft);font-size:.945rem;text-wrap:pretty}
+.reason .lbl{
+  display:block;font-size:.63rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 .2rem;
+}
+.reason b{color:var(--ink);font-weight:600}
+
+/* Optional probes — only reached for when the first answer comes out thin */
+.probe{margin:.75rem 0 0;padding-left:.9rem;border-left:2px solid var(--rule)}
+.probe .lbl{
+  display:block;font-size:.63rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 .28rem;
+}
+.probe p{margin:0;color:var(--ink-soft);font-size:.945rem;text-wrap:pretty}
+.probe p + p{margin-top:.4rem}
+
 /* ── After ───────────────────────────────────────────────────────────────── */
 .warn{
   margin:1.5rem 0 0;padding:1rem 1.15rem;border-radius:8px;
   background:var(--sunk);border:1px solid var(--rule);
 }
+.closing{margin:1.5rem 0 0;font-size:1.1rem;line-height:1.5;color:var(--ink);text-wrap:pretty}
+.stephead{margin:2.4rem 0 0;font-size:1.02rem;font-weight:700;letter-spacing:-.01em}
+.body{margin:.7rem 0 0;color:var(--ink-soft);font-size:.95rem;text-wrap:pretty}
+
+/* transcript answer -> the line that actually goes in the file */
+.transform{display:flex;flex-direction:column;gap:.7rem;margin:1rem 0 0}
+.tside{padding:.85rem 1rem;border-radius:7px;background:var(--sunk);border:1px solid var(--rule)}
+.tside + .tside{background:var(--gold-soft);border-color:var(--gold-line)}
+.tside .lbl{
+  display:block;font-size:.63rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 .4rem;
+}
+.tside + .tside .lbl{color:var(--gold)}
+.tside p{margin:0;font-size:.945rem;line-height:1.45;color:var(--ink)}
+
+/* durable vs dated */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1rem 0 0}
+.scol{padding:.85rem 1rem;border-radius:7px;background:var(--sunk);border:1px solid var(--rule)}
+.scol .lbl{
+  display:block;font-size:.63rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 .45rem;
+}
+.scol ul{margin:0;padding-left:1.05rem;display:flex;flex-direction:column;gap:.26rem}
+.scol li{font-size:.92rem;color:var(--ink-soft)}
 .warn b{font-weight:700}
 .warn p{margin:0;font-size:.95rem;color:var(--ink-soft)}
 .warn p + p{margin-top:.5rem}
@@ -288,6 +329,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
   .facts{display:grid;grid-template-columns:1fr 1fr}
   .fact{border-right:0;margin-right:0;padding-right:0}
   .jumps{display:none}
+  .split{grid-template-columns:1fr}
 }
 
 /* ── Print — some interviewers carry paper ───────────────────────────────── */
@@ -316,9 +358,9 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
       <a href="#work">Work</a>
       <a href="#voice">Voice</a>
       <a href="#rhythm">Rhythm</a>
-      <a href="#nos">Hard nos</a>
+      <a href="#nos">Boundaries</a>
       <a href="#people">People</a>
-      <a href="#after">After</a>
+      <a href="#after">Afterwards</a>
     </div>
   </div>
 </nav>
@@ -327,86 +369,91 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
   <div class="wrap">
 
     <header class="masthead">
-      <p class="eyebrow">Hermes Kit · Operator's script</p>
+      <p class="eyebrow">Hermes Kit · The SOUL interview</p>
       <h1>The SOUL Interview</h1>
-      <p class="lede">Forty-five minutes of questions whose answers become someone's
-      assistant. You ask, they talk, the recorder runs. <b>This is the actual work</b> —
-      the install is plumbing, an afternoon of mostly waiting for Docker. This is what
-      separates an assistant that knows someone from a chatbot wearing their name.</p>
+      <p class="lede">Your SOUL file teaches Hermes how to work with <b>you</b> — what
+      matters right now, how you think, how you want to be spoken to, and what it should
+      never assume. This page is the conversation that produces it.</p>
+      <p class="lede">You don't need perfect answers. Specific, honest ones are far more
+      useful than polished ones.</p>
 
       <dl class="facts">
         <div class="fact"><dt>Length</dt><dd>~45 min</dd></div>
-        <div class="fact"><dt>Questions</dt><dd>27</dd></div>
-        <div class="fact"><dt>Must-ask</dt><dd>6</dd></div>
-        <div class="fact"><dt>Capture</dt><dd>Recorded</dd></div>
+        <div class="fact"><dt>Prompts</dt><dd>27</dd></div>
+        <div class="fact"><dt>Start with</dt><dd>6</dd></div>
+        <div class="fact"><dt>Best done</dt><dd>Out loud</dd></div>
       </dl>
     </header>
 
     <section id="before">
-      <div class="sectionhead"><h2>Before you sit down</h2></div>
+      <div class="sectionhead"><h2>What to expect</h2></div>
       <hr class="hr">
       <ul class="prep">
         <li><span class="tick">1</span><div>
-          <b>Sit with them.</b>
-          <span>A phone call is fine. Texting is not. You need the tangents — the aside
-          they add after answering is usually better than the answer.</span>
+          <b>Answer out loud.</b>
+          <span>Have someone ask you these, or talk into a recorder on your own. Speaking
+          gets you the tangents, and the aside you add after answering is usually better
+          than the answer.</span>
         </div></li>
         <li><span class="tick">2</span><div>
-          <b>Ask permission, then start recording.</b>
-          <span>A voice memo on the table is enough. You are not transcribing while they
-          talk — you are listening for the sharp specific line you will quote later.</span>
+          <b>Record it.</b>
+          <span>A voice memo on the table is enough. Nobody should be typing while you
+          talk. The recording is transcribed later, on your own machine — it never goes to
+          a cloud service.</span>
         </div></li>
         <li><span class="tick">3</span><div>
-          <b>Don't ask all 27.</b>
-          <span>Ask what fits the person in front of you. A short honest briefing beats a
-          padded one, and question 4 matters more than 12 through 18 combined.</span>
+          <b>These are 27 prompts, not 27 required answers.</b>
+          <span>It's a question bank. Follow the conversation, skip anything that doesn't
+          apply to you, and go deeper wherever an answer feels important. A short honest
+          briefing beats a padded one.</span>
         </div></li>
         <li><span class="tick">4</span><div>
-          <b>Write it up afterwards, in your own prose.</b>
-          <span>Not a Q&amp;A dump — briefing notes for a new chief of staff who starts
-          Monday. Quote them directly where they said it well; their words beat your
-          summary every time.</span>
+          <b>What comes out is a short file, not a transcript.</b>
+          <span>Afterwards the conversation becomes <code>SOUL.md</code> — a page or two of
+          durable statements Hermes can reason from. Your exact words get quoted where you
+          said something well.</span>
         </div></li>
       </ul>
     </section>
 
     <section id="rules">
-      <div class="sectionhead"><h2>The two rules that make it good</h2></div>
+      <div class="sectionhead"><h2>Two things worth knowing before you start</h2></div>
       <hr class="hr">
       <div class="rules">
         <div class="rule">
-          <h3>Specific beats complete</h3>
-          <p>Five sharp facts outperform forty vague ones.</p>
+          <h3>Specific beats comprehensive</h3>
+          <p>You don't need to document your whole life. A handful of specific truths are
+          worth far more to Hermes than a long list of vague preferences.</p>
           <div class="vs">
-            <i class="good">“Mornings are calls and admin, afternoons are for making things.”</i>
-            <i class="bad">“Values work–life balance.”</i>
+            <i class="good">“I don't schedule calls after 4pm because evenings are family time.”</i>
+            <i class="bad">“I value work–life balance.”</i>
           </div>
         </div>
         <div class="rule">
-          <h3>True beats flattering</h3>
-          <p>The assistant calibrates every suggestion off what it believes. If it thinks
-          they're comfortable, it will propose expensive things. Write what's true, and
-          date it.</p>
+          <h3>Describe reality, not the ideal version</h3>
+          <p>Hermes makes decisions based on what you tell it. Describe how things actually
+          work today, even when that's different from how you'd like them to work. If a
+          fact changes often — revenue, deadlines, priorities — note the date.</p>
           <div class="vs">
-            <i class="good">“Revenue is $0/mo.”</i>
-            <i class="bad">“Growing steadily.”</i>
+            <i class="good">“I usually don't start focused work until after lunch.”</i>
+            <i class="bad">“I try to protect my mornings for deep work.”</i>
           </div>
         </div>
       </div>
     </section>
 
     <section id="shortlist">
-      <div class="sectionhead"><h2>If you only get fifteen minutes</h2></div>
+      <div class="sectionhead"><h2>Short on time? Start with these six</h2></div>
       <hr class="hr">
       <div class="shortlist">
-        <p>These six carry most of the weight. Ask them in this order and you have a
-        usable briefing even if the conversation ends early.</p>
+        <p>These six give Hermes enough context to become meaningfully more useful. You can
+        always come back for the rest.</p>
         <ol>
-          <li><span class="n">04</span><a href="#q4">If this thing works perfectly, what does it do for you?</a></li>
+          <li><span class="n">04</span><a href="#q4">If this works perfectly, what does it do for you?</a></li>
           <li><span class="n">07</span><a href="#q7">What have you already decided <em>not</em> to do?</a></li>
           <li><span class="n">12</span><a href="#q12">When an assistant annoys you, what did it just do?</a></li>
-          <li><span class="n">20</span><a href="#q20">What does your day shape look like?</a></li>
-          <li><span class="n">24</span><a href="#q24">What must it never, ever do?</a></li>
+          <li><span class="n">20</span><a href="#q20">What shape does your day usually take?</a></li>
+          <li><span class="n">24</span><a href="#q24">What should Hermes never do without asking you first?</a></li>
           <li><span class="n">26</span><a href="#q26">What have you learned the hard way?</a></li>
         </ol>
       </div>
@@ -415,28 +462,39 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
     <!-- ── IDENTITY ─────────────────────────────────────────────────────── -->
     <section id="identity">
       <div class="sectionhead"><h2>Identity</h2><span class="budget">~6 min · Q1–4</span></div>
-      <p class="subhead">Who am I talking to?</p>
+      <p class="subhead"><b>Help Hermes understand your world.</b> Who you are, where your
+      time actually goes, how you work, and what you ultimately want it to help with.</p>
       <hr class="hr">
       <div class="qlist">
 
         <article class="q" id="q1">
           <div class="qnum">01</div>
           <div>
-            <p class="ask">What do you actually do all day?</p>
-            <p class="note">Not their title. What the hours go into.</p>
+            <p class="ask">What does a normal day actually involve for you?</p>
+            <div class="probe">
+              <span class="lbl">Follow up with</span>
+              <p>Forget the job title for a second — where does the time really go?</p>
+            </div>
           </div>
         </article>
 
         <article class="q" id="q2">
           <div class="qnum">02</div>
           <div>
-            <p class="ask">How would you describe your own working style?</p>
-            <p class="note">Push for <b>their phrase</b>, not a category.</p>
+            <p class="ask">When you're working well, what does that tend to look like?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Hermes suggests work
+            differently depending on how you actually operate. Your own phrasing is more
+            useful here than a category.</p>
+            <div class="probe">
+              <span class="lbl">Follow up with</span>
+              <p>Structured, improvisational, obsessive, easily distracted, somewhere in
+              between? Use your own words.</p>
+            </div>
             <div class="eg">
               <span class="lbl">From a real briefing</span>
-              <ul><li>“Self-described: messy creative. The systems around him exist to
+              <ul><li>“Self-described messy creative. The systems around me exist to
                 organize without adding friction.”</li></ul>
-              <p class="why">That one line permanently changes how the assistant proposes things.</p>
+              <p class="why">One line like that permanently changes how Hermes proposes things.</p>
             </div>
           </div>
         </article>
@@ -444,27 +502,33 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
         <article class="q" id="q3">
           <div class="qnum">03</div>
           <div>
-            <p class="ask">Where are you, and what's your timezone?</p>
-            <p class="note">Drives every “today”, every “tomorrow”, and the hour their daily
-            digest lands. Get it exactly right.</p>
+            <p class="ask">Where are you, and what timezone are you in?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>This drives every
+            “today”, every “tomorrow”, and the hour your daily digest arrives. Worth getting
+            exactly right.</p>
           </div>
         </article>
 
         <article class="q key" id="q4">
           <div class="qnum">04</div>
           <div>
-            <span class="chip">Most important question in the interview</span>
-            <p class="ask">If this thing works perfectly, what does it do for you?</p>
-            <p class="note">One sentence. It goes at the top of the file and shapes
-            everything else. <b>Don't accept “help me be organised”</b> — ask what being
-            disorganised actually cost them this week.</p>
+            <span class="chip">The one that shapes everything else</span>
+            <p class="ask">If this works perfectly, what does it do for you?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Your answer goes at
+            the top of the file, and every other answer gets read in light of it. One
+            sentence is plenty.</p>
+            <div class="probe">
+              <span class="lbl">If the answer comes out vague</span>
+              <p>“Help me get organised” is hard to act on. What did being disorganised
+              actually cost you this week?</p>
+            </div>
             <div class="eg">
               <span class="lbl">Two real answers</span>
               <ul>
                 <li>“I want to know what I was working on.” — <cite>Doug</cite></li>
                 <li>“I want ideas caught before they evaporate.” — <cite>Mazíx</cite></li>
               </ul>
-              <p class="why">These lead to two very different assistants.</p>
+              <p class="why">Those two produce very different assistants.</p>
             </div>
           </div>
         </article>
@@ -475,33 +539,37 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
     <!-- ── MISSION ──────────────────────────────────────────────────────── -->
     <section id="mission">
       <div class="sectionhead"><h2>Mission</h2><span class="budget">~8 min · Q5–8</span></div>
-      <p class="subhead">What are they pushing at?</p>
+      <p class="subhead"><b>What matters right now?</b> What you're trying to make happen,
+      what can't slip, and what you've deliberately decided not to pursue.</p>
       <hr class="hr">
       <div class="qlist">
 
         <article class="q" id="q5">
           <div class="qnum">05</div>
           <div>
-            <p class="ask">What are you trying to make happen in the next few months?</p>
-            <p class="note">With a number and a date, if there is one.</p>
+            <p class="ask">What are you trying to make happen over the next few months?</p>
+            <div class="probe">
+              <span class="lbl">Follow up with</span>
+              <p>If there's a number, a milestone, or a date attached to it, include that too.</p>
+            </div>
           </div>
         </article>
 
         <article class="q" id="q6">
           <div class="qnum">06</div>
           <div>
-            <p class="ask">What's the one thing that, if it slipped, would matter most?</p>
+            <p class="ask">Of everything you're working on, what can least afford to slip?</p>
           </div>
         </article>
 
         <article class="q key" id="q7">
           <div class="qnum">07</div>
           <div>
-            <span class="chip">The section people skip</span>
+            <span class="chip">Easy to skip, hard to replace</span>
             <p class="ask">What have you already decided <em>not</em> to do?</p>
-            <p class="note">The most valuable answers in the whole interview. Every “no”
-            here is a suggestion the assistant won't waste their time with, and a debate
-            they won't have to have twice.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Every “no” here is a
+            suggestion Hermes won't waste your time with, and an argument you won't have to
+            have twice.</p>
             <div class="eg">
               <span class="lbl">Real answers</span>
               <ul>
@@ -518,8 +586,9 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div>
             <p class="ask">What does everyone keep telling you to do that you're
             deliberately not doing?</p>
-            <p class="note">Question 7 asked sideways. It often gets the better answer —
-            ask it even if they already answered 7.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Same ground as the
+            last question from a different angle, and it often gets the better answer. Worth
+            answering even if you think you've covered it.</p>
           </div>
         </article>
 
@@ -529,18 +598,22 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
     <!-- ── WORK ─────────────────────────────────────────────────────────── -->
     <section id="work">
       <div class="sectionhead"><h2>Work</h2><span class="budget">~6 min · Q9–11</span></div>
-      <p class="subhead">The situation, honestly.</p>
-      <div class="skipband"><b>Skip this whole block</b> if the assistant is for personal
-      life only.</div>
+      <p class="subhead"><b>Give Hermes the real-world context.</b> How the work actually
+      functions, what resources genuinely exist, and who else is involved.</p>
+      <div class="skipband"><b>Skip this whole section</b> if your Hermes is for personal
+      life only. Nothing later depends on it.</div>
       <hr class="hr">
       <div class="qlist">
 
         <article class="q" id="q9">
           <div class="qnum">09</div>
           <div>
-            <p class="ask">What do you sell, and how does money actually work?</p>
-            <p class="note">If prices change, ask <b>where the real answer lives</b>. A rule
-            like “read the file, never quote from memory” belongs in the briefing verbatim.</p>
+            <p class="ask">What do you sell, and how does the money actually work?</p>
+            <div class="probe">
+              <span class="lbl">Follow up with</span>
+              <p>If your prices change, where does the real answer live? A rule like “read
+              the file, never quote from memory” is worth saying out loud.</p>
+            </div>
           </div>
         </article>
 
@@ -548,8 +621,9 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div class="qnum">10</div>
           <div>
             <p class="ask">Where do things actually stand right now — revenue, costs, runway?</p>
-            <p class="note">Be blunt with them about why you're asking: an assistant that
-            thinks they're flush will suggest expensive things.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Hermes calibrates
+            what it suggests off this. An assistant that thinks you're flush will propose
+            expensive things.</p>
           </div>
         </article>
 
@@ -557,8 +631,11 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div class="qnum">11</div>
           <div>
             <p class="ask">Who else is involved?</p>
-            <p class="note">“Strictly solo — there is nobody to delegate to” changes every
-            proposal the assistant makes.</p>
+            <div class="eg">
+              <span class="lbl">A real answer</span>
+              <ul><li>“Strictly solo — there is nobody to delegate to.”</li></ul>
+              <p class="why">That single line changes every proposal Hermes makes.</p>
+            </div>
           </div>
         </article>
 
@@ -568,7 +645,9 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
     <!-- ── VOICE ────────────────────────────────────────────────────────── -->
     <section id="voice">
       <div class="sectionhead"><h2>Voice</h2><span class="budget">~9 min · Q12–18</span></div>
-      <p class="subhead">How to talk to them. Get this wrong and they'll stop using it inside a week.</p>
+      <p class="subhead"><b>How should Hermes talk to you?</b> What feels useful, what
+      feels irritating, and how direct, brief, or proactive it should be. Get this wrong and
+      you'll stop using it inside a week.</p>
       <hr class="hr">
       <div class="qlist">
 
@@ -577,8 +656,14 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div>
             <span class="chip">Ask it exactly like this</span>
             <p class="ask">When an assistant annoys you, what did it just do?</p>
-            <p class="note">The best question in this section. Asking it the abstract way
-            (“what tone do you prefer?”) gets you nothing.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Concrete irritations
+            turn straight into rules. The abstract version — “what tone do you prefer?” —
+            gets nothing useful.</p>
+            <div class="probe">
+              <span class="lbl">Try thinking of</span>
+              <p>AI assistants, apps, coworkers, even emails that make you roll your eyes.
+              What was the behaviour that did it?</p>
+            </div>
             <div class="eg">
               <span class="lbl">Answers that became rules</span>
               <ul>
@@ -593,15 +678,23 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
         <article class="q" id="q13">
           <div class="qnum">13</div>
           <div>
-            <p class="ask">Long or short? Answer first, or reasoning first?</p>
+            <p class="ask">How do you like answers delivered?</p>
+            <div class="probe">
+              <span class="lbl">For example</span>
+              <p>Short by default or detailed? Answer first or explanation first? Bullets or
+              prose?</p>
+            </div>
           </div>
         </article>
 
         <article class="q" id="q14">
           <div class="qnum">14</div>
           <div>
-            <p class="ask">Do you want to be told when you're wrong?</p>
-            <p class="note">Some people genuinely don't. Believe them.</p>
+            <p class="ask">If Hermes thinks you're mistaken or overlooking something, how
+            should it handle that?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Some people want to
+            be challenged directly, some genuinely don't, and plenty want it only on things
+            that matter. All of those are fine — just say which.</p>
           </div>
         </article>
 
@@ -609,17 +702,21 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div class="qnum">15</div>
           <div>
             <p class="ask">Casual or formal?</p>
-            <p class="note">Match their register. If they say “dude” during the interview,
-            write that down.</p>
+            <div class="probe">
+              <span class="lbl">Follow up with</span>
+              <p>Talk the way you'd actually talk. If “dude” is in your vocabulary, that's
+              worth knowing.</p>
+            </div>
           </div>
         </article>
 
         <article class="q" id="q16">
           <div class="qnum">16</div>
           <div>
-            <p class="ask">You're often away from your phone — should it acknowledge a
+            <p class="ask">When you're away from your phone, should Hermes acknowledge a
             message before it starts working?</p>
-            <p class="note">Silence reads as broken to most people.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Silence reads as
+            broken to most people.</p>
           </div>
         </article>
 
@@ -627,18 +724,21 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div class="qnum">17</div>
           <div>
             <p class="ask">Do you send voice notes? And do you want spoken replies back?</p>
-            <p class="note"><b>Two separate questions — ask both.</b> Most people send voice
-            constantly once they realise they can. Far fewer want audio coming back. Don't
-            assume the answer to one is the answer to the other.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>These are two
+            separate questions. Most people send voice constantly once they realise they
+            can; far fewer want audio coming back.</p>
           </div>
         </article>
 
         <article class="q" id="q18">
           <div class="qnum">18</div>
           <div>
-            <p class="ask">Will it ever draft anything you send to someone else?</p>
-            <p class="note">If yes: spelling, case, banned punctuation, and the words they
-            hate.</p>
+            <p class="ask">Will Hermes ever draft something you send to someone else?</p>
+            <div class="probe">
+              <span class="lbl">If yes</span>
+              <p>Spelling, capitalisation, punctuation you don't want anywhere near your
+              name, and the words you can't stand.</p>
+            </div>
           </div>
         </article>
 
@@ -648,7 +748,9 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
     <!-- ── RHYTHM ───────────────────────────────────────────────────────── -->
     <section id="rhythm">
       <div class="sectionhead"><h2>Rhythm</h2><span class="budget">~7 min · Q19–23</span></div>
-      <p class="subhead">When to speak, and when to shut up.</p>
+      <p class="subhead"><b>When should Hermes help, and when should it leave you alone?</b>
+      Your energy, your schedule, your routines, your quiet hours, and the nudges that
+      actually help.</p>
       <hr class="hr">
       <div class="qlist">
 
@@ -656,20 +758,22 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div class="qnum">19</div>
           <div>
             <p class="ask">When are you sharpest?</p>
-            <p class="note">The block to protect.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>That's the block
+            worth protecting.</p>
           </div>
         </article>
 
         <article class="q key" id="q20">
           <div class="qnum">20</div>
           <div>
-            <span class="chip">Best value per minute in the interview</span>
-            <p class="ask">What does your day shape look like?</p>
-            <p class="note">No other single line does more for a daily digest.</p>
+            <span class="chip">The most useful minute you'll spend</span>
+            <p class="ask">What shape does your day usually take?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Nothing else you say
+            does more for your daily digest.</p>
             <div class="eg">
               <span class="lbl">A real answer</span>
               <ul><li>“Mornings are calls and admin; afternoons and evenings are creative work.”</li></ul>
-              <p class="why">The assistant then puts phone-and-form tasks in the morning and
+              <p class="why">Hermes then puts phone-and-form tasks in the morning and
               judgment tasks in the afternoon.</p>
             </div>
           </div>
@@ -679,17 +783,18 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div class="qnum">21</div>
           <div>
             <p class="ask">When should it absolutely not ping you?</p>
-            <p class="note">Quiet hours. Non-negotiable, and the fastest way to get an
-            assistant muted forever.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>Quiet hours are
+            non-negotiable, and getting them wrong is the fastest way to mute an assistant
+            forever.</p>
           </div>
         </article>
 
         <article class="q" id="q22">
           <div class="qnum">22</div>
           <div>
-            <p class="ask">Is there one habit that, if it slips, everything slips?</p>
-            <p class="note">If they have one, that's the single nudge worth making. Write it
-            down as exactly that.</p>
+            <p class="ask">Is there one habit that, when it slips, everything else slips?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>If you have one,
+            that's the single nudge worth Hermes making.</p>
           </div>
         </article>
 
@@ -697,11 +802,11 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
           <div class="qnum">23</div>
           <div>
             <p class="ask">What do you do when it's going badly?</p>
-            <p class="note">So the assistant can say “go for a walk” instead of offering
-            another tactic.</p>
+            <p class="reason"><span class="lbl">Why this matters</span>So Hermes can suggest
+            the thing that actually helps, instead of handing you another tactic.</p>
             <div class="eg">
               <span class="lbl">A real answer</span>
-              <ul><li>“Recovery is getting out of the house. If he's been at the screen all
+              <ul><li>“Recovery is getting out of the house. If I've been at the screen all
                 day and things are grinding, that's the suggestion — not another tactic.”</li></ul>
             </div>
           </div>
@@ -712,31 +817,41 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
 
     <!-- ── HARD NOS ─────────────────────────────────────────────────────── -->
     <section id="nos">
-      <div class="sectionhead"><h2>Hard nos</h2><span class="budget">~3 min · Q24</span></div>
-      <p class="subhead">The rules with consequences attached.</p>
+      <div class="sectionhead"><h2>Boundaries</h2><span class="budget">~3 min · Q24</span></div>
+      <p class="subhead"><b>Set the hard limits now.</b> The things Hermes must never do,
+      assume, expose, promise, or decide on your behalf.</p>
       <hr class="hr">
       <div class="qlist">
 
         <article class="q key" id="q24">
           <div class="qnum">24</div>
           <div>
-            <span class="chip">Push for the consequence, not the rule</span>
-            <p class="ask">What must it never, ever do?</p>
-            <p class="note">A rule with evidence attached gets followed — and the assistant
-            generalises correctly to the cases you didn't list. So don't stop at the rule.
-            Ask what happened.</p>
+            <span class="chip">Say what could go wrong, not just the rule</span>
+            <p class="ask">What should Hermes never do without asking you first?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>A rule is much easier
+            for Hermes to apply correctly when it understands what can go wrong if it
+            ignores it — and it will then generalise sensibly to the cases you didn't think
+            to list.</p>
+            <div class="probe">
+              <span class="lbl">Try asking</span>
+              <p>Is there anything it should never send, publish, delete, buy, change, or
+              share on your behalf?</p>
+              <p>Are there systems, files, people, or subjects it should treat as especially
+              sensitive?</p>
+              <p>Has an assistant or automation crossed a line on you before? What happened?</p>
+            </div>
             <div class="eg">
-              <span class="lbl">A real answer, with its receipt</span>
+              <span class="lbl">A real answer, with the reason attached</span>
               <ul><li>“Never fetch a <code>/go/</code> link — every request records a real
-                click and corrupts his prospect stats. Four false opens already on record.”</li></ul>
-              <p class="why">The receipt is what makes it stick.</p>
+                click and corrupts my prospect stats. Four false opens already on record.”</li></ul>
+              <p class="why">The consequence is what makes the rule stick.</p>
             </div>
             <div class="always">
-              <span class="lbl">Always include these, whatever they say</span>
+              <span class="lbl">Already built in — you don't need to ask for these</span>
               <ul>
-                <li>Never paste secrets into chat, never commit personal information.</li>
-                <li>Never claim a fact they haven't shared — say “I don't know” instead.</li>
-                <li>Never guarantee an outcome on their behalf.</li>
+                <li>It never pastes secrets into chat or commits personal information.</li>
+                <li>It never claims a fact you haven't shared — it says “I don't know” instead.</li>
+                <li>It never guarantees an outcome on your behalf.</li>
               </ul>
             </div>
           </div>
@@ -748,26 +863,35 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
     <!-- ── PEOPLE ───────────────────────────────────────────────────────── -->
     <section id="people">
       <div class="sectionhead"><h2>People &amp; history</h2><span class="budget">~6 min · Q25–27</span></div>
-      <p class="subhead">The names it will hear, and the lessons it should already know.</p>
+      <p class="subhead"><b>Give Hermes the context you shouldn't have to explain twice.</b>
+      The people you mention often, the lessons that cost you something, and the decisions
+      that are already settled.</p>
       <hr class="hr">
       <div class="qlist">
 
         <article class="q" id="q25">
           <div class="qnum">25</div>
           <div>
-            <p class="ask">Who will you mention that it needs to know instantly?</p>
-            <p class="note">Name, relationship, and <b>the one thing that matters</b> — not
-            a biography.</p>
+            <p class="ask">Who are the people you're likely to mention often?</p>
+            <p class="reason"><span class="lbl">Keep it to three things</span>Their name,
+            how they relate to you, and the one thing Hermes needs to know. Not a
+            biography — and nothing sensitive that isn't necessary.</p>
           </div>
         </article>
 
         <article class="q key" id="q26">
           <div class="qnum">26</div>
           <div>
-            <span class="chip">Only exists if you ask</span>
-            <p class="ask">What have you learned the hard way?</p>
-            <p class="note">Often the best content in the whole file. Get the cost attached
-            — the number is what makes it land.</p>
+            <span class="chip">This one only exists if someone asks</span>
+            <p class="ask">What have you learned the hard way that Hermes shouldn't make you
+            learn again?</p>
+            <p class="reason"><span class="lbl">Why this matters</span>This is often the
+            best content in the whole file.</p>
+            <div class="probe">
+              <span class="lbl">Follow up with</span>
+              <p>Was there a decision, an experiment, an expense, or a repeated pattern
+              behind it? The specifics are what let Hermes generalise the lesson.</p>
+            </div>
             <div class="eg">
               <span class="lbl">A real answer</span>
               <ul><li>“13 audits, 0 closes on the ownership pitch. Ownership was never why
@@ -779,9 +903,16 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
         <article class="q" id="q27">
           <div class="qnum">27</div>
           <div>
-            <p class="ask">What decisions are settled that you don't want reopened?</p>
-            <p class="note">Date them. It stops the assistant relitigating the same question
-            every few weeks.</p>
+            <p class="ask">What have you already decided that you don't want Hermes
+            repeatedly suggesting or debating?</p>
+            <div class="probe">
+              <span class="lbl">Follow up with</span>
+              <p>When did you decide it, and what would have to change before it's worth
+              reconsidering?</p>
+            </div>
+            <p class="reason"><span class="lbl">Why this matters</span>That gives Hermes both
+            a boundary and the condition for reopening it, so it stops relitigating the same
+            question every few weeks.</p>
           </div>
         </article>
 
@@ -790,13 +921,20 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
 
     <!-- ── AFTER ────────────────────────────────────────────────────────── -->
     <section id="after">
-      <div class="sectionhead"><h2>After the interview</h2></div>
-      <p class="subhead">The recording was scaffolding. The write-up is the product.</p>
+      <div class="sectionhead"><h2>That's enough</h2></div>
+      <hr class="hr">
+      <p class="closing">The goal was never to capture everything about you. It's to give
+      Hermes enough true context to stop behaving like a stranger.</p>
+
+      <div class="sectionhead" style="margin-top:2.8rem"><h2>For the person setting this up</h2></div>
+      <p class="subhead">Everything below is the mechanical part: turning the recording into
+      the file Hermes actually reads.</p>
       <hr class="hr">
 
+      <h3 class="stephead">1 · Transcribe it on your own machine</h3>
       <div class="warn">
-        <p><b>Transcribe on your own machine.</b> This recording is the most personal
-        artifact in the kit — it never goes to a cloud transcriber.</p>
+        <p><b>This recording is the most personal artifact in the kit.</b> It never goes to
+        a cloud transcriber.</p>
       </div>
 
       <pre>ffmpeg -i interview.m4a -ar 16000 -ac 1 /tmp/interview.wav
@@ -805,54 +943,107 @@ whisper-cli -m ~/.cache/whisper/ggml-small.en.bin -f /tmp/interview.wav -nt &gt;
       <div class="warn">
         <p>No <code>whisper-cli</code>? <code>brew install whisper-cpp</code>, then download
         the <code>small.en</code> model once.</p>
-        <p>Raw audio without a transcript is a last resort — you will never scrub through
-        45 minutes again. The transcript is what you actually write from. <b>Once the
-        write-up is done, delete the audio.</b></p>
+        <p>Raw audio without a transcript is a last resort — nobody scrubs through 45
+        minutes twice. The transcript is what you write from. <b>Once the write-up is done,
+        delete the audio.</b></p>
       </div>
 
-      <div class="sectionhead" style="margin-top:2.6rem"><h2>The write-up checklist</h2></div>
-      <hr class="hr">
+      <h3 class="stephead">2 · Turn it into SOUL.md, not a transcript</h3>
+      <p class="body">The file should hold concise, durable statements Hermes can reason
+      from. Strip the conversational filler and keep the operating truth. Quote directly
+      only where the exact wording carries meaning.</p>
+
+      <div class="transform">
+        <div class="tside">
+          <span class="lbl">What they said</span>
+          <p>“I don't know, mornings are kind of chaotic because I'm usually doing calls and
+          emails and then after lunch I finally get into actual design stuff.”</p>
+        </div>
+        <div class="tside">
+          <span class="lbl">What goes in SOUL.md</span>
+          <p>Mornings are generally for calls and admin. Focused creative work usually
+          happens after lunch. Protect afternoons from unnecessary meetings.</p>
+        </div>
+      </div>
+
+      <h3 class="stephead">3 · Separate what lasts from what expires</h3>
+      <div class="split">
+        <div class="scol">
+          <span class="lbl">Durable — write plainly</span>
+          <ul>
+            <li>Communication preferences</li>
+            <li>Working style</li>
+            <li>Boundaries</li>
+            <li>Recurring rhythms</li>
+            <li>Important relationships</li>
+            <li>Lessons learned</li>
+          </ul>
+        </div>
+        <div class="scol">
+          <span class="lbl">Temporary — add a date</span>
+          <ul>
+            <li>Revenue and costs</li>
+            <li>Current goals and deadlines</li>
+            <li>Team composition</li>
+            <li>Active projects</li>
+            <li>Current constraints</li>
+          </ul>
+        </div>
+      </div>
+      <p class="body">Mark temporary facts with an “as of” date. Otherwise a six-month-old
+      situation quietly becomes Hermes's permanent picture of the world.</p>
+
+      <h3 class="stephead">4 · Leave the unknowns visible</h3>
+      <p class="body">Never infer an answer just because the transcript makes one seem
+      plausible. If something important didn't come up, write it as a question:</p>
+      <pre>⟨ASK: What time should quiet hours begin?⟩</pre>
+      <p class="body">Hermes should be able to tell the difference between something the
+      person said, something you inferred, and something nobody knows yet. Where you can,
+      keep inferred personal facts out of the file entirely.</p>
+
+      <h3 class="stephead">5 · Have them read it</h3>
+      <p class="body">Before Hermes starts relying on the file, the person it describes
+      should read it once. Ask them to look for:</p>
       <ul class="checks">
-        <li><div><b>Every placeholder and comment removed.</b>
-          <span>A placeholder left in is something the assistant will confidently reason
-          from as though it were true.</span></div></li>
-        <li><div><b>Unknowns marked ⟨ASK⟩, not guessed.</b>
-          <span>A blank the assistant asks about beats a plausible invention.</span></div></li>
-        <li><div><b>Volatile facts dated</b>, so a stale one is visibly stale.</div></li>
-        <li><div><b>Their words quoted</b> where they said it well.</div></li>
-        <li><div><b>Read it aloud.</b>
-          <span>If a section sounds like a form, rewrite it as a sentence.</span></div></li>
-        <li><div><b>Show it to them.</b>
-          <span>They'll correct one thing you got importantly wrong. They always do. Worth
-          ten minutes.</span></div></li>
+        <li><div><b>Something that isn't true.</b></div></li>
+        <li><div><b>Something technically true but misleading.</b></div></li>
+        <li><div><b>A boundary that's missing.</b></div></li>
+        <li><div><b>A preference stated too strongly.</b>
+          <span>Hermes will apply it more literally than you'd expect.</span></div></li>
+        <li><div><b>A temporary fact with no date on it.</b></div></li>
+        <li><div><b>Anything they'd be uncomfortable having Hermes use as context.</b></div></li>
       </ul>
 
       <div class="warn" style="margin-top:1.6rem">
-        <p>Then restart the assistant and test it with something only a well-briefed one
+        <p>Then restart Hermes and test it with something only a well-briefed assistant
         could get right — <b>“should I call Scott today or tomorrow?”</b> A generic answer
-        means the briefing is thin.</p>
+        means the file is still thin.</p>
       </div>
 
       <div class="roundtwo">
-        <h3>Round two is the good one</h3>
-        <p>The first version is always half-blind: it captures what someone <em>says</em>
-        about themselves before the assistant has lived with them. Two to three weeks of
-        real use is the best interview prep that exists. Book round two then — about 20
-        minutes, and different questions:</p>
+        <h3>The useful version comes after you've used it</h3>
+        <p>The first file is always half-blind: it captures what someone says about
+        themselves before Hermes has lived with them. Two to three weeks of real use is the
+        best interview prep that exists. Book twenty minutes then, and ask a different set
+        of questions:</p>
         <ol>
-          <li><b>What did it get wrong about you?</b> Every irritation is a missing or wrong line.</li>
-          <li><b>Which blanks can we now fill?</b></li>
-          <li><b>What dated facts have changed?</b> Revenue, targets, decisions — update and re-date.</li>
-          <li><b>What rule do you wish it had?</b> They'll have one by now. Get the consequence attached.</li>
+          <li><b>What has Hermes misunderstood about you?</b></li>
+          <li><b>What has it done that annoyed you?</b> Every irritation is a missing or wrong line.</li>
+          <li><b>What does it keep asking that it should already know?</b></li>
+          <li><b>What assumptions has it made incorrectly?</b></li>
+          <li><b>Which facts or priorities have changed?</b> Update them and re-date them.</li>
+          <li><b>What new rule would make it noticeably better?</b> There'll be one by now.</li>
         </ol>
-        <p>Revise, don't rewrite. Keep every line that use has proven true; fix what use
-        disproved. After round two, a yearly pass is usually enough.</p>
+        <p>Update the existing file rather than regenerating it. Keep every line that real
+        use has proven true, and fix what it disproved. Real behaviour is better calibration
+        data than hypothetical preferences. After this pass, a yearly review is usually
+        enough.</p>
       </div>
 
-      <p class="colophon"><b>A note on decay.</b> This briefing is the file that goes stale
-      fastest, because it holds exactly the facts that change. A stale one is worse than a
-      short one, because the assistant trusts it completely. Everything else grows on its
-      own — this file only changes if a human changes it.</p>
+      <p class="colophon"><b>A note on decay.</b> This is the file that goes stale fastest,
+      because it holds exactly the facts that change. A stale one is worse than a short one,
+      because Hermes trusts it completely. Everything else grows on its own — this file only
+      changes if a human changes it.</p>
     </section>
 
   </div>

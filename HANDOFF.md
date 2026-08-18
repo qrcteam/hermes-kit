@@ -459,3 +459,33 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   The hermes CLI can't be run in the container either (`cli.py` needs `rich`, not installed), so
   MCP servers are configured by hand-editing `config.yaml`; it has no comments and carries
   `_config_version`, so a `yaml.safe_dump` round-trip with `sort_keys=False` is safe. [gotcha]
+- **`/kit/install/soul-interview` rewritten for the person being configured (2026-08-18).**
+  It was an operator's script — third person throughout ("who am I talking to?", "how to talk
+  to them"), mechanics before purpose, and the crucial "don't ask all 27" reassurance buried
+  as step 3 of the prep list. Now: opens with what a SOUL file is and does for *you*, states
+  up front that 27 is a question bank not a form, and every question is second person and
+  sayable out loud. **Source of truth is `templates/soul-interview.src.html`** — one file,
+  two outputs via `build-soul-interview-web.py` (artifact with base64 fonts + web page with
+  `/fonts/*.woff2`, light-only). Edit the source, never the built files. Deploy chain:
+  build → copy `soul-interview.web.html` to BOTH `docs/install-guide/soul-interview.html`
+  and `bp-promo/public/kit/install/soul-interview.html`, then ship bp-promo. The two build
+  outputs in `templates/` are deliberately untracked; the committed copy is the docs one. [state]
+- **New question hierarchy — three classes, use them consistently:** `.ask` (the question,
+  1.3rem, always dominant), `.reason` (one-line "why this matters", small-caps label),
+  `.probe` (optional follow-ups, left-bordered block), plus the existing `.eg` gold callout.
+  Not every question gets all four — that was the point. Anchors `#q1`–`#q27` and all section
+  ids are unchanged; `#nos` and `#after` kept their ids under new labels (Boundaries,
+  Afterwards) so existing links and the scrollspy still work. [state]
+- **GOTCHA for anyone editing these kit pages: `file://` URLs are blocked by the Chrome
+  extension**, so you cannot visually check a built page by opening it directly. Serve it
+  instead — `cd bp-promo/public && python3 -m http.server 8777`, then load
+  `http://127.0.0.1:8777/kit/install/soul-interview.html`. Serving from `bp-promo/public`
+  rather than `templates/` matters: the web build references `/fonts/*.woff2`, which only
+  resolve from that root, so serving the templates dir renders in fallback fonts and the
+  layout you check is not the layout that ships. [gotcha]
+- **Open question left for Oz: `/kit/install/soul` and `/kit/install/soul-interview` now
+  overlap.** `soul.html` was already fully person-facing ("Your assistant's first briefing —
+  you're getting a personal AI assistant"), and soul-interview is now person-facing too.
+  Neither links to the other. They are not duplicates — soul is the short why-this-exists
+  intro, soul-interview is the question bank — but nothing on either page says so. Worth a
+  cross-link and one line of framing on each. Not done; not asked for. [state]

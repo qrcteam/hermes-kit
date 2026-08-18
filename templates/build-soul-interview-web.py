@@ -80,10 +80,12 @@ body = web.split("</style>", 1)[1]
 style = web.split("<style>", 1)[1].split("</style>", 1)[0]
 
 doc = f"""<!doctype html>
-<!-- Hermes Kit · The SOUL Interview — the OPERATOR's script: one person interviews
-     another with a recorder running. Sibling of soul.html, which is the person-facing
-     self-interview prompt. Generated from hermes/templates by build-web.py — edit the
-     source, not this file. Hosted at beautiful-possibilities.com/kit/install/soul-interview -->
+<!-- Hermes Kit · The SOUL Interview — the question bank, written to the person being
+     configured ("you"). Works whether someone interviews them or they answer it alone;
+     the write-up mechanics sit in their own section at the end. Sibling of soul.html,
+     which is the short person-facing intro. Generated from hermes/templates by
+     build-soul-interview-web.py — edit the source, not this file.
+     Hosted at beautiful-possibilities.com/kit/install/soul-interview -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
