@@ -253,6 +253,15 @@ h2{
 .probe p{margin:0;color:var(--ink-soft);font-size:.945rem;text-wrap:pretty}
 .probe p + p{margin-top:.4rem}
 
+.crosslink{
+  margin:1.5rem 0 0;padding:.85rem 1.05rem;border-radius:7px;
+  background:var(--sunk);border:1px solid var(--rule);
+  font-size:.94rem;color:var(--ink-soft);text-wrap:pretty;
+}
+.crosslink b{color:var(--ink);font-weight:700}
+.crosslink a{color:var(--ink);font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--yellow-line)}
+.crosslink a:hover{border-bottom-color:var(--ink)}
+
 /* ── After ───────────────────────────────────────────────────────────────── */
 .warn{
   margin:1.5rem 0 0;padding:1rem 1.15rem;border-radius:8px;
@@ -389,6 +398,11 @@ code{font-family:var(--mono);font-size:.87em;background:var(--sunk);padding:.1em
         <div class="fact"><dt>Best done</dt><dd>Out loud</dd></div>
       </dl>
     </header>
+
+    <p class="crosslink"><b>Would rather not do the long version?</b> The
+    <a href="/kit/install/soul">15-minute self-serve route</a> hands a prompt to the ChatGPT
+    or Claude you already use — it interviews you and produces a draft you can send straight
+    on. Same file at the end; this page just goes deeper and gets it in your own words.</p>
 
     <section id="before">
       <div class="sectionhead"><h2>What to expect</h2></div>
