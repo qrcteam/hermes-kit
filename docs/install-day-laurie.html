@@ -102,6 +102,20 @@ h1{
 .shape .n{font-size:13.5px; font-weight:600; line-height:1.3; display:block}
 .shape .d{font-size:11.5px; color:var(--ink-3); display:block; margin-top:3px}
 
+/* ---------- whose keyboard ---------- */
+.whose{
+  margin:16px 0 0; background:var(--surface); border:1px solid var(--rule);
+  border-top:3px solid var(--accent); border-radius:0 0 3px 3px; padding:18px 20px;
+  box-shadow:var(--shadow);
+}
+.whose h3{margin:0 0 9px; font-size:16px; font-weight:700; letter-spacing:-.01em}
+.whose p{font-size:14.5px}
+.whose .hazard{
+  background:var(--warn-soft); border-left:2px solid var(--warn); border-radius:0 3px 3px 0;
+  padding:10px 13px; margin:12px 0 0; max-width:none;
+}
+.whose .hazard b{color:var(--warn); font-weight:600}
+
 /* ---------- phases ---------- */
 .phase{margin:64px 0 0; scroll-margin-top:70px}
 .phase-head{display:flex; align-items:baseline; gap:14px; border-bottom:2px solid var(--ink); padding-bottom:9px}
@@ -151,8 +165,22 @@ a{color:var(--accent); text-underline-offset:2px}
 }
 .cmd .c{color:var(--code-dim)}
 .cmd .k{color:var(--code-accent)}
+.cmd-head{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:6px 7px 6px 13px; background:rgba(255,255,255,.045);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.host{
+  font-family:"JetBrains Mono",monospace; font-size:10px; letter-spacing:.11em;
+  text-transform:uppercase; color:#A7AEBC; display:flex; align-items:center; gap:7px;
+}
+.host::before{
+  content:""; width:7px; height:7px; border-radius:50%; flex:none;
+  background:var(--code-accent);
+}
+.host.you::before{background:none; box-shadow:inset 0 0 0 1.5px #7C8494}
 .copy{
-  position:absolute; top:7px; right:7px; font:inherit; font-family:"JetBrains Mono",monospace;
+  font:inherit; font-family:"JetBrains Mono",monospace; flex:none;
   font-size:10.5px; letter-spacing:.04em; text-transform:uppercase;
   background:rgba(255,255,255,.07); color:#9AA2B1; border:1px solid rgba(255,255,255,.12);
   border-radius:2px; padding:3px 8px; cursor:pointer;
@@ -269,6 +297,19 @@ td code, p code, li code{
   <div><span class="t">07 · 25m</span><span class="n">Promoter &amp; proof</span><span class="d">Three smoke tests</span></div>
 </div>
 
+<div class="whose">
+  <h3>Whose keyboard is this?</h3>
+  <p>Every command block on this page is stamped with the machine it belongs to.
+  <strong>Phase 00 is the only thing you run on your own Mac.</strong> From the moment you have
+  remote control, everything — clone, Docker, vault, keys, container, crons — happens on
+  <strong>hers</strong>, in a Terminal window on her screen.</p>
+  <p class="hazard"><b>The trap:</b> the kit lands at <code>~/Documents/Projects/hermes</code> on
+  <em>both</em> machines, so the commands look identical either side. Run phase 04 or 05 on your
+  own Mac by mistake and you overwrite your own <code>~/.hermes/.env</code>, your own Pinecone key,
+  and start a second gateway fighting your own bot for its token. Before pasting anything below
+  phase 00, glance at the window title and confirm it says her name.</p>
+</div>
+
 <!-- ══════════════════ 00 ══════════════════ -->
 <section class="phase" id="p0">
   <div class="phase-head"><span class="phase-num">00</span><h2>Before you dial</h2><span class="phase-time">~15 min · your machine</span></div>
@@ -277,8 +318,8 @@ td code, p code, li code{
     <h3><span class="ix">00.1</span>Pull the kit and read her record</h3>
     <p>You are about to type these commands on someone else's computer. Have the current version
     in front of you, not last week's.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>cd ~/Documents/Projects/hermes &amp;&amp; git pull
-open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></pre></div>
+    <div class="cmd"><div class="cmd-head"><span class="host you">Your Mac</span><button class="copy" type="button">Copy</button></div><pre><code>cd ~/Documents/Projects/hermes &amp;&amp; git pull
+open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></pre></div></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — Kit is up to date, and <code>people/laurie.md</code> is open in a window you can type into all day.</span></label>
   </div>
 
@@ -370,7 +411,7 @@ open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></
     <h3><span class="ix">02.2</span>Command Line Tools and Homebrew</h3>
     <p>A stock Mac has neither <code>git</code> nor <code>brew</code>. The runbook assumes both.
     Install them before anything else — the first one opens a GUI dialog she has to accept.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code><span class="c"># pops a dialog — she clicks Install, then wait it out</span>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code><span class="c"># pops a dialog — she clicks Install, then wait it out</span>
 xcode-select --install
 
 <span class="c"># Homebrew — asks for HER admin password</span>
@@ -380,7 +421,7 @@ xcode-select --install
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' &gt;&gt; ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-git --version &amp;&amp; brew --version</code></pre></div>
+git --version &amp;&amp; brew --version</code></pre></div></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — Both print a version number in a <em>new</em> Terminal window, not just the one you ran the installer in.</span></label>
   </div>
 </section>
@@ -393,27 +434,27 @@ git --version &amp;&amp; brew --version</code></pre></div>
     <h3><span class="ix">03.1</span>Clone hermes-kit to the path the runbook expects</h3>
     <p>Every command in the runbook refers to <code>~/Documents/Projects/hermes</code>. Clone it
     exactly there and you never have to translate a path live.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>mkdir -p ~/Documents/Projects
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>mkdir -p ~/Documents/Projects
 git clone https://github.com/qrcteam/hermes-kit.git ~/Documents/Projects/hermes
-ls ~/Documents/Projects/hermes/templates</code></pre></div>
+ls ~/Documents/Projects/hermes/templates</code></pre></div></div>
     <div class="why"><b>Yes, Documents is fine for the kit.</b> The "never Desktop, Documents or
     Downloads" rule is about the <em>vault</em> — macOS blocks background jobs from those folders,
     and the promoter is a background job. The kit is only ever read by you, by hand, from a
     terminal you opened. Her vault still goes to <code>~/Memory</code> and nowhere else.</div>
     <p>It's a private repo, so <code>git clone</code> will ask for GitHub credentials. Easiest path
     is to install the GitHub CLI now — you need it in a minute anyway:</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>brew install gh
-gh auth login   <span class="c"># HTTPS · browser flow · SHE logs in with her account</span></code></pre></div>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>brew install gh
+gh auth login   <span class="c"># HTTPS · browser flow · SHE logs in with her account</span></code></pre></div></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>ls</code> shows the templates folder, and <code>gh auth status</code> shows <em>her</em> GitHub account logged in.</span></label>
   </div>
 
   <div class="step">
     <h3><span class="ix">03.2</span>Docker Desktop and Obsidian</h3>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>brew install --cask docker
-brew install --cask obsidian</code></pre></div>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>brew install --cask docker
+brew install --cask obsidian</code></pre></div></div>
     <p><strong>Open Docker Desktop once</strong> and let it finish starting. It asks for her admin
     password and shows a licence agreement — her hands. Nothing below works until it's running.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker --version &amp;&amp; docker ps</code></pre></div>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker --version &amp;&amp; docker ps</code></pre></div></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — A version number and an <em>empty container table</em>. An error here means Docker Desktop isn't up yet — wait, don't retry.</span></label>
   </div>
 </section>
@@ -442,7 +483,7 @@ brew install --cask obsidian</code></pre></div>
   <div class="step">
     <h3><span class="ix">04.2</span>Build the vault</h3>
     <p>Replace the bucket list on the <code>for b in …</code> line with hers from 00.3.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>export NAME=laurie
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>export NAME=laurie
 export VAULT=~/Memory/$NAME-vault
 mkdir -p "$VAULT"
 
@@ -460,19 +501,19 @@ rm "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md"
 mkdir -p "$VAULT/wiki/people" "$VAULT/wiki/reference" "$VAULT/raw/sessions"
 
 cd "$VAULT" &amp;&amp; git init -q -b main &amp;&amp; git add -A \
-  &amp;&amp; git commit -qm "vault: initial skeleton for $NAME"</code></pre></div>
+  &amp;&amp; git commit -qm "vault: initial skeleton for $NAME"</code></pre></div></div>
     <p>Then create the private remote and push. With <code>gh</code> already authenticated this is
     one command and no SSH keys:</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>cd "$VAULT"
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>cd "$VAULT"
 gh repo create qrcteam/laurie-vault --private --source=. --remote=origin --push
-gh repo view qrcteam/laurie-vault --json visibility</code></pre></div>
+gh repo view qrcteam/laurie-vault --json visibility</code></pre></div></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — Repo reads <code>"PRIVATE"</code>, the skeleton is visible on GitHub, and <code>ls $VAULT/wiki/topics</code> shows her buckets each holding a <code>_manual.md</code>.</span></label>
   </div>
 
   <div class="step">
     <h3><span class="ix">04.3</span>Her Pinecone index</h3>
     <p>She creates the API key on her own screen and pastes it. You never keep a copy.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>export PC_KEY=&lt;she pastes her pinecone key&gt;
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>export PC_KEY=&lt;she pastes her pinecone key&gt;
 
 curl -s "https://api.pinecone.io/indexes/create-for-model" \
   -H "Api-Key: $PC_KEY" -H "Content-Type: application/json" \
@@ -482,12 +523,12 @@ curl -s "https://api.pinecone.io/indexes/create-for-model" \
     "cloud": "aws",
     "region": "us-east-1",
     "embed": { "model": "llama-text-embed-v2", "field_map": { "text": "text" } }
-  }' | python3 -m json.tool</code></pre></div>
+  }' | python3 -m json.tool</code></pre></div></div>
     <p>Store it in a file, then clear it from the shell:</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>mkdir -p ~/.hermes/secrets
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>mkdir -p ~/.hermes/secrets
 printf '%s' "$PC_KEY" &gt; ~/.hermes/secrets/pinecone.key
 chmod 600 ~/.hermes/secrets/pinecone.key
-unset PC_KEY</code></pre></div>
+unset PC_KEY</code></pre></div></div>
     <div class="why"><b>Why a file and not the environment:</b> the promoter needs a key that can
     write to the index; the agent only ever needs to search it. Keeping it out of the agent's
     environment means a prompt injection can't exfiltrate a credential that could wipe her index.</div>
@@ -496,7 +537,7 @@ unset PC_KEY</code></pre></div>
 
   <div class="step">
     <h3><span class="ix">04.4</span>Configure Hermes, install the two skills</h3>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>mkdir -p ~/.hermes/{inbox,scripts,secrets}
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>mkdir -p ~/.hermes/{inbox,scripts,secrets}
 cp ~/Documents/Projects/hermes/templates/env.template ~/.hermes/.env
 chmod 600 ~/.hermes/.env
 open -e ~/.hermes/.env   <span class="c"># paste bot token + numeric user ID (+ WhatsApp number)</span>
@@ -509,7 +550,7 @@ chmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh
 mkdir -p ~/.hermes/skills/note-taking/vault-capture
 cp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md
 mkdir -p ~/.hermes/skills/note-taking/session-log
-cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md</code></pre></div>
+cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md</code></pre></div></div>
     <div class="why">The two skills do different halves of memory. <b>vault-capture</b> saves facts
     the moment they're said. <b>session-log</b> saves what she did, once, at the end of a working
     conversation — including where she stopped, which is the line she'll reread most. Facts alone
@@ -524,19 +565,19 @@ cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md
 
   <div class="step">
     <h3><span class="ix">05.1</span>Run the container</h3>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker run -d --name hermes --restart unless-stopped \
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker run -d --name hermes --restart unless-stopped \
   -p 127.0.0.1:8642:8642 \
   --env-file ~/.hermes/.env \
   -v "$HOME/.hermes:/opt/data" \
   -v "$HOME/Memory/$NAME-vault:/vault:<span class="k">ro</span>" \
-  nousresearch/hermes-agent:latest</code></pre></div>
+  nousresearch/hermes-agent:latest</code></pre></div></div>
     <div class="warn"><p><b>The <code>:ro</code> is the single most important character in this kit.</b>
     It makes it impossible — not merely forbidden — for the agent to damage her memory. If you
     retype this line from memory later, that's the character you'll drop.</p></div>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec hermes hermes config set database.journal_mode delete
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker exec hermes hermes config set database.journal_mode delete
 docker exec hermes hermes config set approvals.mode smart
 docker exec hermes hermes config set approvals.cron_mode deny
-docker restart hermes</code></pre></div>
+docker restart hermes</code></pre></div></div>
     <div class="why"><b><code>journal_mode: delete</code> is not a preference.</b> SQLite's
     write-ahead log corrupts across a macOS Docker bind mount. Get it wrong and
     <em>"database disk image is malformed"</em> turns up in about a week.</div>
@@ -545,8 +586,8 @@ docker restart hermes</code></pre></div>
 
   <div class="step">
     <h3><span class="ix">05.2</span>Log into her model — her hands, her account</h3>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec -it hermes hermes model
-docker exec hermes hermes status</code></pre></div>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker exec -it hermes hermes model
+docker exec hermes hermes status</code></pre></div></div>
     <p>She picks her provider and follows the device-flow link. Credentials land in
     <code>~/.hermes/auth.json</code> — never in <code>.env</code>.</p>
     <div class="warn"><p><b>Laurie has OpenRouter credit, which makes this mandatory, not optional.</b>
@@ -554,13 +595,13 @@ docker exec hermes hermes status</code></pre></div>
     OpenRouter key can flip the <em>main</em> model onto OpenRouter carrying the wrong model ID —
     a non-retryable 400, and the bot goes mute <em>because a key was added</em>. Pin the primary
     and declare the fallback explicitly.</p></div>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code><span class="c"># primary = whichever she actually pays for:</span>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code><span class="c"># primary = whichever she actually pays for:</span>
 <span class="c">#   ChatGPT Plus → openai-codex     Claude Pro → anthropic</span>
 docker exec hermes hermes config set model.provider <span class="k">openai-codex</span>
 docker exec hermes hermes config set fallback_providers \
   '[{"provider":"openrouter","model":"anthropic/claude-sonnet-4.5"}]'
 docker restart hermes
-docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"</code></pre></div>
+docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"</code></pre></div></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>hermes status</code> shows Gateway running, Telegram ✓, model logged in — and the proof command answers <code>PROVIDER-OK</code>.</span></label>
   </div>
 
@@ -576,12 +617,12 @@ docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"</code></pre></div
     <h3><span class="ix">05.4</span>WhatsApp — skip if Telegram only</h3>
     <p>Telegram must be working first; two channels failing at once is twice the diagnosis. The
     step everything hinges on is the config block, not the <code>.env</code> flag:</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec hermes hermes config get platforms.whatsapp.enabled   <span class="c"># want: true</span>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker exec hermes hermes config get platforms.whatsapp.enabled   <span class="c"># want: true</span>
 docker exec -it hermes hermes whatsapp   <span class="c"># pair from INSIDE the container</span>
 <span class="c"># ~30s of dependency install that looks like a hang — wait. Then choose self-chat,</span>
 <span class="c"># and she scans the QR: WhatsApp → Settings → Linked Devices → Link a Device</span>
 docker restart hermes
-docker logs hermes 2>&amp;1 | grep -i whatsapp | tail -3</code></pre></div>
+docker logs hermes 2>&amp;1 | grep -i whatsapp | tail -3</code></pre></div></div>
     <p>Worth saying out loud: the bridge emulates WhatsApp Web rather than Meta's official Business
     API. Fine for personal self-chat. <strong>Her business number does not go on it</strong>, and
     nothing outbound gets automated from it.</p>
@@ -608,11 +649,11 @@ docker logs hermes 2>&amp;1 | grep -i whatsapp | tail -3</code></pre></div>
 
   <div class="step">
     <h3><span class="ix">06.2</span>Write SOUL.md in your own prose</h3>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>cp ~/Documents/Projects/hermes/templates/SOUL.md.template ~/.hermes/SOUL.md
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>cp ~/Documents/Projects/hermes/templates/SOUL.md.template ~/.hermes/SOUL.md
 open -e ~/.hermes/SOUL.md
 <span class="c"># …write it, then:</span>
 docker restart hermes
-grep -c '&lt;' ~/.hermes/SOUL.md</code></pre></div>
+grep -c '&lt;' ~/.hermes/SOUL.md</code></pre></div></div>
     <p>Briefing notes for a new chief of staff who starts Monday — not a Q&amp;A dump. Quote her
     directly where she said it well.</p>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — The count is <code>0</code>, or very near it. Any <code>&lt;placeholder&gt;</code> left behind is something the agent will confidently reason from as if it were true.</span></label>
@@ -626,31 +667,31 @@ grep -c '&lt;' ~/.hermes/SOUL.md</code></pre></div>
   <div class="step">
     <h3><span class="ix">07.1</span>Load the promoter and prove it runs</h3>
     <p>This is the piece that actually writes her memory.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>sed -e "s|&lt;USER&gt;|$(whoami)|g" -e "s|&lt;NAME&gt;|$NAME|g" \
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>sed -e "s|&lt;USER&gt;|$(whoami)|g" -e "s|&lt;NAME&gt;|$NAME|g" \
   ~/Documents/Projects/hermes/templates/com.hermeskit.vault-promote.plist \
   &gt; ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
 
 plutil -lint ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
 launchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2&gt;/dev/null
 launchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
-launchctl list | grep vault-promote</code></pre></div>
+launchctl list | grep vault-promote</code></pre></div></div>
     <p>Exit status <code>0</code> is what you want. <code>78</code> means a malformed plist;
     <code>1</code> usually means a wrong path inside it. Then run it by hand before trusting the
     schedule:</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>VAULT_ROOT=~/Memory/$NAME-vault \
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>VAULT_ROOT=~/Memory/$NAME-vault \
 PINECONE_INDEX=$NAME-vault \
 PINECONE_STATE=~/.hermes/pinecone-state.json \
 PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
 PINECONE_SYNC=~/Memory/$NAME-vault/scripts/pinecone-sync \
 bash ~/.hermes/promote.sh
 
-cat ~/.hermes/promote-state.json</code></pre></div>
+cat ~/.hermes/promote-state.json</code></pre></div></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>"status": "ok"</code>. Anything else, read the message — it says what's wrong.</span></label>
   </div>
 
   <div class="step">
     <h3><span class="ix">07.2</span>Watchdog and morning digest</h3>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec hermes hermes cron create "0 14 * * *" \
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker exec hermes hermes cron create "0 14 * * *" \
   --name vault-health --script vault-health.sh --no-agent --deliver telegram
 
 docker exec hermes hermes cron create "0 13 * * *" \
@@ -659,7 +700,7 @@ docker exec hermes hermes cron create "0 13 * * *" \
    Give a short briefing: what's open, what's owed, what they said they'd do. Two or three
    things, in plain sentences, not a table. If nothing needs attention, say so in one line."
 
-docker exec hermes hermes cron list</code></pre></div>
+docker exec hermes hermes cron list</code></pre></div></div>
     <div class="warn"><p><b>Those hours are UTC.</b> Mountain Time is UTC−6 in summer, so
     <code>13</code> = 7am. Check the timezone Laurie actually lives in before you leave.</p></div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — Both jobs listed, and the digest hour converts to a morning in <em>her</em> timezone.</span></label>
@@ -669,11 +710,11 @@ docker exec hermes hermes cron list</code></pre></div>
     <h3><span class="ix">07.3</span>Run the verifier before the live test</h3>
     <p>Read-only. It walks the whole checklist so you don't have to hold it in your head, and every
     <code>FAIL</code> prints its own fix underneath.</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>bash ~/Documents/Projects/hermes/templates/install-verify.sh
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>bash ~/Documents/Projects/hermes/templates/install-verify.sh
 
 <span class="c"># to let it repair the mechanical ones (idempotent, reversible, can't lose data):</span>
 bash ~/Documents/Projects/hermes/templates/install-verify.sh --fix
-docker restart hermes   <span class="c"># only if it changed a config key</span></code></pre></div>
+docker restart hermes   <span class="c"># only if it changed a config key</span></code></pre></div></div>
     <div class="why">Get it green <b>before</b> the live test below. A failing smoke test on top of a
     half-finished install tells you nothing about which of the two is broken.</div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>install-verify.sh</code> exits clean, no red.</span></label>
@@ -685,7 +726,7 @@ docker restart hermes   <span class="c"># only if it changed a config key</span>
     <em>"remember I switched the Henderson job to the Tuesday crew because Thursday's tied up on
     Ruiz."</em> The agent should confirm it in plain language. Then wait 15 minutes, or run the
     promoter by hand again, and check all three:</p>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code><span class="c"># 1 · did the note land in the vault?</span>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code><span class="c"># 1 · did the note land in the vault?</span>
 ls -la ~/Memory/$NAME-vault/wiki/topics/*/ | grep -i henderson
 
 <span class="c"># 2 · is it committed and pushed?</span>
@@ -696,7 +737,7 @@ git -C ~/Memory/$NAME-vault status -sb
 VAULT_ROOT=~/Memory/$NAME-vault PINECONE_INDEX=$NAME-vault \
 PINECONE_STATE=~/.hermes/pinecone-state.json \
 PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
-~/Memory/$NAME-vault/scripts/pinecone-sync search "who is doing the Henderson work"</code></pre></div>
+~/Memory/$NAME-vault/scripts/pinecone-sync search "who is doing the Henderson work"</code></pre></div></div>
     <div class="why">If the third fails but the first two pass, <b>her memory is safe</b> — recall is
     just degraded to literal search. Fix it, but don't panic in front of her.</div>
     <label class="gate"><input type="checkbox"><span><b>GATE</b> — All three pass, and her final text — <em>"who's on Henderson?"</em> — comes back right.</span></label>
@@ -709,7 +750,7 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
 
   <div class="step">
     <h3><span class="ix">08.1</span>Open her memory in front of her</h3>
-    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>open -a Obsidian ~/Memory/$NAME-vault</code></pre></div>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>open -a Obsidian ~/Memory/$NAME-vault</code></pre></div></div>
     <p>Give her the onboarding doc and <strong>nothing else</strong>. If she has to ask you something
     the doc should have answered, that's an edit to make, not an explanation to give.</p>
     <p>Say the support boundary plainly: <strong>you handle</strong> the container, sync, the bot
@@ -836,7 +877,7 @@ the runbook wins — and this page needs an edit. Tick marks are stored in this 
 
   Array.prototype.forEach.call(document.querySelectorAll(".copy"), function(btn){
     btn.addEventListener("click", function(){
-      var pre = btn.parentNode.querySelector("pre");
+      var pre = btn.parentNode.parentNode.querySelector("pre");
       var text = pre.innerText;
       var done = function(label){
         btn.textContent = label; btn.classList.add("done");
