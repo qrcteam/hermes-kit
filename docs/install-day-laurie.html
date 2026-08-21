@@ -105,16 +105,11 @@ h1{
 /* ---------- whose keyboard ---------- */
 .whose{
   margin:16px 0 0; background:var(--surface); border:1px solid var(--rule);
-  border-top:3px solid var(--accent); border-radius:0 0 3px 3px; padding:18px 20px;
-  box-shadow:var(--shadow);
+  border-radius:3px; padding:18px 20px; box-shadow:var(--shadow);
 }
 .whose h3{margin:0 0 9px; font-size:16px; font-weight:700; letter-spacing:-.01em}
 .whose p{font-size:14.5px}
-.whose .hazard{
-  background:var(--warn-soft); border-left:2px solid var(--warn); border-radius:0 3px 3px 0;
-  padding:10px 13px; margin:12px 0 0; max-width:none;
-}
-.whose .hazard b{color:var(--warn); font-weight:600}
+.whose .warn{margin-bottom:0}
 
 /* ---------- phases ---------- */
 .phase{margin:64px 0 0; scroll-margin-top:70px}
@@ -303,11 +298,11 @@ td code, p code, li code{
   <strong>Phase 00 is the only thing you run on your own Mac.</strong> From the moment you have
   remote control, everything — clone, Docker, vault, keys, container, crons — happens on
   <strong>hers</strong>, in a Terminal window on her screen.</p>
-  <p class="hazard"><b>The trap:</b> the kit lands at <code>~/Documents/Projects/hermes</code> on
+  <div class="warn"><p><b>The trap:</b> the kit lands at <code>~/Documents/Projects/hermes</code> on
   <em>both</em> machines, so the commands look identical either side. Run phase 04 or 05 on your
   own Mac by mistake and you overwrite your own <code>~/.hermes/.env</code>, your own Pinecone key,
   and start a second gateway fighting your own bot for its token. Before pasting anything below
-  phase 00, glance at the window title and confirm it says her name.</p>
+  phase 00, glance at the window title and confirm it says her name.</p></div>
 </div>
 
 <!-- ══════════════════ 00 ══════════════════ -->
