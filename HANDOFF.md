@@ -489,3 +489,36 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   Neither links to the other. They are not duplicates — soul is the short why-this-exists
   intro, soul-interview is the question bank — but nothing on either page says so. Worth a
   cross-link and one line of framing on each. Not done; not asked for. [state]
+## 2026-08-20/21 session — Laurie prep + client-facing accounts page
+- **Laurie is on macOS** (confirmed by Oz) and her install is the next one up — runbook 02, the
+  proven path, no WSL adventure. Meeting was set for 2026-08-21. Nothing exists at
+  `people/laurie.md` yet; create it on install day per the kit's own rule. [state]
+- **New client-facing page: the six accounts, shipped live.** `docs/install-guide/start.html`
+  (source of truth, committed) → mirrored to `bp-promo/public/kit/install/start.html`, deployed,
+  live at **<https://beautiful-possibilities.com/kit/install/start>** — noindex, same treatment
+  as soul / soul-interview. Markdown twin at `onboarding/laurie-accounts.md`. Copy is
+  deliberately generic (no client name) so it serves the whole founder cohort. Content is the
+  canonical six — Telegram, model subscription ($20/mo, THEIR card), GitHub, Pinecone,
+  OpenRouter (~$10), Obsidian (no account) — plus the CRM login they already have, the two Mac
+  facts (never sleep; one piece of software installed together), what to bring, and the
+  "I'm not asking you for any keys" close. Forbidden words honoured: no Docker/repo/index/sync
+  anywhere in it. [decision]
+- **GOTCHA — bp-promo serves these extensionless.** `/kit/install/start.html` 307-redirects to
+  `/kit/install/start`. Send clients the clean form; the `.html` one works but bounces. [gotcha]
+- **GOTCHA — artifacts are not shareable to clients.** Oz can only share a claude.ai artifact
+  with teammates, so an artifact is fine as a draft/preview for him but is NEVER the deliverable
+  for a client. Anything a client must open ships to bp-promo. Cost this session one full
+  build-and-publish cycle before it surfaced. [gotcha]
+- **Foundation guide not built yet.** A paste-ready prompt was handed to Oz for the oz-foundation
+  session: add a `hermes-accounts` Guide to `app/lib/guides.ts` with `public: true`, which serves
+  logged-out at `/g/hermes-accounts` (same mechanism as `/g/map-interview`). That becomes the
+  permanent home on his own domain; `/kit/install/start` can retire or stay as the kit copy.
+  Note the guides system is structured data rendered by `GuideBody` — the artifact's tick-off
+  checkboxes and bespoke typography do NOT carry over into a Guide entry. [state]
+- **claude-os is Jack Roberts' software and must NOT be pushed to GitHub** — its LICENSE forbids
+  re-uploading to any code host, public or private. Oz asked for a private qrcteam mirror; the
+  push was stopped and the reason explained. Backed up instead as a local git bundle:
+  `~/Documents/Projects/_archive/claude-os-2026-08-21.bundle` (90 MB, verified, all refs) with a
+  README beside it. Protects the two local-only commits — `966cd38` ($150/hr rate + minute
+  estimates) and `7535665` (os3.2 Design Studio merge). Repo has no remote by design.
+  Still to do: get that one file off this machine. [gotcha]
