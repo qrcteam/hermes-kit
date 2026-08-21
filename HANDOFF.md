@@ -491,8 +491,11 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   cross-link and one line of framing on each. Not done; not asked for. [state]
 ## 2026-08-20/21 session — Laurie prep + client-facing accounts page
 - **Laurie is on macOS** (confirmed by Oz) and her install is the next one up — runbook 02, the
-  proven path, no WSL adventure. Meeting was set for 2026-08-21. Nothing exists at
-  `people/laurie.md` yet; create it on install day per the kit's own rule. [state]
+  proven path, no WSL adventure. Meeting was set for 2026-08-21. `people/laurie.md` now exists — platform, paths, offer and the boundary ruling; fill the rest
+  on install day. **Boundary ruled by Oz 2026-08-20: her vault repo starts in `qrcteam` and
+  transfers to her own GitHub once the install is stable** (one-click ownership transfer, vault
+  keeps working through it). Two obligations ride on that — say out loud on install day that Oz
+  can read her notes, and actually do the transfer at stable state. [decision]
 - **New client-facing page: the six accounts, shipped live.** `docs/install-guide/start.html`
   (source of truth, committed) → mirrored to `bp-promo/public/kit/install/start.html`, deployed,
   live at **<https://beautiful-possibilities.com/kit/install/start>** — noindex, same treatment
