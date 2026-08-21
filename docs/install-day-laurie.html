@@ -176,6 +176,7 @@ a{color:var(--accent); text-underline-offset:2px}
   background:var(--code-accent);
 }
 .host.you::before{background:none; box-shadow:inset 0 0 0 1.5px #7C8494}
+.host.chat::before{border-radius:2px}
 .copy{
   font:inherit; font-family:"JetBrains Mono",monospace; flex:none;
   font-size:10.5px; letter-spacing:.04em; text-transform:uppercase;
@@ -765,7 +766,46 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
   </div>
 
   <div class="step">
-    <h3><span class="ix">08.2</span>Fill in her record while it's fresh</h3>
+    <h3><span class="ix">08.2</span>Set the session rules — she pastes this, not you</h3>
+    <p>Two habits that only bite in week two, when nobody's watching: sessions that run for
+    days and quietly burn context, and an assistant that answers a non-technical person with
+    terminal commands. Both are fixed by one message. <strong>Have her paste and send it</strong>,
+    so the standing rules save under her own account.</p>
+    <div class="cmd"><div class="cmd-head"><span class="host chat">Her Hermes chat</span><button class="copy" type="button">Copy</button></div><pre><code>Please configure two things for session management:
+
+1. Auto-reset idle sessions after 2 hours. Set session_reset.mode to idle and
+session_reset.idle_minutes to 120 in the config, so if I don't send anything for
+2 hours, the session automatically resets to prevent runaway context/token buildup.
+
+2. Proactively suggest starting a new session (/new) more often — don't wait for me
+to notice context is bloated. Specifically, suggest /new when:
+   - We clearly finish one topic/task and are about to start an unrelated one
+   - Context usage (context_pct) climbs high, even mid-topic
+   - A task or conversation thread reaches a natural resolution (approved, deployed,
+     decided, closed)
+
+Please save this as a standing rule in memory so it persists across sessions, and
+don't wait for me to ask each time — just flag it naturally ("Looks like we've
+wrapped up X — want a fresh session before we move to Y?").
+
+Also, I'm not technical — please keep responses plain-language only. Specifically:
+
+- Don't show me code snippets, terminal commands, file paths, JSON, or config syntax
+  unless I explicitly ask to see them
+- Summarize what you did in outcomes, not steps ("I fixed the connection issue"
+  instead of showing the commands)
+- If something technical needs my input (like a password, a click, or a decision),
+  tell me exactly what to click or say in plain words — no jargon
+- Save this as a standing preference in memory</code></pre></div>
+    <p>Then check that Hermes actually wrote the config rather than just agreeing to:</p>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker exec hermes hermes config get session_reset</code></pre></div>
+    <div class="why"><b>A model agreeing is not a config change.</b> Want <code>mode: idle</code>
+    and <code>idle_minutes: 120</code>. If it only said it would, say it again.</div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>session_reset</code> reads <code>idle</code> / <code>120</code>, and she has seen the assistant answer her in plain language.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">08.3</span>Fill in her record while it's fresh</h3>
     <p><strong>Back on your own Mac</strong>, into <code>people/laurie.md</code>: bot handle, her buckets and <em>why</em> those, which model
     she's on, the digest hour in local time, the one-sentence job in her words, the boundary
     conversation date, and every deviation from the runbook you had to make today.
@@ -777,7 +817,7 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
   </div>
 
   <div class="step">
-    <h3><span class="ix">08.3</span>The two obligations you took on</h3>
+    <h3><span class="ix">08.4</span>The two obligations you took on</h3>
     <ol>
       <li><strong>Transfer <code>qrcteam/laurie-app</code> when the install is stable.</strong>
       Her foundation instance was started in your org before the day-one-ownership call, so it's

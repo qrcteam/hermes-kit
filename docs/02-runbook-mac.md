@@ -441,6 +441,19 @@ Finally, ask them to text: *"who's on Henderson?"* — the answer should come ba
 open -a Obsidian ~/Memory/$NAME-vault
 ```
 
+**Set the session rules before you leave.** Have *them* paste
+[`templates/session-hygiene-prompt.md`](../templates/session-hygiene-prompt.md) into their
+Hermes and send it. It does two jobs: idle sessions reset after two hours instead of running
+forever and quietly burning context, and the agent starts talking in plain language instead of
+showing them terminal commands. Both are week-two problems, and week two is when nobody's
+watching. Then verify Hermes actually wrote the config rather than just agreeing to:
+
+```bash
+docker exec hermes hermes config get session_reset
+```
+> **You should see** `mode: idle` and `idle_minutes: 120`. If it only said it would, say it
+> again — a model agreeing is not a config change.
+
 Give them [`onboarding/<NAME>.md`](../onboarding/) and **nothing else**. Then walk away —
 if they have to ask you something the doc should have answered, that's an edit to make.
 
@@ -472,6 +485,7 @@ itself.** Run it first; work this list only for whatever it can't see.
 - [ ] Watchdog + digest cron jobs created
 - [ ] All three smoke tests pass
 - [ ] `people/<NAME>.md` filled in
+- [ ] Session hygiene prompt pasted by them; `session_reset` verified as `idle` / `120`
 - [ ] Onboarding doc handed over
 
 ---
