@@ -1,0 +1,859 @@
+<title>Laurie's Install Day</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root{
+  --ground:#F4F5F7; --surface:#FFFFFF; --surface-2:#ECEEF2;
+  --ink:#16181D; --ink-2:#454B57; --ink-3:#6E7686;
+  --rule:#DCDFE6; --rule-strong:#C3C8D2;
+  --accent:#A6552A; --accent-soft:#F7EDE4;
+  --gate:#1F6B4F; --gate-soft:#E4F1EA;
+  --warn:#9E3324; --warn-soft:#FAE8E4;
+  --code-bg:#1A1D24; --code-ink:#D9DEE7; --code-dim:#8B93A3; --code-accent:#E0A06A;
+  --shadow:0 1px 2px rgba(22,24,29,.05), 0 8px 24px -12px rgba(22,24,29,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#14161B; --surface:#1B1E25; --surface-2:#232730;
+    --ink:#E6E9EF; --ink-2:#AEB5C2; --ink-3:#7C8494;
+    --rule:#2E333D; --rule-strong:#3C424E;
+    --accent:#E2915A; --accent-soft:#2A2018;
+    --gate:#6FC79B; --gate-soft:#182620;
+    --warn:#F08A78; --warn-soft:#2B1A17;
+    --code-bg:#0F1116; --code-ink:#D9DEE7; --code-dim:#79808F; --code-accent:#E0A06A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#14161B; --surface:#1B1E25; --surface-2:#232730;
+  --ink:#E6E9EF; --ink-2:#AEB5C2; --ink-3:#7C8494;
+  --rule:#2E333D; --rule-strong:#3C424E;
+  --accent:#E2915A; --accent-soft:#2A2018;
+  --gate:#6FC79B; --gate-soft:#182620;
+  --warn:#F08A78; --warn-soft:#2B1A17;
+  --code-bg:#0F1116; --code-ink:#D9DEE7; --code-dim:#79808F; --code-accent:#E0A06A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:920px; margin:0 auto; padding:0 20px 96px}
+
+/* ---------- masthead ---------- */
+.mast{padding:56px 0 28px; border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-size:11.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent); margin:0 0 14px;
+}
+h1{
+  font-size:clamp(38px,6.4vw,60px); line-height:1.02; letter-spacing:-.03em;
+  font-weight:700; margin:0 0 18px; text-wrap:balance;
+}
+.deck{
+  font-family:"Newsreader",Georgia,serif; font-size:19px; line-height:1.6;
+  color:var(--ink-2); max-width:62ch; margin:0;
+}
+.facts{
+  display:flex; flex-wrap:wrap; gap:8px; margin:26px 0 0; padding:0; list-style:none;
+}
+.facts li{
+  font-size:12.5px; font-weight:500; letter-spacing:.01em;
+  background:var(--surface); border:1px solid var(--rule); border-radius:2px;
+  padding:5px 10px; color:var(--ink-2);
+}
+.facts li b{color:var(--ink); font-weight:600}
+
+/* ---------- progress ---------- */
+.progress{
+  position:sticky; top:0; z-index:20; background:var(--ground);
+  border-bottom:1px solid var(--rule); margin:0 -20px; padding:10px 20px;
+  display:flex; align-items:center; gap:14px;
+}
+.bar{flex:1; height:3px; background:var(--rule); border-radius:2px; overflow:hidden}
+.bar span{display:block; height:100%; width:0; background:var(--accent); transition:width .25s ease}
+.count{
+  font-family:"JetBrains Mono",ui-monospace,monospace; font-size:12px;
+  color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.reset{
+  font:inherit; font-size:11.5px; background:none; border:1px solid var(--rule);
+  color:var(--ink-3); border-radius:2px; padding:3px 9px; cursor:pointer;
+}
+.reset:hover{color:var(--ink); border-color:var(--rule-strong)}
+
+/* ---------- shape of the day ---------- */
+.shape{
+  margin:34px 0 0; display:grid; gap:1px; background:var(--rule);
+  border:1px solid var(--rule); border-radius:3px; overflow:hidden;
+  grid-template-columns:repeat(auto-fit,minmax(122px,1fr));
+}
+.shape div{background:var(--surface); padding:12px 13px}
+.shape .t{
+  font-family:"JetBrains Mono",monospace; font-size:10.5px; color:var(--accent);
+  letter-spacing:.06em; display:block; margin-bottom:5px;
+}
+.shape .n{font-size:13.5px; font-weight:600; line-height:1.3; display:block}
+.shape .d{font-size:11.5px; color:var(--ink-3); display:block; margin-top:3px}
+
+/* ---------- phases ---------- */
+.phase{margin:64px 0 0; scroll-margin-top:70px}
+.phase-head{display:flex; align-items:baseline; gap:14px; border-bottom:2px solid var(--ink); padding-bottom:9px}
+.phase-num{
+  font-family:"JetBrains Mono",monospace; font-size:12px; font-weight:700;
+  color:var(--accent); letter-spacing:.04em;
+}
+.phase h2{font-size:25px; letter-spacing:-.02em; font-weight:700; margin:0; flex:1; text-wrap:balance}
+.phase-time{font-family:"JetBrains Mono",monospace; font-size:11.5px; color:var(--ink-3); white-space:nowrap}
+
+.step{
+  background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:20px 22px; margin-top:16px; box-shadow:var(--shadow);
+}
+.step h3{
+  font-size:16.5px; font-weight:600; letter-spacing:-.01em; margin:0 0 10px;
+  display:flex; align-items:baseline; gap:9px;
+}
+.step h3 .ix{
+  font-family:"JetBrains Mono",monospace; font-size:11.5px; color:var(--ink-3);
+  font-weight:500; flex:none;
+}
+p{margin:0 0 12px; max-width:68ch; color:var(--ink-2)}
+p:last-child{margin-bottom:0}
+.step p strong, li strong{color:var(--ink); font-weight:600}
+ul,ol{margin:0 0 12px; padding-left:22px; max-width:68ch; color:var(--ink-2)}
+li{margin-bottom:6px}
+a{color:var(--accent); text-underline-offset:2px}
+
+/* ---------- reasoning aside ---------- */
+.why{
+  font-family:"Newsreader",Georgia,serif; font-size:16.5px; line-height:1.62;
+  color:var(--ink-2); border-left:2px solid var(--accent); padding:2px 0 2px 15px;
+  margin:14px 0; max-width:62ch;
+}
+.why b{font-weight:500; color:var(--ink); font-style:italic}
+
+/* ---------- commands ---------- */
+.cmd{
+  position:relative; background:var(--code-bg); border-radius:3px; margin:12px 0;
+  overflow:hidden;
+}
+.cmd pre{
+  margin:0; padding:14px 16px; overflow-x:auto;
+  font-family:"JetBrains Mono",ui-monospace,monospace; font-size:12.8px; line-height:1.65;
+  color:var(--code-ink);
+}
+.cmd .c{color:var(--code-dim)}
+.cmd .k{color:var(--code-accent)}
+.copy{
+  position:absolute; top:7px; right:7px; font:inherit; font-family:"JetBrains Mono",monospace;
+  font-size:10.5px; letter-spacing:.04em; text-transform:uppercase;
+  background:rgba(255,255,255,.07); color:#9AA2B1; border:1px solid rgba(255,255,255,.12);
+  border-radius:2px; padding:3px 8px; cursor:pointer;
+}
+.copy:hover{color:#E6E9EF; background:rgba(255,255,255,.13)}
+.copy.done{color:#6FC79B; border-color:rgba(111,199,155,.4)}
+
+/* ---------- gate ---------- */
+.gate{
+  display:flex; gap:11px; align-items:flex-start; background:var(--gate-soft);
+  border:1px solid transparent; border-left:2px solid var(--gate);
+  border-radius:0 3px 3px 0; padding:11px 14px; margin:12px 0 0; cursor:pointer;
+}
+.gate:has(input:focus-visible){outline:2px solid var(--accent); outline-offset:2px}
+.gate input{
+  appearance:none; width:15px; height:15px; margin:3px 0 0; flex:none; cursor:pointer;
+  border:1.5px solid var(--gate); border-radius:2px; background:transparent;
+}
+.gate input:checked{background:var(--gate)}
+.gate input:checked::after{
+  content:"✓"; display:block; color:var(--gate-soft); font-size:11px;
+  line-height:12px; text-align:center; font-weight:700;
+}
+.gate span{font-size:14px; color:var(--ink-2); line-height:1.5}
+.gate span b{color:var(--gate); font-weight:600; letter-spacing:.02em}
+.gate:has(input:checked) span{opacity:.62}
+
+/* ---------- warn ---------- */
+.warn{
+  background:var(--warn-soft); border-left:2px solid var(--warn);
+  border-radius:0 3px 3px 0; padding:11px 14px; margin:12px 0; max-width:68ch;
+}
+.warn p{color:var(--ink-2); font-size:14.5px; margin:0}
+.warn p b{color:var(--warn); font-weight:600}
+
+/* ---------- decision block ---------- */
+.decide{
+  border:1px dashed var(--rule-strong); border-radius:3px; padding:16px 18px;
+  margin:14px 0; background:var(--surface-2);
+}
+.decide h4{
+  margin:0 0 8px; font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--accent); font-weight:600;
+}
+.decide p{font-size:14.5px}
+
+/* ---------- landmines ---------- */
+.mines{display:grid; gap:12px; margin-top:16px}
+.mine{
+  background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:15px 17px; display:grid; grid-template-columns:auto 1fr; gap:4px 13px;
+}
+.mine .id{
+  font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--warn);
+  font-weight:700; padding-top:3px; grid-row:span 2;
+}
+.mine h4{margin:0; font-size:14.5px; font-weight:600}
+.mine p{margin:0; font-size:14px}
+
+/* ---------- table ---------- */
+.tbl-wrap{overflow-x:auto; margin:14px 0}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:440px}
+th,td{text-align:left; padding:8px 12px; border-bottom:1px solid var(--rule); vertical-align:top}
+th{
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3);
+  font-weight:600; border-bottom:1px solid var(--rule-strong);
+}
+td{color:var(--ink-2)}
+td code, p code, li code{
+  font-family:"JetBrains Mono",monospace; font-size:12.4px; background:var(--surface-2);
+  padding:1px 5px; border-radius:2px; color:var(--ink);
+}
+.cmd code{background:none; padding:0}
+
+.foot{
+  margin-top:72px; padding-top:22px; border-top:1px solid var(--rule);
+  font-size:13px; color:var(--ink-3); max-width:68ch;
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Hermes Kit · Install #4 · macOS · driven remotely</p>
+  <h1>Laurie's Install Day</h1>
+  <p class="deck">The whole sequence, in the order it actually happens — from the moment the call
+  connects to the moment you close the laptop and she can text her assistant. Every command is
+  the one from <b>docs/02-runbook-mac.md</b>; every gate is a thing you have to <em>see</em>
+  before moving on.</p>
+  <ul class="facts">
+    <li><b>Vault</b> ~/Memory/laurie-vault</li>
+    <li><b>Index</b> laurie-vault</li>
+    <li><b>Repo</b> qrcteam/laurie-vault → hers later</li>
+    <li><b>Model</b> her account, her card</li>
+    <li><b>Extra</b> GoHighLevel readable</li>
+  </ul>
+</header>
+
+<div class="progress">
+  <div class="bar"><span id="fill"></span></div>
+  <span class="count" id="count">0 / 0 gates</span>
+  <button class="reset" id="reset" type="button">Reset</button>
+</div>
+
+<div class="shape">
+  <div><span class="t">00 · 15m</span><span class="n">Before you dial</span><span class="d">Your machine only</span></div>
+  <div><span class="t">01 · 10m</span><span class="n">Open the call</span><span class="d">Consent + accounts</span></div>
+  <div><span class="t">02 · 15m</span><span class="n">Get on her Mac</span><span class="d">Remote + prerequisites</span></div>
+  <div><span class="t">03 · 20m</span><span class="n">Clone &amp; software</span><span class="d">Kit, Docker, Obsidian</span></div>
+  <div><span class="t">04 · 25m</span><span class="n">Bot, vault, index</span><span class="d">Her accounts, her keys</span></div>
+  <div><span class="t">05 · 20m</span><span class="n">Hermes up</span><span class="d">First reply — natural break</span></div>
+  <div><span class="t">06 · 45m</span><span class="n">The SOUL interview</span><span class="d">The actual product</span></div>
+  <div><span class="t">07 · 25m</span><span class="n">Promoter &amp; proof</span><span class="d">Three smoke tests</span></div>
+</div>
+
+<!-- ══════════════════ 00 ══════════════════ -->
+<section class="phase" id="p0">
+  <div class="phase-head"><span class="phase-num">00</span><h2>Before you dial</h2><span class="phase-time">~15 min · your machine</span></div>
+
+  <div class="step">
+    <h3><span class="ix">00.1</span>Pull the kit and read her record</h3>
+    <p>You are about to type these commands on someone else's computer. Have the current version
+    in front of you, not last week's.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>cd ~/Documents/Projects/hermes &amp;&amp; git pull
+open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></pre></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Kit is up to date, and <code>people/laurie.md</code> is open in a window you can type into all day.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">00.2</span>Confirm the six accounts landed</h3>
+    <p>She was sent <a href="https://beautiful-possibilities.com/kit/install/start">beautiful-possibilities.com/kit/install/start</a>
+    ahead of today. Text her the morning of and ask for a straight yes on each: Telegram,
+    model subscription, GitHub, Pinecone, OpenRouter credit, Obsidian downloaded.</p>
+    <div class="why"><b>Why this can't wait until you're on the call:</b> every one of these has an
+    email-confirmation step, and a Pinecone signup discovered at minute forty is twenty minutes of
+    two people watching an inbox.</div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — All six confirmed by her, in writing, before the call starts. GoHighLevel login in reach too.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">00.3</span>Decide her buckets — or plan to decide them with her</h3>
+    <p>Four or five folders that her whole life sorts into, <strong>in her words</strong>. They get
+    created at step 04.2 and renaming them later is a chore. Doug's are project-shaped
+    (<code>projects · clients · learning · personal</code>); Mazíx's are life-area-shaped
+    (<code>creative · qrc-brand · health · home · personal</code>). Laurie's are not decided yet.</p>
+    <div class="decide">
+      <h4>Open decision</h4>
+      <p>If you haven't got them, ask her in the first ten minutes of the call — before any typing —
+      and write them into <code>people/laurie.md</code> as you go. Don't guess them on her behalf;
+      the bucket names are the first thing she'll see in Obsidian and they should sound like her.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ 01 ══════════════════ -->
+<section class="phase" id="p1">
+  <div class="phase-head"><span class="phase-num">01</span><h2>Open the call — before any typing</h2><span class="phase-time">~10 min</span></div>
+
+  <div class="step">
+    <h3><span class="ix">01.1</span>Say the boundary sentence out loud</h3>
+    <p>Her vault repo starts in <code>qrcteam</code> so you can clone and fix it without a
+    screen-share during the weeks when things actually break, and it transfers to her own GitHub
+    once the install is stable. That arrangement is only honest if she hears it.</p>
+    <div class="why">Say something close to: <b>"Her memory lives in a private repo on my
+    organisation's GitHub for now, which means I can read her notes. I'd rather say that than
+    have her assume otherwise. It moves to her account the moment this is stable, and it keeps
+    working through the move."</b></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Said out loud, she said fine, and you noted the date in <code>people/laurie.md</code>.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">01.2</span>Set the two Mac facts</h3>
+    <p>Her assistant can only answer while her Mac is awake. Do this <strong>first</strong> — a Mac
+    that sleeps also drops your remote session mid-install.</p>
+    <ul>
+      <li><strong>System Settings → Lock Screen →</strong> display off is fine, <strong>sleep is not</strong>.</li>
+      <li>On a laptop, check the same under battery/power and leave it plugged in.</li>
+    </ul>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — You watched her change it. Never-sleep is set on the power source she'll actually leave it on.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">01.3</span>Book the 45 minutes for the interview</h3>
+    <p>Everything in phases 02–05 is plumbing. Phase 06 is the product. If today's window is under
+    two and a half hours, agree now that the interview moves to a second call rather than getting
+    compressed into fifteen rushed minutes.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 02 ══════════════════ -->
+<section class="phase" id="p2">
+  <div class="phase-head"><span class="phase-num">02</span><h2>Get on her Mac</h2><span class="phase-time">~15 min</span></div>
+
+  <div class="warn"><p><b>Not covered by the kit.</b> Mazíx's install was on-site; the runbook has
+  never had a remote-access step. This is a recommendation, not a proven path — budget extra time
+  the first time.</p></div>
+
+  <div class="step">
+    <h3><span class="ix">02.1</span>Screen share with remote control</h3>
+    <p><strong>Recommended default: Zoom.</strong> She shares her screen, you click <em>Request
+    remote control</em>, she approves once. macOS will make her grant Zoom
+    <strong>Screen Recording</strong> and <strong>Accessibility</strong> permission in System
+    Settings → Privacy &amp; Security — that prompt appears the first time and needs her password.</p>
+    <p>Fallback if Zoom fights you: macOS Screen Sharing over the Messages app (both on iMessage,
+    Details → share screen → ask to control).</p>
+    <div class="why"><b>What remote control cannot do for you:</b> type her passwords, approve an
+    admin prompt, scan a QR code, or log into her accounts. Plan for her hands on the keyboard at
+    four moments — the Docker install password, the Pinecone key copy, the model login, and the
+    Telegram bot creation on her phone.</div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — You can move her cursor and type into her Terminal. Test by opening Terminal yourself.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">02.2</span>Command Line Tools and Homebrew</h3>
+    <p>A stock Mac has neither <code>git</code> nor <code>brew</code>. The runbook assumes both.
+    Install them before anything else — the first one opens a GUI dialog she has to accept.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code><span class="c"># pops a dialog — she clicks Install, then wait it out</span>
+xcode-select --install
+
+<span class="c"># Homebrew — asks for HER admin password</span>
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+<span class="c"># Apple Silicon only: put brew on PATH for this shell and future ones</span>
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' &gt;&gt; ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+git --version &amp;&amp; brew --version</code></pre></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Both print a version number in a <em>new</em> Terminal window, not just the one you ran the installer in.</span></label>
+  </div>
+</section>
+
+<!-- ══════════════════ 03 ══════════════════ -->
+<section class="phase" id="p3">
+  <div class="phase-head"><span class="phase-num">03</span><h2>Clone the kit, install the software</h2><span class="phase-time">~20 min · mostly waiting</span></div>
+
+  <div class="step">
+    <h3><span class="ix">03.1</span>Clone hermes-kit to the path the runbook expects</h3>
+    <p>Every command in the runbook refers to <code>~/Documents/Projects/hermes</code>. Clone it
+    exactly there and you never have to translate a path live.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>mkdir -p ~/Documents/Projects
+git clone https://github.com/qrcteam/hermes-kit.git ~/Documents/Projects/hermes
+ls ~/Documents/Projects/hermes/templates</code></pre></div>
+    <div class="why"><b>Yes, Documents is fine for the kit.</b> The "never Desktop, Documents or
+    Downloads" rule is about the <em>vault</em> — macOS blocks background jobs from those folders,
+    and the promoter is a background job. The kit is only ever read by you, by hand, from a
+    terminal you opened. Her vault still goes to <code>~/Memory</code> and nowhere else.</div>
+    <p>It's a private repo, so <code>git clone</code> will ask for GitHub credentials. Easiest path
+    is to install the GitHub CLI now — you need it in a minute anyway:</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>brew install gh
+gh auth login   <span class="c"># HTTPS · browser flow · SHE logs in with her account</span></code></pre></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>ls</code> shows the templates folder, and <code>gh auth status</code> shows <em>her</em> GitHub account logged in.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">03.2</span>Docker Desktop and Obsidian</h3>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>brew install --cask docker
+brew install --cask obsidian</code></pre></div>
+    <p><strong>Open Docker Desktop once</strong> and let it finish starting. It asks for her admin
+    password and shows a licence agreement — her hands. Nothing below works until it's running.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker --version &amp;&amp; docker ps</code></pre></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — A version number and an <em>empty container table</em>. An error here means Docker Desktop isn't up yet — wait, don't retry.</span></label>
+  </div>
+</section>
+
+<!-- ══════════════════ 04 ══════════════════ -->
+<section class="phase" id="p4">
+  <div class="phase-head"><span class="phase-num">04</span><h2>Her bot, her vault, her index</h2><span class="phase-time">~25 min</span></div>
+
+  <div class="step">
+    <h3><span class="ix">04.1</span>Make the Telegram bot — on her phone</h3>
+    <ol>
+      <li>Message <strong>@BotFather</strong> → <code>/newbot</code></li>
+      <li>Name it something she'll recognise — <em>"Laurie's Assistant"</em></li>
+      <li>Username must end in <code>bot</code> — e.g. <code>lauries_memory_bot</code></li>
+      <li>Copy the token (<code>8123456789:AAF…</code>) — treat it like a password</li>
+      <li>Message <strong>@userinfobot</strong> → copy the numeric user ID it replies with</li>
+    </ol>
+    <div class="warn"><p><b>That numeric ID is the only thing between a stranger and her memory.</b>
+    Read it back to her digit by digit before pasting it.</p></div>
+    <p>Ask now whether she wants <strong>WhatsApp</strong> too — self-chat mode, she messages
+    herself and the agent answers in that thread. If yes, get her number as
+    <code>15551234567</code>. Pairing happens after the container is up.</p>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Two strings in hand: bot token and numeric user ID. WhatsApp decided either way.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">04.2</span>Build the vault</h3>
+    <p>Replace the bucket list on the <code>for b in …</code> line with hers from 00.3.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>export NAME=laurie
+export VAULT=~/Memory/$NAME-vault
+mkdir -p "$VAULT"
+
+cp -R ~/Documents/Projects/hermes/templates/vault-skeleton/. "$VAULT"/
+mv "$VAULT/gitignore.template" "$VAULT/.gitignore"
+chmod +x "$VAULT/scripts/pinecone-sync"
+
+<span class="c"># ← HER buckets, her words</span>
+for b in <span class="k">projects clients learning personal</span>; do
+  mkdir -p "$VAULT/wiki/topics/$b"
+  sed "s/&lt;bucket-name&gt;/$b/g; s/&lt;Bucket Name&gt;/${b}/g; s/&lt;YYYY-MM-DD&gt;/$(date +%F)/" \
+    "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md" &gt; "$VAULT/wiki/topics/$b/_manual.md"
+done
+rm "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md"
+mkdir -p "$VAULT/wiki/people" "$VAULT/wiki/reference" "$VAULT/raw/sessions"
+
+cd "$VAULT" &amp;&amp; git init -q -b main &amp;&amp; git add -A \
+  &amp;&amp; git commit -qm "vault: initial skeleton for $NAME"</code></pre></div>
+    <p>Then create the private remote and push. With <code>gh</code> already authenticated this is
+    one command and no SSH keys:</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>cd "$VAULT"
+gh repo create qrcteam/laurie-vault --private --source=. --remote=origin --push
+gh repo view qrcteam/laurie-vault --json visibility</code></pre></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Repo reads <code>"PRIVATE"</code>, the skeleton is visible on GitHub, and <code>ls $VAULT/wiki/topics</code> shows her buckets each holding a <code>_manual.md</code>.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">04.3</span>Her Pinecone index</h3>
+    <p>She creates the API key on her own screen and pastes it. You never keep a copy.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>export PC_KEY=&lt;she pastes her pinecone key&gt;
+
+curl -s "https://api.pinecone.io/indexes/create-for-model" \
+  -H "Api-Key: $PC_KEY" -H "Content-Type: application/json" \
+  -H "X-Pinecone-API-Version: 2025-04" \
+  -d '{
+    "name": "'"$NAME"'-vault",
+    "cloud": "aws",
+    "region": "us-east-1",
+    "embed": { "model": "llama-text-embed-v2", "field_map": { "text": "text" } }
+  }' | python3 -m json.tool</code></pre></div>
+    <p>Store it in a file, then clear it from the shell:</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>mkdir -p ~/.hermes/secrets
+printf '%s' "$PC_KEY" &gt; ~/.hermes/secrets/pinecone.key
+chmod 600 ~/.hermes/secrets/pinecone.key
+unset PC_KEY</code></pre></div>
+    <div class="why"><b>Why a file and not the environment:</b> the promoter needs a key that can
+    write to the index; the agent only ever needs to search it. Keeping it out of the agent's
+    environment means a prompt injection can't exfiltrate a credential that could wipe her index.</div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — JSON came back with <code>"name": "laurie-vault"</code> and a host. ("Already exists" is fine.) Key file is mode 600.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">04.4</span>Configure Hermes, install the two skills</h3>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>mkdir -p ~/.hermes/{inbox,scripts,secrets}
+cp ~/Documents/Projects/hermes/templates/env.template ~/.hermes/.env
+chmod 600 ~/.hermes/.env
+open -e ~/.hermes/.env   <span class="c"># paste bot token + numeric user ID (+ WhatsApp number)</span>
+
+K=~/Documents/Projects/hermes/templates
+cp "$K/promote.sh"      ~/.hermes/promote.sh
+cp "$K/vault-health.sh" ~/.hermes/scripts/vault-health.sh
+chmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh
+
+mkdir -p ~/.hermes/skills/note-taking/vault-capture
+cp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md
+mkdir -p ~/.hermes/skills/note-taking/session-log
+cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md</code></pre></div>
+    <div class="why">The two skills do different halves of memory. <b>vault-capture</b> saves facts
+    the moment they're said. <b>session-log</b> saves what she did, once, at the end of a working
+    conversation — including where she stopped, which is the line she'll reread most. Facts alone
+    answer "what do I know?" but never "what was I working on?"</div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>.env</code> is mode 600 with token + user ID filled in, and both SKILL.md files exist.</span></label>
+  </div>
+</section>
+
+<!-- ══════════════════ 05 ══════════════════ -->
+<section class="phase" id="p5">
+  <div class="phase-head"><span class="phase-num">05</span><h2>Start Hermes — first reply</h2><span class="phase-time">~20 min</span></div>
+
+  <div class="step">
+    <h3><span class="ix">05.1</span>Run the container</h3>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker run -d --name hermes --restart unless-stopped \
+  -p 127.0.0.1:8642:8642 \
+  --env-file ~/.hermes/.env \
+  -v "$HOME/.hermes:/opt/data" \
+  -v "$HOME/Memory/$NAME-vault:/vault:<span class="k">ro</span>" \
+  nousresearch/hermes-agent:latest</code></pre></div>
+    <div class="warn"><p><b>The <code>:ro</code> is the single most important character in this kit.</b>
+    It makes it impossible — not merely forbidden — for the agent to damage her memory. If you
+    retype this line from memory later, that's the character you'll drop.</p></div>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec hermes hermes config set database.journal_mode delete
+docker exec hermes hermes config set approvals.mode smart
+docker exec hermes hermes config set approvals.cron_mode deny
+docker restart hermes</code></pre></div>
+    <div class="why"><b><code>journal_mode: delete</code> is not a preference.</b> SQLite's
+    write-ahead log corrupts across a macOS Docker bind mount. Get it wrong and
+    <em>"database disk image is malformed"</em> turns up in about a week.</div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Container running, and <code>docker inspect hermes</code> confirms the vault mount is read-only.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">05.2</span>Log into her model — her hands, her account</h3>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec -it hermes hermes model
+docker exec hermes hermes status</code></pre></div>
+    <p>She picks her provider and follows the device-flow link. Credentials land in
+    <code>~/.hermes/auth.json</code> — never in <code>.env</code>.</p>
+    <div class="warn"><p><b>Laurie has OpenRouter credit, which makes this mandatory, not optional.</b>
+    With two provider credentials in reach and <code>model.provider: auto</code>, adding the
+    OpenRouter key can flip the <em>main</em> model onto OpenRouter carrying the wrong model ID —
+    a non-retryable 400, and the bot goes mute <em>because a key was added</em>. Pin the primary
+    and declare the fallback explicitly.</p></div>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code><span class="c"># primary = whichever she actually pays for:</span>
+<span class="c">#   ChatGPT Plus → openai-codex     Claude Pro → anthropic</span>
+docker exec hermes hermes config set model.provider <span class="k">openai-codex</span>
+docker exec hermes hermes config set fallback_providers \
+  '[{"provider":"openrouter","model":"anthropic/claude-sonnet-4.5"}]'
+docker restart hermes
+docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"</code></pre></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>hermes status</code> shows Gateway running, Telegram ✓, model logged in — and the proof command answers <code>PROVIDER-OK</code>.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">05.3</span>She texts the bot "hello"</h3>
+    <p>Do not go further until a reply comes back. If nothing does, go to
+    <code>docs/06-troubleshooting.md</code> → <em>"The bot doesn't reply"</em>, and check the two
+    usual suspects: the Telegram cold-start wedge, and two gateways fighting over one token.</p>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — She got a reply on her own phone, from her own bot. <strong>This is the natural break point</strong> if the day is running long.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">05.4</span>WhatsApp — skip if Telegram only</h3>
+    <p>Telegram must be working first; two channels failing at once is twice the diagnosis. The
+    step everything hinges on is the config block, not the <code>.env</code> flag:</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec hermes hermes config get platforms.whatsapp.enabled   <span class="c"># want: true</span>
+docker exec -it hermes hermes whatsapp   <span class="c"># pair from INSIDE the container</span>
+<span class="c"># ~30s of dependency install that looks like a hang — wait. Then choose self-chat,</span>
+<span class="c"># and she scans the QR: WhatsApp → Settings → Linked Devices → Link a Device</span>
+docker restart hermes
+docker logs hermes 2>&amp;1 | grep -i whatsapp | tail -3</code></pre></div>
+    <p>Worth saying out loud: the bridge emulates WhatsApp Web rather than Meta's official Business
+    API. Fine for personal self-chat. <strong>Her business number does not go on it</strong>, and
+    nothing outbound gets automated from it.</p>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Logs say <code>Bridge ready (status: connected)</code> and she got a reply in her own self-chat thread.</span></label>
+  </div>
+</section>
+
+<!-- ══════════════════ 06 ══════════════════ -->
+<section class="phase" id="p6">
+  <div class="phase-head"><span class="phase-num">06</span><h2>The SOUL interview</h2><span class="phase-time">~45 min · the actual product</span></div>
+
+  <div class="step">
+    <h3><span class="ix">06.1</span>Run the interview</h3>
+    <p>Everything above is plumbing. This is what separates an assistant that knows her from a very
+    expensive ChatGPT wearing her name. Questions are in <code>docs/04-soul-interview.md</code>.
+    Don't ask all 25 — ask what fits, and get the sharp lines down verbatim.</p>
+    <p>If it moves to a second session, send her the self-interview instead:
+    <a href="https://beautiful-possibilities.com/kit/install/soul">/kit/install/soul</a> — it has
+    her own AI prefill from existing chat history first, so the interview shrinks to the gaps.</p>
+    <div class="why">Recording is best, with permission — and transcribe it <b>on your own machine</b>
+    with whisper-cli. The interview is the most personal artifact in this kit; it never goes to a
+    cloud transcriber.</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">06.2</span>Write SOUL.md in your own prose</h3>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>cp ~/Documents/Projects/hermes/templates/SOUL.md.template ~/.hermes/SOUL.md
+open -e ~/.hermes/SOUL.md
+<span class="c"># …write it, then:</span>
+docker restart hermes
+grep -c '&lt;' ~/.hermes/SOUL.md</code></pre></div>
+    <p>Briefing notes for a new chief of staff who starts Monday — not a Q&amp;A dump. Quote her
+    directly where she said it well.</p>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — The count is <code>0</code>, or very near it. Any <code>&lt;placeholder&gt;</code> left behind is something the agent will confidently reason from as if it were true.</span></label>
+  </div>
+</section>
+
+<!-- ══════════════════ 07 ══════════════════ -->
+<section class="phase" id="p7">
+  <div class="phase-head"><span class="phase-num">07</span><h2>The promoter, the crons, the proof</h2><span class="phase-time">~25 min</span></div>
+
+  <div class="step">
+    <h3><span class="ix">07.1</span>Load the promoter and prove it runs</h3>
+    <p>This is the piece that actually writes her memory.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>sed -e "s|&lt;USER&gt;|$(whoami)|g" -e "s|&lt;NAME&gt;|$NAME|g" \
+  ~/Documents/Projects/hermes/templates/com.hermeskit.vault-promote.plist \
+  &gt; ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
+
+plutil -lint ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
+launchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2&gt;/dev/null
+launchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
+launchctl list | grep vault-promote</code></pre></div>
+    <p>Exit status <code>0</code> is what you want. <code>78</code> means a malformed plist;
+    <code>1</code> usually means a wrong path inside it. Then run it by hand before trusting the
+    schedule:</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>VAULT_ROOT=~/Memory/$NAME-vault \
+PINECONE_INDEX=$NAME-vault \
+PINECONE_STATE=~/.hermes/pinecone-state.json \
+PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
+PINECONE_SYNC=~/Memory/$NAME-vault/scripts/pinecone-sync \
+bash ~/.hermes/promote.sh
+
+cat ~/.hermes/promote-state.json</code></pre></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>"status": "ok"</code>. Anything else, read the message — it says what's wrong.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">07.2</span>Watchdog and morning digest</h3>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>docker exec hermes hermes cron create "0 14 * * *" \
+  --name vault-health --script vault-health.sh --no-agent --deliver telegram
+
+docker exec hermes hermes cron create "0 13 * * *" \
+  --name daily-digest --deliver telegram \
+  "Good morning. Read /vault/wiki/topics/*/_manual.md and any notes from the last 3 days.
+   Give a short briefing: what's open, what's owed, what they said they'd do. Two or three
+   things, in plain sentences, not a table. If nothing needs attention, say so in one line."
+
+docker exec hermes hermes cron list</code></pre></div>
+    <div class="warn"><p><b>Those hours are UTC.</b> Mountain Time is UTC−6 in summer, so
+    <code>13</code> = 7am. Check the timezone Laurie actually lives in before you leave.</p></div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Both jobs listed, and the digest hour converts to a morning in <em>her</em> timezone.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">07.3</span>Run the verifier before the live test</h3>
+    <p>Read-only. It walks the whole checklist so you don't have to hold it in your head, and every
+    <code>FAIL</code> prints its own fix underneath.</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>bash ~/Documents/Projects/hermes/templates/install-verify.sh
+
+<span class="c"># to let it repair the mechanical ones (idempotent, reversible, can't lose data):</span>
+bash ~/Documents/Projects/hermes/templates/install-verify.sh --fix
+docker restart hermes   <span class="c"># only if it changed a config key</span></code></pre></div>
+    <div class="why">Get it green <b>before</b> the live test below. A failing smoke test on top of a
+    half-finished install tells you nothing about which of the two is broken.</div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>install-verify.sh</code> exits clean, no red.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">07.4</span>The three smoke tests</h3>
+    <p>Have her text her bot something real from her own week — the shape of the classic test is:
+    <em>"remember I switched the Henderson job to the Tuesday crew because Thursday's tied up on
+    Ruiz."</em> The agent should confirm it in plain language. Then wait 15 minutes, or run the
+    promoter by hand again, and check all three:</p>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code><span class="c"># 1 · did the note land in the vault?</span>
+ls -la ~/Memory/$NAME-vault/wiki/topics/*/ | grep -i henderson
+
+<span class="c"># 2 · is it committed and pushed?</span>
+git -C ~/Memory/$NAME-vault log --oneline -3
+git -C ~/Memory/$NAME-vault status -sb
+
+<span class="c"># 3 · is it findable by MEANING, not keyword?</span>
+VAULT_ROOT=~/Memory/$NAME-vault PINECONE_INDEX=$NAME-vault \
+PINECONE_STATE=~/.hermes/pinecone-state.json \
+PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
+~/Memory/$NAME-vault/scripts/pinecone-sync search "who is doing the Henderson work"</code></pre></div>
+    <div class="why">If the third fails but the first two pass, <b>her memory is safe</b> — recall is
+    just degraded to literal search. Fix it, but don't panic in front of her.</div>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — All three pass, and her final text — <em>"who's on Henderson?"</em> — comes back right.</span></label>
+  </div>
+</section>
+
+<!-- ══════════════════ 08 ══════════════════ -->
+<section class="phase" id="p8">
+  <div class="phase-head"><span class="phase-num">08</span><h2>Hand it over, then close the loop</h2><span class="phase-time">~15 min</span></div>
+
+  <div class="step">
+    <h3><span class="ix">08.1</span>Open her memory in front of her</h3>
+    <div class="cmd"><button class="copy" type="button">Copy</button><pre><code>open -a Obsidian ~/Memory/$NAME-vault</code></pre></div>
+    <p>Give her the onboarding doc and <strong>nothing else</strong>. If she has to ask you something
+    the doc should have answered, that's an edit to make, not an explanation to give.</p>
+    <p>Say the support boundary plainly: <strong>you handle</strong> the container, sync, the bot
+    going quiet, Hermes versions. <strong>She handles</strong> her subscription, keeping the machine
+    awake, and what she puts in it. <strong>Nobody handles</strong> the model being wrong about
+    something — it's an assistant, not an oracle. Set that today and it's fine; leave it and the
+    first hallucination becomes a support ticket about trust.</p>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — She has opened her own vault in Obsidian, with her hands, and read a note in it.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">08.2</span>Fill in her record while it's fresh</h3>
+    <p>Into <code>people/laurie.md</code>: bot handle, her buckets and <em>why</em> those, which model
+    she's on, the digest hour in local time, the one-sentence job in her words, the boundary
+    conversation date, and every deviation from the runbook you had to make today.
+    <strong>No secrets in that file — it's in git.</strong></p>
+    <p>Then append what bit you to <code>HANDOFF.md</code> and push the kit. The remote-access step
+    in phase 02 is the obvious candidate to promote into <code>02-runbook-mac.md</code> once it's
+    been proven once.</p>
+    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>people/laurie.md</code> committed and pushed; status changed from <em>not installed</em>.</span></label>
+  </div>
+
+  <div class="step">
+    <h3><span class="ix">08.3</span>The two obligations you took on</h3>
+    <ol>
+      <li><strong>Transfer the repo when it's stable.</strong> <code>qrcteam/laurie-vault</code> →
+      her own GitHub. One-click ownership transfer; the vault keeps working through it. Until that
+      happens, the "you could fire me tomorrow and lose nothing" test fails.</li>
+      <li><strong>Her GoHighLevel, connected and readable</strong>, plus <strong>one stuck project
+      finished</strong>. Both are in the $1,500 offer she accepted. Neither is an install-day job —
+      but if you don't put them in the six-week plan today, they slide.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ══════════════════ landmines ══════════════════ -->
+<section class="phase" id="mines">
+  <div class="phase-head"><span class="phase-num">!!</span><h2>Already paid for once</h2><span class="phase-time">don't pay twice</span></div>
+  <p style="margin-top:16px">Each of these cost real time on an earlier install. They're in the
+  runbook and troubleshooting doc — this is the glance version for when something goes sideways
+  while two people are watching.</p>
+
+  <div class="mines">
+    <div class="mine"><span class="id">01</span><h4>The vault must not live in Desktop, Documents or Downloads</h4>
+      <p>macOS blocks background jobs from all three, silently. <code>~/Memory</code> is not blocked. This one already cost a fortnight of failed syncs.</p></div>
+    <div class="mine"><span class="id">02</span><h4>Adding the OpenRouter key can mute a working bot</h4>
+      <p>With <code>provider: auto</code> and two credentials, the main model can route to OpenRouter with the wrong model ID → non-retryable 400. Pin the primary, declare the fallback. See 05.2.</p></div>
+    <div class="mine"><span class="id">03</span><h4><code>WHATSAPP_ENABLED=true</code> in .env is not enough</h4>
+      <p>Hermes only starts platforms listed under <code>platforms:</code> in config.yaml. Without it you get a setup that looks configured and never replies.</p></div>
+    <div class="mine"><span class="id">04</span><h4>Pair WhatsApp from inside the container</h4>
+      <p>The bridge only listens on the container's own loopback. Pairing anywhere else produces a bridge Hermes cannot reach.</p></div>
+    <div class="mine"><span class="id">05</span><h4>Exactly one gateway</h4>
+      <p>A native <code>hermes gateway</code> on the host will fight the container over the same bot token. Container only.</p></div>
+    <div class="mine"><span class="id">06</span><h4><code>journal_mode: delete</code>, every time</h4>
+      <p>Including after any container rebuild or upgrade. SQLite's WAL corrupts across a macOS bind mount, and the failure shows up about a week later.</p></div>
+    <div class="mine"><span class="id">07</span><h4>Moving the vault breaks absolute paths silently</h4>
+      <p>If you relocate it later, grep for the old path in the plist, the container mount, and any script before closing the terminal.</p></div>
+  </div>
+</section>
+
+<!-- ══════════════════ deltas ══════════════════ -->
+<section class="phase" id="deltas">
+  <div class="phase-head"><span class="phase-num">Δ</span><h2>What's different about this install</h2><span class="phase-time">Laurie only</span></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Thing</th><th>Mazíx / Doug</th><th>Laurie</th></tr></thead>
+      <tbody>
+        <tr><td>Who's in the room</td><td>On-site, family</td><td><strong>Remote</strong>, paying client — phase 02 is new ground</td></tr>
+        <tr><td>Vault repo</td><td><code>qrcteam</code>, indefinitely</td><td><code>qrcteam</code> <strong>now, hers at stable state</strong> — say it out loud, then do it</td></tr>
+        <tr><td>OpenRouter</td><td>Optional</td><td>She has credit → <strong>provider pinning is mandatory</strong></td></tr>
+        <tr><td>Extra integration</td><td>None</td><td><strong>GoHighLevel</strong> connected and readable</td></tr>
+        <tr><td>Beyond the install</td><td>—</td><td>Six weekly calls, <strong>one stuck project finished</strong></td></tr>
+        <tr><td>Buckets</td><td>Decided in advance</td><td><strong>Still undecided</strong> — ask in the first ten minutes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p class="foot">Source of truth is <code>docs/02-runbook-mac.md</code> in <code>qrcteam/hermes-kit</code>;
+this page is the install-day arrangement of it for one person on one afternoon. When they disagree,
+the runbook wins — and this page needs an edit. Tick marks are stored in this browser only.</p>
+
+</div>
+
+<script>
+(function(){
+  var KEY = "hermes-laurie-install-v1";
+  var boxes = Array.prototype.slice.call(document.querySelectorAll(".gate input"));
+  var fill = document.getElementById("fill");
+  var count = document.getElementById("count");
+
+  boxes.forEach(function(b, i){ b.id = "g" + i; });
+
+  function load(){
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (!raw) return;
+      var saved = JSON.parse(raw);
+      if (!Array.isArray(saved)) return;
+      boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    } catch (e) { /* private window, blocked storage — render unchecked */ }
+  }
+
+  function save(){
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(boxes.map(function(b){ return b.checked; })));
+    } catch (e) { /* nothing to do; page still works */ }
+  }
+
+  function paint(){
+    var done = boxes.filter(function(b){ return b.checked; }).length;
+    fill.style.width = boxes.length ? (done / boxes.length * 100) + "%" : "0%";
+    count.textContent = done + " / " + boxes.length + " gates";
+  }
+
+  boxes.forEach(function(b){ b.addEventListener("change", function(){ save(); paint(); }); });
+
+  document.getElementById("reset").addEventListener("click", function(){
+    boxes.forEach(function(b){ b.checked = false; });
+    save(); paint();
+  });
+
+  load(); paint();
+
+  Array.prototype.forEach.call(document.querySelectorAll(".copy"), function(btn){
+    btn.addEventListener("click", function(){
+      var pre = btn.parentNode.querySelector("pre");
+      var text = pre.innerText;
+      var done = function(label){
+        btn.textContent = label; btn.classList.add("done");
+        window.setTimeout(function(){ btn.textContent = "Copy"; btn.classList.remove("done"); }, 1800);
+      };
+      try {
+        navigator.clipboard.writeText(text).then(function(){ done("Copied"); }, function(){ select(pre, done); });
+      } catch (e) { select(pre, done); }
+    });
+  });
+
+  function select(pre, done){
+    try {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      done("Press ⌘C");
+    } catch (e) { done("Select it"); }
+  }
+})();
+</script>
