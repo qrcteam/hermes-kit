@@ -269,7 +269,7 @@ td code, p code, li code{
   <ul class="facts">
     <li><b>Vault</b> ~/Memory/laurie-vault</li>
     <li><b>Index</b> laurie-vault</li>
-    <li><b>Repo</b> qrcteam/laurie-vault → hers later</li>
+    <li><b>Repo</b> hers, from day one</li>
     <li><b>Model</b> her account, her card</li>
     <li><b>Extra</b> GoHighLevel readable</li>
   </ul>
@@ -349,15 +349,17 @@ open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></
   <div class="phase-head"><span class="phase-num">01</span><h2>Open the call — before any typing</h2><span class="phase-time">~10 min</span></div>
 
   <div class="step">
-    <h3><span class="ix">01.1</span>Say the boundary sentence out loud</h3>
-    <p>Her vault repo starts in <code>qrcteam</code> so you can clone and fix it without a
-    screen-share during the weeks when things actually break, and it transfers to her own GitHub
-    once the install is stable. That arrangement is only honest if she hears it.</p>
-    <div class="why">Say something close to: <b>"Her memory lives in a private repo on my
-    organisation's GitHub for now, which means I can read her notes. I'd rather say that than
-    have her assume otherwise. It moves to her account the moment this is stable, and it keeps
-    working through the move."</b></div>
-    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Said out loud, she said fine, and you noted the date in <code>people/laurie.md</code>.</span></label>
+    <h3><span class="ix">01.1</span>Say where her memory lives — and ask about access</h3>
+    <p>Her vault repo is created in <strong>her own GitHub account</strong> on install day.
+    Nothing of hers starts in yours. Say that plainly, because it's the part that makes the rest
+    of the arrangement believable.</p>
+    <p>Then ask the access question rather than assuming the answer. If you're a collaborator on
+    her repo you can fix a broken sync without booking a screen-share; if you're not, support
+    means getting on a call. Both are fine — it's her call, and she can revoke it in one click.</p>
+    <div class="why">Say something close to: <b>"Her memory lives in her own GitHub account, not
+    mine — she owns it outright from today. If she wants him able to fix things without setting up
+    a call every time, she can add him as a collaborator, and remove him any time she likes."</b></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — She knows the repo is hers, and she has said yes or no to collaborator access. Note which, and the date, in <code>people/laurie.md</code>.</span></label>
   </div>
 
   <div class="step">
@@ -439,8 +441,8 @@ ls ~/Documents/Projects/hermes/templates</code></pre></div>
     <p>It's a private repo, so <code>git clone</code> will ask for GitHub credentials. Easiest path
     is to install the GitHub CLI now — you need it in a minute anyway:</p>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>brew install gh
-gh auth login   <span class="c"># HTTPS · browser flow · SHE logs in with her account</span></code></pre></div>
-    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>ls</code> shows the templates folder, and <code>gh auth status</code> shows <em>her</em> GitHub account logged in.</span></label>
+gh auth login   <span class="c"># HTTPS · browser flow · SHE logs in, on her own account</span></code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>ls</code> shows the templates folder, and <code>gh auth status</code> shows <em>her</em> GitHub account. <strong>Whatever account this says is the account that will own her memory</strong> — check it, don't assume.</span></label>
   </div>
 
   <div class="step">
@@ -497,12 +499,18 @@ mkdir -p "$VAULT/wiki/people" "$VAULT/wiki/reference" "$VAULT/raw/sessions"
 
 cd "$VAULT" &amp;&amp; git init -q -b main &amp;&amp; git add -A \
   &amp;&amp; git commit -qm "vault: initial skeleton for $NAME"</code></pre></div>
-    <p>Then create the private remote and push. With <code>gh</code> already authenticated this is
-    one command and no SSH keys:</p>
+    <p>Then create the private remote and push. Because <code>gh</code> is authenticated as her,
+    an unqualified repo name creates it <strong>in her account</strong> — which is exactly what you
+    want, and why there's no owner prefix on this line:</p>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>cd "$VAULT"
-gh repo create qrcteam/laurie-vault --private --source=. --remote=origin --push
-gh repo view qrcteam/laurie-vault --json visibility</code></pre></div>
-    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Repo reads <code>"PRIVATE"</code>, the skeleton is visible on GitHub, and <code>ls $VAULT/wiki/topics</code> shows her buckets each holding a <code>_manual.md</code>.</span></label>
+gh repo create laurie-vault --private --source=. --remote=origin --push
+gh repo view --json owner,visibility</code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Repo reads <code>"PRIVATE"</code> and the owner is <strong>her</strong>, not <code>qrcteam</code>. Skeleton visible on GitHub, and <code>ls $VAULT/wiki/topics</code> shows her buckets each holding a <code>_manual.md</code>.</span></label>
+
+    <p><strong>Only if she said yes at 01.1</strong> — add yourself as a collaborator on her repo.
+    She stays the owner; this is a permission she grants and can withdraw:</p>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>gh api --method PUT "repos/$(gh api user -q .login)/laurie-vault/collaborators/qrcteam" \
+  -f permission=push</code></pre></div>
   </div>
 
   <div class="step">
@@ -771,9 +779,10 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
   <div class="step">
     <h3><span class="ix">08.3</span>The two obligations you took on</h3>
     <ol>
-      <li><strong>Transfer the repo when it's stable.</strong> <code>qrcteam/laurie-vault</code> →
-      her own GitHub. One-click ownership transfer; the vault keeps working through it. Until that
-      happens, the "you could fire me tomorrow and lose nothing" test fails.</li>
+      <li><strong>Transfer <code>qrcteam/laurie-app</code> when the install is stable.</strong>
+      Her foundation instance was started in your org before the day-one-ownership call, so it's
+      the one repo of hers still sitting in yours. One-click GitHub ownership transfer. Until it
+      moves, the "she could fire me tomorrow and lose nothing" test fails on that repo.</li>
       <li><strong>Her GoHighLevel, connected and readable</strong>, plus <strong>one stuck project
       finished</strong>. Both are in the $1,500 offer she accepted. Neither is an install-day job —
       but if you don't put them in the six-week plan today, they slide.</li>
@@ -814,7 +823,7 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
       <thead><tr><th>Thing</th><th>Mazíx / Doug</th><th>Laurie</th></tr></thead>
       <tbody>
         <tr><td>Who's in the room</td><td>On-site, family</td><td><strong>Remote</strong>, paying client — phase 02 is new ground</td></tr>
-        <tr><td>Vault repo</td><td><code>qrcteam</code>, indefinitely</td><td><code>qrcteam</code> <strong>now, hers at stable state</strong> — say it out loud, then do it</td></tr>
+        <tr><td>Vault repo</td><td><code>qrcteam</code>, indefinitely</td><td><strong>Her own GitHub from day one</strong> — collaborator access only if she offers it</td></tr>
         <tr><td>OpenRouter</td><td>Optional</td><td>She has credit → <strong>provider pinning is mandatory</strong></td></tr>
         <tr><td>Extra integration</td><td>None</td><td><strong>GoHighLevel</strong> connected and readable</td></tr>
         <tr><td>Beyond the install</td><td>—</td><td>Six weekly calls, <strong>one stuck project finished</strong></td></tr>

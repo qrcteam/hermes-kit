@@ -525,3 +525,33 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   README beside it. Protects the two local-only commits — `966cd38` ($150/hr rate + minute
   estimates) and `7535665` (os3.2 Design Studio merge). Repo has no remote by design.
   Still to do: get that one file off this machine. [gotcha]
+
+## 2026-08-21 session — Laurie install-day runbook + ownership reversal
+- **REVERSED: Laurie's vault repo starts in HER GitHub, not `qrcteam`.** Oz's call on install
+  day, superseding the 2026-08-20 ruling (which had it starting in `qrcteam` and transferring at
+  stable state). Support access is now an invitation instead of a default: she may add `qrcteam`
+  as a **collaborator** on her own repo and can revoke it in one click. `people/laurie.md` records
+  both the new decision and the superseded one — don't delete the old ruling, the reasoning
+  matters. [decision]
+- **`qrcteam/laurie-app` is the one repo of hers still in Oz's org** — her foundation instance,
+  started before the day-one-ownership call. **Transfer it to her account at stable state.** This
+  is now the only outstanding ownership obligation for Laurie. [state]
+- **`gh` does the GitHub work on her Mac, not SSH.** `gh auth login` as her, then
+  `gh repo create laurie-vault --private --source=. --remote=origin --push` — unqualified name
+  creates it under the authenticated user, so no owner prefix and no SSH keypair on a client
+  machine. Runbook 02 still says `git@github.com:` + a manual repo creation; worth promoting the
+  `gh` path into the runbook once it's been proven on a real install. [decision]
+- **New: `docs/install-day-laurie.html`** — install-day arrangement of runbook 02 for one remote
+  macOS install: call → remote in → clone → 8 phases → landmines → handover, 23 tick-off gates
+  with localStorage. Artifact (private, for Oz):
+  <https://claude.ai/code/artifact/06b754ae-71f4-4962-b29d-b830c01071ce>. It adds three steps the
+  runbook has never had — remote access (Zoom screen-share + remote control, UNPROVEN, Mazíx was
+  on-site), Command Line Tools + Homebrew (a stock Mac has neither `git` nor `brew`), and `gh`
+  auth instead of SSH. [state]
+- **GOTCHA — both machines get the kit at `~/Documents/Projects/hermes`,** so every command reads
+  identically on either side. Running runbook steps 5–6 on Oz's own Mac by mistake would overwrite
+  his `~/.hermes/.env` and Pinecone key and start a second gateway fighting `@Ozzzhermesbot` for
+  its token. Every command block on the new page is stamped HER MAC / YOUR MAC for this reason.
+  Only phase 00 (and the SOUL transcription + `people/laurie.md`) run on Oz's machine. [gotcha]
+- **Laurie's buckets are still undecided** — the page carries Doug's set as a placeholder. They
+  get created at step 04.2 and renaming later is a chore; ask her in the first ten minutes. [state]

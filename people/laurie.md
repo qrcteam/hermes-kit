@@ -15,7 +15,7 @@
 |---|---|
 | Vault | `~/Memory/laurie-vault` |
 | Hermes home | `~/.hermes` |
-| Git remote | `qrcteam/laurie-vault` (private) — **hers eventually, see Boundary** |
+| Git remote | `<her-github>/laurie-vault` (private) — **hers from day one** |
 | Pinecone index | `laurie-vault` |
 | Pinecone account | hers |
 | Bot | `@<handle>` — made on install day |
@@ -30,22 +30,25 @@
 
 ## Boundary
 
-**Decided 2026-08-20 by Oz: the vault repo starts in `qrcteam`, and moves to her own GitHub
-account later.** Reason: she's a paying client, and the kit's own rule (doc 07) says a paying
-client owns everything — but starting in `qrcteam` means Oz can clone and fix things without a
-screen-share during the weeks when things actually break. The move is a one-click GitHub
-ownership transfer and the vault keeps working through it, so this is a deferral, not a
-compromise.
+**Decided 2026-08-21 by Oz: her vault repo is created in HER GitHub account on install day.**
+Nothing of hers starts in `qrcteam`. This supersedes the 2026-08-20 ruling below.
 
-**Two things this obliges:**
+If she wants Oz able to fix things without a screen-share, she adds him (`qrcteam`) as a
+collaborator on her own repo — her invitation, and she can revoke it in one click. Ask; don't
+assume. If she declines, support happens over a screen-share and that is a fine trade.
 
-1. **Say out loud on install day that you can read her notes** — consent, not assumption. This
-   is the single sentence that makes the arrangement honest.
-2. **Transfer it when the install is stable.** Same trigger as the price drop: stable state.
-   If it isn't moved by then, the "you could fire me and lose nothing" test fails.
+**Superseded (2026-08-20):** the vault repo was to start in `qrcteam` and transfer at stable
+state, on the reasoning that Oz could clone and fix during the weeks when things break. Reversed
+because the kit's own rule for a paying client (doc 07) is that everything is hers from day one,
+and a collaborator invite buys the same support access without ever holding her memory.
 
-Everything else is hers from day one: her Pinecone account, her model subscription, her
-machine, her GoHighLevel. Oz holds no keys of hers after install.
+**Still outstanding — the foundation instance.** `qrcteam/laurie-app` was started in Oz's org
+before this decision. **Transfer it to her account when the install is stable.** One-click GitHub
+ownership transfer. Until that happens, the "she could fire me tomorrow and lose nothing" test
+still fails on that one repo.
+
+Everything else is hers from day one: her Pinecone account, her model subscription, her machine,
+her GoHighLevel. Oz holds no keys of hers after install.
 
 ## Offer
 
