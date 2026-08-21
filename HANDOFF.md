@@ -555,3 +555,13 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   Only phase 00 (and the SOUL transcription + `people/laurie.md`) run on Oz's machine. [gotcha]
 - **Laurie's buckets are still undecided** — the page carries Doug's set as a placeholder. They
   get created at step 04.2 and renaming later is a chore; ask her in the first ten minutes. [state]
+- **BIG ONE — the easiest install path is Claude Code running ON their machine.** Laurie's install
+  (2026-08-21, macOS, remote): clone `hermes-kit` onto her Mac, start Claude Code there, and let it
+  read the runbook and drive the install locally while Oz supervises over screen share. Confirmed
+  by Oz as "the easiest thing." This largely retires the phase-02 model of Oz hand-typing every
+  command through remote control — the remote session becomes supervision, not data entry, and the
+  runbook's `~/Documents/Projects/hermes` paths resolve natively because the kit is genuinely there.
+  **Make this the documented default in `02-runbook-mac.md` before Trenton's install.** [decision]
+- **Open boundary question this raises:** whose Claude Code account authenticates on a client's
+  machine, and does it get removed at handover? Same test as everything else — she should be able
+  to fire Oz tomorrow and lose nothing. Not yet decided; settle before the next client install. [state]

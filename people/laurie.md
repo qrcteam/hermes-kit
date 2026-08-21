@@ -1,6 +1,6 @@
 # Laurie
 
-**Status:** not installed · **Platform:** macOS · **Installed:** <date>
+**Status:** INSTALLING — started 2026-08-21 (remote; Claude Code driving on her Mac) · **Platform:** macOS
 
 > **No secrets in this file, ever.** Names of things, not values. No tokens, no keys, no bot
 > tokens, no user IDs. This file is in git.
@@ -63,4 +63,9 @@ create before install day. Sent ahead of the 2026-08-21 meeting.
 
 ## Deviations from the runbook
 
-<none yet>
+- **Claude Code ran on her machine and drove the install.** Kit cloned to her Mac, Claude Code
+  started there, runbook followed locally with Oz supervising over screen share — instead of Oz
+  hand-typing every command through remote control. Oz: "the easiest thing." This is the path to
+  document for the remaining installs.
+- Obsidian was already installed on her Mac. Her existing vaults were left untouched;
+  `~/Memory/laurie-vault` is a separate vault, as designed.
