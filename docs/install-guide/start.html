@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Six Accounts, Twenty Minutes</title>
+<meta name="description" content="The six accounts to set up before your assistant install call.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%94%91</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --ground:#F5F7F8;
+    --surface:#FFFFFF;
+    --surface-sunk:#EDF1F2;
+    --ink:#14191C;
+    --ink-soft:#3C474C;
+    --muted:#68767C;
+    --rule:#DCE3E5;
+    --rule-strong:#C2CDD0;
+    --accent:#0F5F57;
+    --accent-soft:#E2EFEC;
+    --accent-ink:#0B4A44;
+    --gold:#8A6516;
+    --gold-soft:#F4EBD7;
+    --shadow:0 1px 2px rgba(20,25,28,.05), 0 8px 24px -16px rgba(20,25,28,.28);
+    --display:"Newsreader", Georgia, "Times New Roman", serif;
+    --body:"Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#11161A;
+      --surface:#181F24;
+      --surface-sunk:#141A1E;
+      --ink:#E7ECEE;
+      --ink-soft:#C3CDD1;
+      --muted:#8E9CA3;
+      --rule:#2A343A;
+      --rule-strong:#3A464D;
+      --accent:#4FB9AA;
+      --accent-soft:#16302E;
+      --accent-ink:#8FD9CD;
+      --gold:#D6AF63;
+      --gold-soft:#2B2517;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#11161A;
+    --surface:#181F24;
+    --surface-sunk:#141A1E;
+    --ink:#E7ECEE;
+    --ink-soft:#C3CDD1;
+    --muted:#8E9CA3;
+    --rule:#2A343A;
+    --rule-strong:#3A464D;
+    --accent:#4FB9AA;
+    --accent-soft:#16302E;
+    --accent-ink:#8FD9CD;
+    --gold:#D6AF63;
+    --gold-soft:#2B2517;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:47rem;margin:0 auto;padding:clamp(2rem,6vw,4.5rem) clamp(1.1rem,4vw,2rem) 5rem}
+
+  /* ---------- masthead ---------- */
+  header{
+    display:flex;flex-direction:column;gap:1.15rem;
+    padding-bottom:2rem;margin-bottom:2.5rem;
+    border-bottom:1px solid var(--rule);
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;font-weight:500;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+    margin:0;
+  }
+  h1{
+    font-family:var(--display);
+    font-optical-sizing:auto;
+    font-weight:500;
+    font-size:clamp(2.1rem,6.5vw,3.15rem);
+    line-height:1.08;
+    letter-spacing:-.018em;
+    text-wrap:balance;
+    margin:0;
+  }
+  .stand{
+    margin:0;max-width:36em;
+    font-size:1.075rem;color:var(--ink-soft);
+  }
+  .stand strong{font-weight:600;color:var(--ink)}
+
+  /* ---------- prose blocks ---------- */
+  section{margin-bottom:3.25rem}
+  h2{
+    font-family:var(--display);font-weight:500;
+    font-size:1.65rem;line-height:1.2;letter-spacing:-.012em;
+    margin:0 0 .35rem;text-wrap:balance;
+  }
+  .lede{margin:0 0 1.4rem;color:var(--ink-soft);max-width:38em}
+  p{margin:0 0 1rem}
+  p:last-child{margin-bottom:0}
+  a{color:var(--accent-ink);text-decoration-thickness:1px;text-underline-offset:2px}
+  a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+  /* ---------- the count strip ---------- */
+  .count{
+    display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+    padding:.7rem .95rem;margin-bottom:1.15rem;
+    background:var(--surface-sunk);border:1px solid var(--rule);border-radius:3px;
+  }
+  .count b{
+    font-family:var(--mono);font-size:.82rem;font-weight:500;
+    letter-spacing:.02em;font-variant-numeric:tabular-nums;color:var(--ink);
+  }
+  .count span{font-size:.82rem;color:var(--muted)}
+
+  /* ---------- account cards ---------- */
+  ol.accounts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    box-shadow:var(--shadow);
+    padding:1.15rem 1.25rem 1.25rem;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    column-gap:.9rem;row-gap:.55rem;
+    transition:border-color .18s ease, opacity .18s ease;
+  }
+  .card:has(input:checked){opacity:.62;border-color:var(--rule-strong)}
+  .card:has(input:checked) .name{text-decoration:line-through;text-decoration-color:var(--rule-strong)}
+
+  .box{grid-row:1 / span 3;padding-top:.22rem}
+  .box input{
+    appearance:none;-webkit-appearance:none;margin:0;
+    width:1.3rem;height:1.3rem;border-radius:2px;
+    border:1.5px solid var(--rule-strong);background:var(--surface);
+    cursor:pointer;display:grid;place-content:center;
+    transition:background .15s ease,border-color .15s ease;
+  }
+  .box input:checked{background:var(--accent);border-color:var(--accent)}
+  .box input:checked::after{
+    content:"";width:.72rem;height:.4rem;
+    border-left:2px solid var(--surface);border-bottom:2px solid var(--surface);
+    transform:rotate(-45deg) translate(1px,-1px);
+  }
+  :root[data-theme="dark"] .box input:checked::after,
+  .box input:checked::after{border-color:var(--ground)}
+
+  .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.55rem .7rem}
+  .name{
+    font-family:var(--display);font-weight:600;font-size:1.22rem;
+    letter-spacing:-.008em;line-height:1.25;margin:0;
+  }
+  .cost{
+    font-family:var(--mono);font-size:.71rem;font-weight:500;
+    letter-spacing:.04em;text-transform:uppercase;
+    padding:.2rem .45rem;border-radius:2px;white-space:nowrap;
+    background:var(--accent-soft);color:var(--accent-ink);
+  }
+  .cost.paid{background:var(--gold-soft);color:var(--gold)}
+  .what{grid-column:2;margin:0;color:var(--ink-soft)}
+  .what em{font-style:italic;color:var(--ink)}
+  .foot{
+    grid-column:2;display:flex;flex-wrap:wrap;align-items:center;
+    gap:.5rem 1rem;margin:0;
+  }
+  .without{font-size:.9rem;color:var(--muted);margin:0}
+  .go{
+    font-family:var(--mono);font-size:.78rem;letter-spacing:.01em;
+    color:var(--accent-ink);text-decoration:none;
+    border-bottom:1px solid var(--rule-strong);padding-bottom:1px;white-space:nowrap;
+  }
+  .go:hover{border-color:var(--accent)}
+
+  /* ---------- plain note blocks ---------- */
+  .note{
+    background:var(--accent-soft);border:1px solid var(--rule);
+    border-radius:3px;padding:1.1rem 1.25rem;
+  }
+  .note h3{
+    font-family:var(--body);font-size:.78rem;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);
+    margin:0 0 .45rem;
+  }
+
+  ul.bring{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  ul.bring li{
+    display:flex;gap:.75rem;align-items:flex-start;
+    padding-bottom:.6rem;border-bottom:1px solid var(--rule);
+  }
+  ul.bring li:last-child{border-bottom:0;padding-bottom:0}
+  ul.bring li::before{
+    content:"";flex:none;width:.42rem;height:.42rem;margin-top:.62rem;
+    border-radius:50%;background:var(--accent);
+  }
+
+  footer{
+    margin-top:3.5rem;padding-top:1.6rem;border-top:1px solid var(--rule);
+    color:var(--muted);font-size:.93rem;
+  }
+  footer p{max-width:38em}
+
+  @media (max-width:34rem){
+    body{font-size:16px}
+    .card{padding:1rem 1rem 1.1rem;column-gap:.75rem}
+    .what,.foot{grid-column:1 / -1}
+    .box{grid-row:auto}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+  }</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Before we build your assistant</p>
+    <h1>Six accounts, twenty minutes</h1>
+    <p class="stand">This is everything to set up before our call. <strong>Sign up, and stop there</strong> — don't create keys, projects or anything clever inside them. We do that part together, on your screen, so nothing lands in the wrong place.</p>
+  </header>
+
+  <section>
+    <h2>Start here</h2>
+    <p class="lede">Use <strong>one email address</strong> for all six — whichever you think of as your main business email — and keep the passwords wherever you normally keep passwords.</p>
+    <p>Four of these are free. One costs about $20 a month, and it's the only ongoing cost in the whole setup. One takes a $10 top-up that lasts a very long time.</p>
+    <p>Every account is in <em>your</em> name, on your card. That's deliberate: if you and I stopped working together tomorrow, your assistant would keep running and you'd keep everything.</p>
+  </section>
+
+  <section>
+    <h2>The six</h2>
+    <p class="lede">Tick them off as you go — this page remembers where you got to.</p>
+
+    <div class="count"><b id="tally">0 of 6 done</b><span>about 20 minutes, all in</span></div>
+
+    <ol class="accounts">
+
+      <li class="card">
+        <span class="box"><input type="checkbox" data-id="telegram" aria-label="Telegram — done"></span>
+        <div class="head"><h3 class="name">Telegram</h3><span class="cost">Free</span></div>
+        <p class="what">The doorway — the app you'll actually text your assistant in, the same way you text anyone else. Install it on your phone and make an account. <em>Don't set up the assistant itself yet</em>; that's a two-minute job we do together on the call, on your phone.</p>
+        <p class="foot"><span class="without">Without it, there's no way to reach it.</span> <a class="go" href="https://telegram.org/" target="_blank" rel="noopener">telegram.org&nbsp;↗</a></p>
+      </li>
+
+      <li class="card">
+        <span class="box"><input type="checkbox" data-id="model" aria-label="ChatGPT Plus or Claude Pro — done"></span>
+        <div class="head"><h3 class="name">ChatGPT Plus <span style="color:var(--muted);font-weight:400">or</span> Claude Pro</h3><span class="cost paid">$20 / month</span></div>
+        <p class="what">The thinking part. This one has to be in your name on your card — it's your account and your own relationship with the AI, not mine. If you already pay for one of them, that's the one we'll use. If you have neither and don't mind which, take <em>ChatGPT Plus</em>; it's the smoother path on the day.</p>
+        <p class="foot"><span class="without">Without it, nothing thinks.</span> <a class="go" href="https://chatgpt.com/" target="_blank" rel="noopener">chatgpt.com&nbsp;↗</a> <a class="go" href="https://claude.ai/" target="_blank" rel="noopener">claude.ai&nbsp;↗</a></p>
+      </li>
+
+      <li class="card">
+        <span class="box"><input type="checkbox" data-id="github" aria-label="GitHub — done"></span>
+        <div class="head"><h3 class="name">GitHub</h3><span class="cost">Free</span></div>
+        <p class="what">The backup. Every time your assistant learns something, a private copy goes here automatically. It's what makes a dead laptop cost you a laptop instead of everything you've taught it. Sign up, confirm the email, stop there.</p>
+        <p class="foot"><span class="without">Without it, your memory lives on one disk.</span> <a class="go" href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup&nbsp;↗</a></p>
+      </li>
+
+      <li class="card">
+        <span class="box"><input type="checkbox" data-id="pinecone" aria-label="Pinecone — done"></span>
+        <div class="head"><h3 class="name">Pinecone</h3><span class="cost">Free</span></div>
+        <p class="what">This is what lets you ask a question in your own words. Search for <em>“who did I hire for the bathroom?”</em> and it finds the note that says <em>“went with Ruiz”</em> — no matching words at all. The free tier is genuinely enough for one person.</p>
+        <p class="foot"><span class="without">Without it, you can only search for exact words.</span> <a class="go" href="https://app.pinecone.io/?sessionType=signup" target="_blank" rel="noopener">pinecone.io&nbsp;↗</a></p>
+      </li>
+
+      <li class="card">
+        <span class="box"><input type="checkbox" data-id="openrouter" aria-label="OpenRouter — done"></span>
+        <div class="head"><h3 class="name">OpenRouter</h3><span class="cost paid">~$10 once</span></div>
+        <p class="what">The understudy. It runs small background jobs and steps in on the days your main AI has an outage. Sign up and put $10 of credit on it — in practice that lasts months, because it's only doing the quiet work.</p>
+        <p class="foot"><span class="without">Without it, an outage means a silent assistant.</span> <a class="go" href="https://openrouter.ai/" target="_blank" rel="noopener">openrouter.ai&nbsp;↗</a></p>
+      </li>
+
+      <li class="card">
+        <span class="box"><input type="checkbox" data-id="obsidian" aria-label="Obsidian — done"></span>
+        <div class="head"><h3 class="name">Obsidian</h3><span class="cost">Free — no account</span></div>
+        <p class="what">Not an account at all, just an app to download. It's the window you'll read your assistant's memory through — everything it knows about you, as ordinary pages you can open, correct, or delete.</p>
+        <p class="foot"><span class="without">Without it, the memory works but stays invisible.</span> <a class="go" href="https://obsidian.md/" target="_blank" rel="noopener">obsidian.md&nbsp;↗</a></p>
+      </li>
+
+    </ol>
+  </section>
+
+  <section>
+    <h2>One you already have</h2>
+    <p class="lede">Bring your <strong>GoHighLevel</strong> login. We'll connect it so your assistant can read what's in there and answer questions about it.</p>
+    <div class="note">
+      <h3>Worth checking today</h3>
+      <p>You'll need to reach the settings area where API keys live. If someone else originally set up your account, make sure you can get in there yourself — that's much easier to sort out today than in the middle of our call.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>On your Mac</h2>
+    <p class="lede">Two things about the machine itself. Neither needs doing before the call, but both are worth knowing now.</p>
+    <p><strong>It has to stay awake.</strong> Your assistant can only answer while your Mac is on and awake, so we'll set it to never sleep while it's plugged in. The screen going dark is fine — the machine going to sleep is not.</p>
+    <p><strong>There's one piece of software we install together.</strong> It takes about five minutes and there's nothing for you to do beforehand. Just have your Mac password to hand, and be plugged in.</p>
+  </section>
+
+  <section>
+    <h2>What to bring</h2>
+    <ul class="bring">
+      <li>Your phone, with Telegram installed and you already logged in</li>
+      <li>Your Mac, plugged in, with your Mac password to hand</li>
+      <li>The six logins above, plus your GoHighLevel login</li>
+      <li>About ninety minutes — most of which is me asking you questions, not typing</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p><strong>What I'm not asking you for:</strong> no keys, no passwords, nothing emailed to me. Every key gets created by you, on your own screen, while we're on the call. You own all six accounts, and you can revoke my access to any of it in one click.</p>
+  </footer>
+
+</div>
+
+<script>
+  (function(){
+    var KEY = 'hermes-accounts-v1';
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox]'));
+    var tally = document.getElementById('tally');
+    var state = {};
+    try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { state = {}; }
+
+    function count(){
+      var n = boxes.filter(function(b){ return b.checked; }).length;
+      tally.textContent = n + ' of ' + boxes.length + ' done';
+    }
+    boxes.forEach(function(b){
+      b.checked = !!state[b.dataset.id];
+      b.addEventListener('change', function(){
+        state[b.dataset.id] = b.checked;
+        try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+        count();
+      });
+    });
+    count();
+  })();
+</script>
+</body>
+</html>
