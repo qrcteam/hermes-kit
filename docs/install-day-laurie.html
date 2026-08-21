@@ -1,4 +1,5 @@
 <title>Laurie's Install Day</title>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,8 +93,9 @@ h1{
 .shape{
   margin:34px 0 0; display:grid; gap:1px; background:var(--rule);
   border:1px solid var(--rule); border-radius:3px; overflow:hidden;
-  grid-template-columns:repeat(auto-fit,minmax(122px,1fr));
+  grid-template-columns:repeat(4,1fr);   /* 8 phases -> exactly two full rows */
 }
+@media (max-width:680px){ .shape{grid-template-columns:repeat(2,1fr)} }
 .shape div{background:var(--surface); padding:12px 13px}
 .shape .t{
   font-family:"JetBrains Mono",monospace; font-size:10.5px; color:var(--accent);
@@ -109,7 +111,7 @@ h1{
 }
 .whose h3{margin:0 0 9px; font-size:16px; font-weight:700; letter-spacing:-.01em}
 .whose p{font-size:14.5px}
-.whose .warn{margin-bottom:0}
+.whose .warn{margin-bottom:0; max-width:none}
 
 /* ---------- phases ---------- */
 .phase{margin:64px 0 0; scroll-margin-top:70px}
@@ -250,10 +252,8 @@ td code, p code, li code{
 }
 .cmd code{background:none; padding:0}
 
-.foot{
-  margin-top:72px; padding-top:22px; border-top:1px solid var(--rule);
-  font-size:13px; color:var(--ink-3); max-width:68ch;
-}
+.foot{margin-top:72px; padding-top:22px; border-top:1px solid var(--rule)}
+.foot p{font-size:13px; color:var(--ink-3); max-width:68ch; margin:0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
 </style>
 
@@ -314,8 +314,8 @@ td code, p code, li code{
     <p>You are about to type these commands on someone else's computer. Have the current version
     in front of you, not last week's.</p>
     <div class="cmd"><div class="cmd-head"><span class="host you">Your Mac</span><button class="copy" type="button">Copy</button></div><pre><code>cd ~/Documents/Projects/hermes &amp;&amp; git pull
-open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></pre></div></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Kit is up to date, and <code>people/laurie.md</code> is open in a window you can type into all day.</span></label>
+open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Kit is up to date, and <code>people/laurie.md</code> is open in a window you can type into all day.</span></label>
   </div>
 
   <div class="step">
@@ -326,7 +326,7 @@ open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></
     <div class="why"><b>Why this can't wait until you're on the call:</b> every one of these has an
     email-confirmation step, and a Pinecone signup discovered at minute forty is twenty minutes of
     two people watching an inbox.</div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — All six confirmed by her, in writing, before the call starts. GoHighLevel login in reach too.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — All six confirmed by her, in writing, before the call starts. GoHighLevel login in reach too.</span></label>
   </div>
 
   <div class="step">
@@ -357,7 +357,7 @@ open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></
     organisation's GitHub for now, which means I can read her notes. I'd rather say that than
     have her assume otherwise. It moves to her account the moment this is stable, and it keeps
     working through the move."</b></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Said out loud, she said fine, and you noted the date in <code>people/laurie.md</code>.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Said out loud, she said fine, and you noted the date in <code>people/laurie.md</code>.</span></label>
   </div>
 
   <div class="step">
@@ -368,7 +368,7 @@ open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></
       <li><strong>System Settings → Lock Screen →</strong> display off is fine, <strong>sleep is not</strong>.</li>
       <li>On a laptop, check the same under battery/power and leave it plugged in.</li>
     </ul>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — You watched her change it. Never-sleep is set on the power source she'll actually leave it on.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — You watched her change it. Never-sleep is set on the power source she'll actually leave it on.</span></label>
   </div>
 
   <div class="step">
@@ -399,7 +399,7 @@ open docs/02-runbook-mac.md people/laurie.md docs/06-troubleshooting.md</code></
     admin prompt, scan a QR code, or log into her accounts. Plan for her hands on the keyboard at
     four moments — the Docker install password, the Pinecone key copy, the model login, and the
     Telegram bot creation on her phone.</div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — You can move her cursor and type into her Terminal. Test by opening Terminal yourself.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — You can move her cursor and type into her Terminal. Test by opening Terminal yourself.</span></label>
   </div>
 
   <div class="step">
@@ -416,8 +416,8 @@ xcode-select --install
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' &gt;&gt; ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
-git --version &amp;&amp; brew --version</code></pre></div></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Both print a version number in a <em>new</em> Terminal window, not just the one you ran the installer in.</span></label>
+git --version &amp;&amp; brew --version</code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Both print a version number in a <em>new</em> Terminal window, not just the one you ran the installer in.</span></label>
   </div>
 </section>
 
@@ -431,7 +431,7 @@ git --version &amp;&amp; brew --version</code></pre></div></div>
     exactly there and you never have to translate a path live.</p>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>mkdir -p ~/Documents/Projects
 git clone https://github.com/qrcteam/hermes-kit.git ~/Documents/Projects/hermes
-ls ~/Documents/Projects/hermes/templates</code></pre></div></div>
+ls ~/Documents/Projects/hermes/templates</code></pre></div>
     <div class="why"><b>Yes, Documents is fine for the kit.</b> The "never Desktop, Documents or
     Downloads" rule is about the <em>vault</em> — macOS blocks background jobs from those folders,
     and the promoter is a background job. The kit is only ever read by you, by hand, from a
@@ -439,18 +439,18 @@ ls ~/Documents/Projects/hermes/templates</code></pre></div></div>
     <p>It's a private repo, so <code>git clone</code> will ask for GitHub credentials. Easiest path
     is to install the GitHub CLI now — you need it in a minute anyway:</p>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>brew install gh
-gh auth login   <span class="c"># HTTPS · browser flow · SHE logs in with her account</span></code></pre></div></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>ls</code> shows the templates folder, and <code>gh auth status</code> shows <em>her</em> GitHub account logged in.</span></label>
+gh auth login   <span class="c"># HTTPS · browser flow · SHE logs in with her account</span></code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>ls</code> shows the templates folder, and <code>gh auth status</code> shows <em>her</em> GitHub account logged in.</span></label>
   </div>
 
   <div class="step">
     <h3><span class="ix">03.2</span>Docker Desktop and Obsidian</h3>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>brew install --cask docker
-brew install --cask obsidian</code></pre></div></div>
+brew install --cask obsidian</code></pre></div>
     <p><strong>Open Docker Desktop once</strong> and let it finish starting. It asks for her admin
     password and shows a licence agreement — her hands. Nothing below works until it's running.</p>
-    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker --version &amp;&amp; docker ps</code></pre></div></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — A version number and an <em>empty container table</em>. An error here means Docker Desktop isn't up yet — wait, don't retry.</span></label>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker --version &amp;&amp; docker ps</code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — A version number and an <em>empty container table</em>. An error here means Docker Desktop isn't up yet — wait, don't retry.</span></label>
   </div>
 </section>
 
@@ -472,7 +472,7 @@ brew install --cask obsidian</code></pre></div></div>
     <p>Ask now whether she wants <strong>WhatsApp</strong> too — self-chat mode, she messages
     herself and the agent answers in that thread. If yes, get her number as
     <code>15551234567</code>. Pairing happens after the container is up.</p>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Two strings in hand: bot token and numeric user ID. WhatsApp decided either way.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Two strings in hand: bot token and numeric user ID. WhatsApp decided either way.</span></label>
   </div>
 
   <div class="step">
@@ -496,13 +496,13 @@ rm "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md"
 mkdir -p "$VAULT/wiki/people" "$VAULT/wiki/reference" "$VAULT/raw/sessions"
 
 cd "$VAULT" &amp;&amp; git init -q -b main &amp;&amp; git add -A \
-  &amp;&amp; git commit -qm "vault: initial skeleton for $NAME"</code></pre></div></div>
+  &amp;&amp; git commit -qm "vault: initial skeleton for $NAME"</code></pre></div>
     <p>Then create the private remote and push. With <code>gh</code> already authenticated this is
     one command and no SSH keys:</p>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>cd "$VAULT"
 gh repo create qrcteam/laurie-vault --private --source=. --remote=origin --push
-gh repo view qrcteam/laurie-vault --json visibility</code></pre></div></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Repo reads <code>"PRIVATE"</code>, the skeleton is visible on GitHub, and <code>ls $VAULT/wiki/topics</code> shows her buckets each holding a <code>_manual.md</code>.</span></label>
+gh repo view qrcteam/laurie-vault --json visibility</code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Repo reads <code>"PRIVATE"</code>, the skeleton is visible on GitHub, and <code>ls $VAULT/wiki/topics</code> shows her buckets each holding a <code>_manual.md</code>.</span></label>
   </div>
 
   <div class="step">
@@ -518,16 +518,16 @@ curl -s "https://api.pinecone.io/indexes/create-for-model" \
     "cloud": "aws",
     "region": "us-east-1",
     "embed": { "model": "llama-text-embed-v2", "field_map": { "text": "text" } }
-  }' | python3 -m json.tool</code></pre></div></div>
+  }' | python3 -m json.tool</code></pre></div>
     <p>Store it in a file, then clear it from the shell:</p>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>mkdir -p ~/.hermes/secrets
 printf '%s' "$PC_KEY" &gt; ~/.hermes/secrets/pinecone.key
 chmod 600 ~/.hermes/secrets/pinecone.key
-unset PC_KEY</code></pre></div></div>
+unset PC_KEY</code></pre></div>
     <div class="why"><b>Why a file and not the environment:</b> the promoter needs a key that can
     write to the index; the agent only ever needs to search it. Keeping it out of the agent's
     environment means a prompt injection can't exfiltrate a credential that could wipe her index.</div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — JSON came back with <code>"name": "laurie-vault"</code> and a host. ("Already exists" is fine.) Key file is mode 600.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — JSON came back with <code>"name": "laurie-vault"</code> and a host. ("Already exists" is fine.) Key file is mode 600.</span></label>
   </div>
 
   <div class="step">
@@ -545,12 +545,12 @@ chmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh
 mkdir -p ~/.hermes/skills/note-taking/vault-capture
 cp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md
 mkdir -p ~/.hermes/skills/note-taking/session-log
-cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md</code></pre></div></div>
+cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md</code></pre></div>
     <div class="why">The two skills do different halves of memory. <b>vault-capture</b> saves facts
     the moment they're said. <b>session-log</b> saves what she did, once, at the end of a working
     conversation — including where she stopped, which is the line she'll reread most. Facts alone
     answer "what do I know?" but never "what was I working on?"</div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>.env</code> is mode 600 with token + user ID filled in, and both SKILL.md files exist.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>.env</code> is mode 600 with token + user ID filled in, and both SKILL.md files exist.</span></label>
   </div>
 </section>
 
@@ -565,24 +565,24 @@ cp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md
   --env-file ~/.hermes/.env \
   -v "$HOME/.hermes:/opt/data" \
   -v "$HOME/Memory/$NAME-vault:/vault:<span class="k">ro</span>" \
-  nousresearch/hermes-agent:latest</code></pre></div></div>
+  nousresearch/hermes-agent:latest</code></pre></div>
     <div class="warn"><p><b>The <code>:ro</code> is the single most important character in this kit.</b>
     It makes it impossible — not merely forbidden — for the agent to damage her memory. If you
     retype this line from memory later, that's the character you'll drop.</p></div>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker exec hermes hermes config set database.journal_mode delete
 docker exec hermes hermes config set approvals.mode smart
 docker exec hermes hermes config set approvals.cron_mode deny
-docker restart hermes</code></pre></div></div>
+docker restart hermes</code></pre></div>
     <div class="why"><b><code>journal_mode: delete</code> is not a preference.</b> SQLite's
     write-ahead log corrupts across a macOS Docker bind mount. Get it wrong and
     <em>"database disk image is malformed"</em> turns up in about a week.</div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Container running, and <code>docker inspect hermes</code> confirms the vault mount is read-only.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Container running, and <code>docker inspect hermes</code> confirms the vault mount is read-only.</span></label>
   </div>
 
   <div class="step">
     <h3><span class="ix">05.2</span>Log into her model — her hands, her account</h3>
     <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>docker exec -it hermes hermes model
-docker exec hermes hermes status</code></pre></div></div>
+docker exec hermes hermes status</code></pre></div>
     <p>She picks her provider and follows the device-flow link. Credentials land in
     <code>~/.hermes/auth.json</code> — never in <code>.env</code>.</p>
     <div class="warn"><p><b>Laurie has OpenRouter credit, which makes this mandatory, not optional.</b>
@@ -596,8 +596,8 @@ docker exec hermes hermes config set model.provider <span class="k">openai-codex
 docker exec hermes hermes config set fallback_providers \
   '[{"provider":"openrouter","model":"anthropic/claude-sonnet-4.5"}]'
 docker restart hermes
-docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"</code></pre></div></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>hermes status</code> shows Gateway running, Telegram ✓, model logged in — and the proof command answers <code>PROVIDER-OK</code>.</span></label>
+docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"</code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>hermes status</code> shows Gateway running, Telegram ✓, model logged in — and the proof command answers <code>PROVIDER-OK</code>.</span></label>
   </div>
 
   <div class="step">
@@ -605,7 +605,7 @@ docker exec hermes hermes -z "Reply with exactly: PROVIDER-OK"</code></pre></div
     <p>Do not go further until a reply comes back. If nothing does, go to
     <code>docs/06-troubleshooting.md</code> → <em>"The bot doesn't reply"</em>, and check the two
     usual suspects: the Telegram cold-start wedge, and two gateways fighting over one token.</p>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — She got a reply on her own phone, from her own bot. <strong>This is the natural break point</strong> if the day is running long.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — She got a reply on her own phone, from her own bot. <strong>This is the natural break point</strong> if the day is running long.</span></label>
   </div>
 
   <div class="step">
@@ -617,11 +617,11 @@ docker exec -it hermes hermes whatsapp   <span class="c"># pair from INSIDE the 
 <span class="c"># ~30s of dependency install that looks like a hang — wait. Then choose self-chat,</span>
 <span class="c"># and she scans the QR: WhatsApp → Settings → Linked Devices → Link a Device</span>
 docker restart hermes
-docker logs hermes 2>&amp;1 | grep -i whatsapp | tail -3</code></pre></div></div>
+docker logs hermes 2>&amp;1 | grep -i whatsapp | tail -3</code></pre></div>
     <p>Worth saying out loud: the bridge emulates WhatsApp Web rather than Meta's official Business
     API. Fine for personal self-chat. <strong>Her business number does not go on it</strong>, and
     nothing outbound gets automated from it.</p>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Logs say <code>Bridge ready (status: connected)</code> and she got a reply in her own self-chat thread.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Logs say <code>Bridge ready (status: connected)</code> and she got a reply in her own self-chat thread.</span></label>
   </div>
 </section>
 
@@ -648,10 +648,10 @@ docker logs hermes 2>&amp;1 | grep -i whatsapp | tail -3</code></pre></div></div
 open -e ~/.hermes/SOUL.md
 <span class="c"># …write it, then:</span>
 docker restart hermes
-grep -c '&lt;' ~/.hermes/SOUL.md</code></pre></div></div>
+grep -c '&lt;' ~/.hermes/SOUL.md</code></pre></div>
     <p>Briefing notes for a new chief of staff who starts Monday — not a Q&amp;A dump. Quote her
     directly where she said it well.</p>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — The count is <code>0</code>, or very near it. Any <code>&lt;placeholder&gt;</code> left behind is something the agent will confidently reason from as if it were true.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — The count is <code>0</code>, or very near it. Any <code>&lt;placeholder&gt;</code> left behind is something the agent will confidently reason from as if it were true.</span></label>
   </div>
 </section>
 
@@ -669,7 +669,7 @@ grep -c '&lt;' ~/.hermes/SOUL.md</code></pre></div></div>
 plutil -lint ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
 launchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2&gt;/dev/null
 launchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
-launchctl list | grep vault-promote</code></pre></div></div>
+launchctl list | grep vault-promote</code></pre></div>
     <p>Exit status <code>0</code> is what you want. <code>78</code> means a malformed plist;
     <code>1</code> usually means a wrong path inside it. Then run it by hand before trusting the
     schedule:</p>
@@ -680,8 +680,8 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
 PINECONE_SYNC=~/Memory/$NAME-vault/scripts/pinecone-sync \
 bash ~/.hermes/promote.sh
 
-cat ~/.hermes/promote-state.json</code></pre></div></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>"status": "ok"</code>. Anything else, read the message — it says what's wrong.</span></label>
+cat ~/.hermes/promote-state.json</code></pre></div>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>"status": "ok"</code>. Anything else, read the message — it says what's wrong.</span></label>
   </div>
 
   <div class="step">
@@ -695,10 +695,10 @@ docker exec hermes hermes cron create "0 13 * * *" \
    Give a short briefing: what's open, what's owed, what they said they'd do. Two or three
    things, in plain sentences, not a table. If nothing needs attention, say so in one line."
 
-docker exec hermes hermes cron list</code></pre></div></div>
+docker exec hermes hermes cron list</code></pre></div>
     <div class="warn"><p><b>Those hours are UTC.</b> Mountain Time is UTC−6 in summer, so
     <code>13</code> = 7am. Check the timezone Laurie actually lives in before you leave.</p></div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — Both jobs listed, and the digest hour converts to a morning in <em>her</em> timezone.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — Both jobs listed, and the digest hour converts to a morning in <em>her</em> timezone.</span></label>
   </div>
 
   <div class="step">
@@ -709,10 +709,10 @@ docker exec hermes hermes cron list</code></pre></div></div>
 
 <span class="c"># to let it repair the mechanical ones (idempotent, reversible, can't lose data):</span>
 bash ~/Documents/Projects/hermes/templates/install-verify.sh --fix
-docker restart hermes   <span class="c"># only if it changed a config key</span></code></pre></div></div>
+docker restart hermes   <span class="c"># only if it changed a config key</span></code></pre></div>
     <div class="why">Get it green <b>before</b> the live test below. A failing smoke test on top of a
     half-finished install tells you nothing about which of the two is broken.</div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>install-verify.sh</code> exits clean, no red.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>install-verify.sh</code> exits clean, no red.</span></label>
   </div>
 
   <div class="step">
@@ -732,10 +732,10 @@ git -C ~/Memory/$NAME-vault status -sb
 VAULT_ROOT=~/Memory/$NAME-vault PINECONE_INDEX=$NAME-vault \
 PINECONE_STATE=~/.hermes/pinecone-state.json \
 PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
-~/Memory/$NAME-vault/scripts/pinecone-sync search "who is doing the Henderson work"</code></pre></div></div>
+~/Memory/$NAME-vault/scripts/pinecone-sync search "who is doing the Henderson work"</code></pre></div>
     <div class="why">If the third fails but the first two pass, <b>her memory is safe</b> — recall is
     just degraded to literal search. Fix it, but don't panic in front of her.</div>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — All three pass, and her final text — <em>"who's on Henderson?"</em> — comes back right.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — All three pass, and her final text — <em>"who's on Henderson?"</em> — comes back right.</span></label>
   </div>
 </section>
 
@@ -745,7 +745,7 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
 
   <div class="step">
     <h3><span class="ix">08.1</span>Open her memory in front of her</h3>
-    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>open -a Obsidian ~/Memory/$NAME-vault</code></pre></div></div>
+    <div class="cmd"><div class="cmd-head"><span class="host her">Her Mac</span><button class="copy" type="button">Copy</button></div><pre><code>open -a Obsidian ~/Memory/$NAME-vault</code></pre></div>
     <p>Give her the onboarding doc and <strong>nothing else</strong>. If she has to ask you something
     the doc should have answered, that's an edit to make, not an explanation to give.</p>
     <p>Say the support boundary plainly: <strong>you handle</strong> the container, sync, the bot
@@ -753,7 +753,7 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
     awake, and what she puts in it. <strong>Nobody handles</strong> the model being wrong about
     something — it's an assistant, not an oracle. Set that today and it's fine; leave it and the
     first hallucination becomes a support ticket about trust.</p>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — She has opened her own vault in Obsidian, with her hands, and read a note in it.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — She has opened her own vault in Obsidian, with her hands, and read a note in it.</span></label>
   </div>
 
   <div class="step">
@@ -765,7 +765,7 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
     <p>Then append what bit you to <code>HANDOFF.md</code> and push the kit. The remote-access step
     in phase 02 is the obvious candidate to promote into <code>02-runbook-mac.md</code> once it's
     been proven once.</p>
-    <label class="gate"><input type="checkbox"><span><b>GATE</b> — <code>people/laurie.md</code> committed and pushed; status changed from <em>not installed</em>.</span></label>
+    <label class="gate"><input type="checkbox" autocomplete="off"><span><b>GATE</b> — <code>people/laurie.md</code> committed and pushed; status changed from <em>not installed</em>.</span></label>
   </div>
 
   <div class="step">
@@ -824,9 +824,9 @@ PINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \
   </div>
 </section>
 
-<p class="foot">Source of truth is <code>docs/02-runbook-mac.md</code> in <code>qrcteam/hermes-kit</code>;
+<footer class="foot"><p>Source of truth is <code>docs/02-runbook-mac.md</code> in <code>qrcteam/hermes-kit</code>;
 this page is the install-day arrangement of it for one person on one afternoon. When they disagree,
-the runbook wins — and this page needs an edit. Tick marks are stored in this browser only.</p>
+the runbook wins — and this page needs an edit. Tick marks are stored in this browser only.</p></footer>
 
 </div>
 
