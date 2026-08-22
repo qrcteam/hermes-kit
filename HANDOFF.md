@@ -646,3 +646,15 @@ her first bot reply), 06 (SOUL), 07 (promoter + crons + three smoke tests), 08 (
 placeholder. Ask her, then fill `people/laurie.md`.
 Open question logged and unanswered: **whose Claude Code account authenticated on her machine,
 and does it come off at handover?** Settle before the next client install.
+- **ANSWERED 2026-08-22 (Oz), three open threads closed:**
+  1. **Laurie's buckets — she entered them herself during the install.** Not lost, just not
+     written down: `ls ~/Memory/laurie-vault/wiki/topics/` on her Mac, or her repo if collaborator
+     access was granted. Copy into `people/laurie.md` + the install-day page.
+  2. **The Claude Code on her machine was HER Claude account.** Nothing of Oz's authenticates
+     there; nothing to remove at handover. **Standing shape for client installs: the client's own
+     Claude, on the client's own machine.**
+  3. **Claude-driven install is VITAL** — Oz: *"I won't work on it without Claude."*
+     **`02-runbook-mac.md` gets rewritten around Claude Code on the target machine as THE method**,
+     hand-typed commands demoted to a fallback. Canon since 2026-08-14 everywhere except the
+     runbook — which is the document people actually follow. **Do it before Trenton (#5). This is
+     the next session's first task.** [decision]

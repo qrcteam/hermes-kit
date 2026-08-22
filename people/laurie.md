@@ -24,9 +24,12 @@
 
 ## Buckets
 
-`<a>` · `<b>` · `<c>` · `personal`
+**She chose and entered them herself on install day (2026-08-21)** — her words, which is the
+point. The list is not recorded here yet because Oz did not have it to hand at write-up.
 
-**Why these:** <decide in the SOUL interview — her words, not ours.>
+**Recover them from:** `ls ~/Memory/laurie-vault/wiki/topics/` on her Mac, or her `laurie-vault`
+repo if she granted collaborator access. Then fill them in here and in
+`docs/install-day-laurie.html` (step 04.2 still shows Doug's set as a placeholder).
 
 ## Boundary
 
@@ -69,3 +72,6 @@ create before install day. Sent ahead of the 2026-08-21 meeting.
   document for the remaining installs.
 - Obsidian was already installed on her Mac. Her existing vaults were left untouched;
   `~/Memory/laurie-vault` is a separate vault, as designed.
+- **The Claude Code that drove the install was HER Claude account**, not Oz's (confirmed by Oz
+  2026-08-22). Nothing of his authenticates on her machine and nothing needs removing at
+  handover. This is the standing shape for client installs.
