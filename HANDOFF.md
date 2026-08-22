@@ -565,3 +565,23 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
 - **Open boundary question this raises:** whose Claude Code account authenticates on a client's
   machine, and does it get removed at handover? Same test as everything else — she should be able
   to fire Oz tomorrow and lose nothing. Not yet decided; settle before the next client install. [state]
+- **Hermes' always-loaded memory is a capped budget — and it evicts silently.** `MEMORY.md`
+  (2200 chars) and `USER.md` (1375) are injected into every message, so the caps are per-turn
+  token budgets, not storage. Hit live on Oz's install 2026-08-21/22: MEMORY.md at 95%, Hermes
+  wrote one new standing rule overnight, and the unrelated six-needs-lens entry was **gone** by
+  morning with no announcement. Pruned to pointers (MEMORY 2151→1572, USER 1372→1227); four
+  facts moved into the vault as proper notes and proven recoverable —
+  `hermes -z "Search /vault for the six-needs lens"` returned it. Principle written up as
+  `wiki/concepts/hermes-memory-is-a-budget-not-a-drawer.md`. [gotcha]
+- **Kit hardened for it:** `templates/SOUL.md.template` ground rules gained "search the vault
+  before you say you don't know" and a new rule 3 telling the agent its always-loaded memory is
+  a budget, that a full file evicts silently, and to say so out loud if it evicts something.
+  `06-troubleshooting.md` gained *"It forgot something it used to know"* with the prune
+  procedure and the verify command. [decision]
+- **CRON TRAP, unfixed in the docs:** changing the model re-shapes `model.default` (the picker
+  drops the `provider/` prefix), and any **unpinned** cron job whose config drifted since
+  creation is SKIPPED, not run — "to prevent unintended spend." Killed Oz's daily-digest on
+  2026-08-22. Fix: `hermes cron edit <id> --model <m> --provider <p>`. Watch out — a monitor job
+  can show `ok` while carrying a stale snapshot, because it only calls inference on output
+  change; Oz's `forge-completion-hermes-review` was one bad tick from going quiet with a green
+  status. **Not yet written into runbook 02 / troubleshooting — do it.** [gotcha]

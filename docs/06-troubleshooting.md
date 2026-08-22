@@ -327,6 +327,54 @@ lose notes. Fix it calmly — nothing is at risk.
 
 ---
 
+## "It forgot something it used to know"
+
+Not a bug, and nothing is lost from the vault — but it's the one failure that erodes trust
+fastest, because the agent doesn't announce it.
+
+`MEMORY.md` and `USER.md` in `~/.hermes/memories/` are injected into **every** message the
+agent handles, so they're hard-capped:
+
+```bash
+docker exec hermes hermes config get memory | grep char_limit
+# memory_char_limit: 2200   ← MEMORY.md
+# user_char_limit: 1375     ← USER.md
+
+wc -c ~/.hermes/memories/MEMORY.md ~/.hermes/memories/USER.md
+```
+
+**At the cap, a new fact doesn't get refused — it silently evicts an old one.** Seen live on
+the reference install 2026-08-21/22: `MEMORY.md` sat at 95%, the agent wrote one new standing
+rule overnight, and an unrelated entry was gone by morning with nothing said about it.
+
+**The fix is pruning, not a bigger cap.** These two files should hold only what must be true in
+*every* conversation. Everything else belongs in the vault, where it's unbounded and findable by
+meaning — that's what the vault is for.
+
+1. Back both files up first: `cp MEMORY.md MEMORY.md.bak-$(date +%F)`
+2. Move the background facts into proper vault notes, one fact per note
+3. Leave **one pointer line** behind naming what moved, so the agent knows to go looking
+4. Confirm it can still reach the fact:
+   ```bash
+   docker exec hermes hermes -z "Search /vault for <the evicted thing>. If you cannot find it, say NOT FOUND."
+   ```
+
+You *can* raise the ceiling —
+
+```bash
+docker exec hermes hermes config set memory.memory_char_limit 3500
+docker restart hermes
+```
+
+— but every character costs tokens on every turn forever, and a cap you keep raising stops
+doing its job. Prune first; raise once, deliberately, only if it's still tight afterwards.
+
+**On install day:** the plain-language preference in `templates/session-hygiene-prompt.md`
+spends roughly a third of a fresh `USER.md`. Worth it — but don't also load in preferences they
+never asked for.
+
+---
+
 ## "There's a conflict branch"
 
 The promoter hit a git conflict, parked the work safely, and told them. Nothing is lost — this
