@@ -587,3 +587,56 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   status. **Written up 2026-08-22:** runbook 02 step 9 (pin the digest at creation + checklist line),
   `06-troubleshooting.md` -> *"The digest stopped arriving"*, and `07-operator-notes.md` ->
   *"Changing the model breaks cron"*. [gotcha]
+
+## 2026-08-22 session — memory prune, cron trap, claude-os autostart · REBOOT PENDING
+**Mac is being rebooted at the end of this session** (Chrome wedged). Everything below is
+committed and pushed — hermes-kit at `c44805f`, vault in sync. Nothing is in flight.
+
+### Check these first after the reboot
+1. **Docker Desktop was DOWN before the reboot** (socket gone, process not running — not
+   deliberate). Hermes cannot answer a text until Docker Desktop is running again. Relaunch it,
+   then: `docker ps` → hermes up (`--restart unless-stopped` handles the container itself).
+   **If Docker Desktop does not start on login, turn that on** — Settings → General → *Start
+   Docker Desktop when you sign in*. A Mac that reboots without it is a silently dead assistant.
+2. **Cron pins survived?** `docker exec hermes hermes cron list` — then confirm the pins really
+   are there (the status column lies, see below):
+   `docker exec hermes cat /opt/data/cron/jobs.json | python3 -c "import json,sys; [print(j.get('name'), j.get('model'), j.get('provider')) for j in json.load(sys.stdin)]"`
+   Want `daily-digest` and `forge-completion-hermes-review` both on `gpt-5.6-terra` /
+   `openai-codex`. Next digest fires 13:00 UTC (7am MT).
+3. **claude-os dashboard on 8081.** `curl -s -o /dev/null -w '%{http_code}' localhost:8081/__hermes_status`
+   The launchd job is now **`--strictPort`**, so if anything else grabs 8081 first it will
+   crash-loop instead of silently relocating — check `~/.claude-os/dashboard.log` if it's dead.
+4. **Memory files still pruned?** `wc -c ~/.hermes/memories/MEMORY.md ~/.hermes/memories/USER.md`
+   — expect ~1572 and ~1227. Hermes writes to these on its own, so they will creep back up.
+
+### What changed today
+- **Hermes memory pruned to pointers.** MEMORY.md 2151→1572 (of 2200), USER.md 1372→1227 (of
+  1375). Four background facts moved into the vault as real notes and proven recoverable via
+  `/vault` search. Principle: `wiki/concepts/hermes-memory-is-a-budget-not-a-drawer.md`.
+  Backups at `~/.hermes/memories/*.bak-20260822T154202`. Nothing dropped from USER.md — only
+  compressed. [decision]
+- **A fact was already lost before we started.** The six-needs-lens entry was evicted overnight
+  by Hermes to fit a new rule, silently. Recovered only because it had been read aloud the day
+  before. This is the whole argument for the prune. [gotcha]
+- **Cron model-drift trap documented** in runbook 02 step 9 (pin at creation + checklist),
+  `06-troubleshooting.md` ("The digest stopped arriving") and `07-operator-notes.md` ("Changing
+  the model breaks cron"). [decision]
+- **SOUL.md.template ground rules** gained "search the vault before you say you don't know" and
+  a new rule 3 on the memory budget, so every future install starts knowing this. [decision]
+- **`templates/session-hygiene-prompt.md`** — new paste-and-go prompt for handover (idle reset
+  at 2h + plain-language standing preference). Wired into runbook 02 step 11 + checklist and the
+  Laurie page as step 08.2. [decision]
+- **claude-os autostart was already configured** (`com.claude-os.dashboard`, since 2026-08-14).
+  Fixed the real weakness: the port was unpinned, and the app prefers 8080 — it only landed on
+  8081 because a Python service held 8080. A reboot could have moved it and silently broken the
+  `claude-os` Hermes skill, which hardcodes 8081 in five endpoints. Now
+  `--port 8081 --strictPort`. Old plist backed up in `~/.claude-os/`. [gotcha]
+
+### Laurie — install in progress, unfinished
+Through the vault build with **Claude Code running on her Mac** driving the runbook (the day's
+big finding — see the previous entry). **Not confirmed done:** phase 05 (container, model login,
+her first bot reply), 06 (SOUL), 07 (promoter + crons + three smoke tests), 08 (handover).
+**Her buckets were never captured** — the install-day page still carries Doug's set as a
+placeholder. Ask her, then fill `people/laurie.md`.
+Open question logged and unanswered: **whose Claude Code account authenticated on her machine,
+and does it come off at handover?** Settle before the next client install.
