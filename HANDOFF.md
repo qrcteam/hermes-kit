@@ -658,3 +658,21 @@ and does it come off at handover?** Settle before the next client install.
      hand-typed commands demoted to a fallback. Canon since 2026-08-14 everywhere except the
      runbook — which is the document people actually follow. **Do it before Trenton (#5). This is
      the next session's first task.** [decision]
+- **DONE 2026-08-22 — `02-runbook-mac.md` rewritten around Claude-driven install.** New header
+  declares the method and Oz's ruling; new **"How this install runs"** section carries the
+  operator loop, seven standing rules for Claude (vault path, `:ro`, keys never in the agent
+  env, never echo a secret, move-don't-delete, show the proof, stop and ask), and a
+  **nine-row table of what Claude CANNOT do** — the human-only moments, four of which are
+  account signups to chase before install day. Hand-typing is now the documented fallback.
+- **Kit path changed on the client machine: `~/hermes-kit`, via `$KIT`** (was
+  `~/Documents/Projects/hermes`). Matches the gate card, which already said so, and **kills the
+  same-path-on-both-machines hazard** — Oz's kit stays at `~/Documents/Projects/hermes`, so a
+  command meant for their Mac can no longer be run on his by accident.
+- **Step 3 now uses `gh`, not SSH.** `gh auth login` as them, then
+  `gh repo create <NAME>-vault --private --source=. --remote=origin --push` — no keypair on a
+  client machine, and an unqualified name puts the repo in their account by construction. The
+  gate checks the **owner**, not just private. Ownership framed as a decision (paying client =
+  theirs on day one; family = `qrcteam` with the consent sentence).
+- **`docs/install-day-laurie.html` marked SUPERSEDED** in-page — it was generated from the old
+  runbook, so it describes hand-typing and the old kit path. Kept as Laurie's record.
+  **Trenton (#5) gets a fresh page from the new runbook.** [decision]

@@ -3,9 +3,23 @@
 *One person, one machine, start to finish. Roughly 90 minutes, of which about 45 is the
 [SOUL interview](04-soul-interview.md) and most of the rest is waiting for Docker.*
 
-> **Installing live?** Open [`install-guide/index.html`](install-guide/index.html) in a
-> browser — the interactive gate card: same steps, stamped checkboxes with timestamps,
-> per-step screenshot slots, and a one-click log export for `people/<NAME>.md`.
+> ## This install is Claude-driven
+>
+> **Claude Code runs on *their* machine, reads this runbook, and executes it gate by gate
+> while you supervise.** You are not typing these commands. You paste a gate prompt, read
+> what comes back, and answer the questions Claude stops to ask.
+>
+> Ruled by Oz 2026-08-22: *"Claude-driven install is vital — I won't work on it without
+> Claude."* Proven remotely on install #4 (Laurie, macOS).
+>
+> **To run it:** open [`install-guide/index.html`](install-guide/index.html) — 12 stamped
+> gates, a ready paste-to-Claude prompt per gate, screenshot slots, and a one-click log
+> export for `people/<NAME>.md`.
+>
+> **The commands below are what Claude executes**, and what you fall back to by hand if
+> Claude is unavailable. This file is the source of truth for *what* happens; the gate
+> prompts are the source of truth for *how it gets driven*. When the two disagree, fix
+> both — never let a gate prompt carry a step this file doesn't.
 
 Windows? → [`03-runbook-windows.md`](03-runbook-windows.md).
 
@@ -21,14 +35,89 @@ Saturday.
       Energy settings on a laptop.
 - [ ] **A model subscription in their name** — ChatGPT Plus ($20) is the smoothest path.
       They'll log in themselves during step 6. You cannot use yours.
-- [ ] **A GitHub account** (theirs or yours — decide now, see
-      [`07-operator-notes.md`](07-operator-notes.md)).
+- [ ] **Claude Code installed on their machine, signed in to THEIR Claude account.** This is
+      how the install is driven. Their account, not yours — nothing of yours should
+      authenticate on a client's machine.
+- [ ] **A GitHub account, and whose it is decided.** A paying client's vault repo is created in
+      **their** account on install day; family can use `qrcteam`. See
+      [`07-operator-notes.md`](07-operator-notes.md).
 - [ ] **A Pinecone account** — free tier, theirs.
 - [ ] **Their four buckets, decided.** In their words. See doc 00, "Decide before you start".
 - [ ] **45 minutes of their time** for the interview. Book it.
 
 Throughout, replace `<NAME>` with a lowercase first name (`mazix`, `doug`, `diane`) and
 `<USER>` with their macOS short username (`whoami`).
+
+**The kit lives at `~/hermes-kit` on their machine** — every command below uses `$KIT`:
+
+```bash
+export KIT=~/hermes-kit
+git clone https://github.com/qrcteam/hermes-kit.git "$KIT" 2>/dev/null || git -C "$KIT" pull
+```
+
+Not `~/Documents/Projects/hermes` — that is where the kit sits on **your** machine, and having
+the same path on both is how a command meant for their Mac gets run on yours. Different paths
+make that mistake impossible. (`~/Documents` is fine for the kit itself — the
+Desktop/Documents/Downloads ban is about the *vault*, which is read by a background job.)
+
+---
+
+## How this install runs
+
+**The loop, all day:**
+
+1. You paste the gate's prompt into Claude Code on their machine.
+2. Claude does the work and shows you the output of the verification command.
+3. Claude **stops and asks** whenever the step needs a human — see the list below.
+4. You stamp the gate on the card and move on. A red gate is not a gate you pass.
+
+**Whose everything:** their machine, their Claude account, their accounts throughout. Nothing
+of yours authenticates on a client's machine, so there is nothing to remove at handover and
+they could fire you tomorrow and lose nothing.
+
+### Standing rules for Claude — true for every gate
+
+These are the ones that cost real money or real memory when broken. The gate-00 prompt sets
+them; they are repeated here because this is the file Claude actually reads.
+
+- **The vault never goes under `~/Desktop`, `~/Documents` or `~/Downloads`.** macOS blocks
+  background jobs from all three, silently. `~/Memory/<NAME>-vault`, always.
+- **The vault mount is always `:ro`.** That single character is what makes damaging their
+  memory impossible rather than merely forbidden.
+- **Keys never enter the agent's environment.** Pinecone's key lives in a file the promoter
+  reads. Model credentials come from an OAuth device flow, never a pasted key.
+- **Never echo, log or commit a secret.** Show `.env` **key names only**, never values.
+- **Move, don't delete.** Nothing is ever `rm -rf`'d on someone else's machine.
+- **Stop at every gate and show the verification output.** Don't self-certify and continue —
+  a step that reports success without printing its proof has not been done.
+- **When a step needs a human, stop and ask.** Never guess a bucket word, never invent an
+  account, never fake a scan.
+
+### What Claude cannot do — plan for these nine
+
+Every one of these needs a human's hands or a human's account. They are where the install
+stalls if nobody is expecting them, and they are the reason the operator stays on the call.
+
+| # | Gate | Who does it | What it is |
+|---|---|---|---|
+| 1 | 01 | **They** | Docker Desktop's first launch — admin password and licence prompt |
+| 2 | 02 | **They**, on their phone | @BotFather `/newbot`, then @userinfobot for the numeric ID |
+| 3 | 03 | **They** | `gh auth login` — the account this names is the account that will own their memory |
+| 4 | 03 | **They**, out loud | Their bucket words. Claude must stop and ask; the template's four are not theirs |
+| 5 | 04 | **They** | Pinecone signup and creating the API key on their own screen |
+| 6 | 06 | **They** | The model login device flow — their subscription, their card |
+| 7 | 06 | **They**, on their phone | The WhatsApp QR scan, if they want WhatsApp |
+| 8 | 07 | **You** | The SOUL interview. Claude writes it up; it cannot conduct it |
+| 9 | 10 | **They** | Texting the bot the smoke-test message, and the recall question after |
+
+Four of those are account signups. Chase them **before install day** — discovering a missing
+Pinecone account at minute forty is two people watching an inbox.
+
+### If Claude isn't available
+
+Work the numbered steps below by hand, in order. Everything still works; it is just slower and
+every typo is yours. Log it as a deviation in `people/<NAME>.md` so the next install knows the
+path was exercised.
 
 ---
 
@@ -97,7 +186,7 @@ export VAULT=~/Memory/$NAME-vault
 mkdir -p "$VAULT"
 
 # Copy the skeleton out of this kit
-cp -R ~/Documents/Projects/hermes/templates/vault-skeleton/. "$VAULT"/
+cp -R $KIT/templates/vault-skeleton/. "$VAULT"/
 mv "$VAULT/gitignore.template" "$VAULT/.gitignore"
 chmod +x "$VAULT/scripts/pinecone-sync"
 
@@ -114,17 +203,32 @@ cd "$VAULT" && git init -q -b main && git add -A \
   && git commit -qm "vault: initial skeleton for $NAME"
 ```
 
-Now create an **empty private repo** on GitHub called `<NAME>-vault` — no README, no
-`.gitignore` — and connect it:
+Now the private remote. **Use `gh`, not SSH** — no keypair to generate on someone else's
+machine, and an unqualified repo name creates it in the authenticated account by construction,
+which is exactly the ownership you want:
+
+```bash
+brew install gh          # if not already there
+gh auth login            # ← THEY log in, on their own account
+```
+
+> **Human, not Claude.** Whatever account `gh auth status` names is the account that will own
+> their memory. Read it back to them before continuing.
 
 ```bash
 cd "$VAULT"
-git remote add origin git@github.com:<OWNER>/<NAME>-vault.git
-git push -u origin main
+gh repo create <NAME>-vault --private --source=. --remote=origin --push
+gh repo view --json owner,visibility
 ```
 
-> **You should see** the skeleton on GitHub, and the repo marked **Private**. If it says
-> Public, stop and fix that now.
+> **You should see** `"PRIVATE"` and **their** account as owner. If it says Public, or the
+> owner is `qrcteam` when it shouldn't be, stop and fix that now.
+
+**Whose account is a decision, not a default.** A paying client's vault repo is created in
+**their** GitHub on install day — see [`07-operator-notes.md`](07-operator-notes.md). If they
+want you able to fix things without a screen-share, they add you as a collaborator on their own
+repo and can revoke it in one click. For family, `qrcteam` is fine — say the consent sentence
+out loud once anyway.
 
 ```bash
 ls "$VAULT/wiki/topics"
@@ -174,7 +278,7 @@ exfiltrate a credential that could wipe the index.
 
 ```bash
 mkdir -p ~/.hermes/{inbox,scripts,secrets}
-cp ~/Documents/Projects/hermes/templates/env.template ~/.hermes/.env
+cp $KIT/templates/env.template ~/.hermes/.env
 chmod 600 ~/.hermes/.env
 open -e ~/.hermes/.env    # paste the bot token and their numeric user ID
 ```
@@ -182,7 +286,7 @@ open -e ~/.hermes/.env    # paste the bot token and their numeric user ID
 Install the two scripts and the two memory skills:
 
 ```bash
-K=~/Documents/Projects/hermes/templates
+K=$KIT/templates
 
 cp "$K/promote.sh"        ~/.hermes/promote.sh
 cp "$K/vault-health.sh"   ~/.hermes/scripts/vault-health.sh
@@ -303,7 +407,7 @@ copied to another machine, committed, or included in a backup that leaves the la
 Run the interview in [`04-soul-interview.md`](04-soul-interview.md) — about 45 minutes — then:
 
 ```bash
-cp ~/Documents/Projects/hermes/templates/SOUL.md.template ~/.hermes/SOUL.md
+cp $KIT/templates/SOUL.md.template ~/.hermes/SOUL.md
 open -e ~/.hermes/SOUL.md
 ```
 
@@ -325,7 +429,7 @@ This is the piece that actually writes their memory.
 
 ```bash
 sed -e "s|<USER>|$(whoami)|g" -e "s|<NAME>|$NAME|g" \
-  ~/Documents/Projects/hermes/templates/com.hermeskit.vault-promote.plist \
+  $KIT/templates/com.hermeskit.vault-promote.plist \
   > ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
 
 plutil -lint ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
@@ -393,7 +497,7 @@ See [`06-troubleshooting.md`](06-troubleshooting.md) → *"The digest stopped ar
 bottom of this doc so you don't have to hold it in your head:
 
 ```bash
-bash ~/Documents/Projects/hermes/templates/install-verify.sh
+bash $KIT/templates/install-verify.sh
 ```
 
 Read-only; it reports and never changes anything. Every `FAIL` prints its own fix underneath,
@@ -404,7 +508,7 @@ To let it repair the mechanical ones — missing inbox, wrong file mode, uncopie
 unloaded launchd job, stopped container, drifted config key:
 
 ```bash
-bash ~/Documents/Projects/hermes/templates/install-verify.sh --fix
+bash $KIT/templates/install-verify.sh --fix
 docker restart hermes    # only if it changed a config key
 ```
 
@@ -481,10 +585,12 @@ model account. **No secrets in that file.**
 **`bash templates/install-verify.sh` checks everything below except the last three by
 itself.** Run it first; work this list only for whatever it can't see.
 
+- [ ] Claude Code ran the install on their machine, on **their** Claude account
+- [ ] Kit cloned to `~/hermes-kit` on their machine (not your `~/Documents` path)
 - [ ] Docker Desktop installed and running; machine set to never sleep
 - [ ] Bot created, token and numeric user ID in `~/.hermes/.env` (mode 600)
 - [ ] Vault at `~/Memory/<NAME>-vault` — **not** Desktop/Documents/Downloads
-- [ ] Private GitHub repo, pushed, confirmed private
+- [ ] Private GitHub repo, pushed, confirmed private **and confirmed owned by the right account**
 - [ ] Pinecone index created; key in `~/.hermes/secrets/pinecone.key` (mode 600)
 - [ ] Container running with **`:ro`** on the vault mount
 - [ ] `journal_mode: delete` set
