@@ -308,8 +308,8 @@ const STEPS = [
   intro:`The vault is their memory on disk.`,
   gotcha:{t:'Not Desktop. Not Documents. Not Downloads.', d:`macOS blocks background jobs from all three and does it <b>silently</b>. <code>~/Memory</code> is not blocked.`},
   cmds:[
-    {label:'skeleton + buckets — edit the bucket line to THEIR words', code:`export NAME=<NAME>\nexport VAULT=~/Memory/$NAME-vault\nmkdir -p "$VAULT"\n\ncp -R ~/Documents/Projects/hermes/templates/vault-skeleton/. "$VAULT"/\nmv "$VAULT/gitignore.template" "$VAULT/.gitignore"\nchmod +x "$VAULT/scripts/pinecone-sync"\n\n# their buckets — four or five, their words not yours\nfor b in projects clients learning personal; do\n  mkdir -p "$VAULT/wiki/topics/$b"\n  sed "s/<bucket-name>/$b/g; s/<Bucket Name>/\${b}/g; s/<YYYY-MM-DD>/$(date +%F)/" \\\n    "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md" > "$VAULT/wiki/topics/$b/_manual.md"\ndone\nrm "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md"\nmkdir -p "$VAULT/wiki/people" "$VAULT/wiki/reference" "$VAULT/raw/sessions"\n\ncd "$VAULT" && git init -q -b main && git add -A \\\n  && git commit -qm "vault: initial skeleton for $NAME"`},
-    {label:'connect to a NEW empty PRIVATE repo named <NAME>-vault', code:`cd "$VAULT"\ngit remote add origin git@github.com:<OWNER>/<NAME>-vault.git\ngit push -u origin main`},
+    {label:'skeleton + buckets — edit the bucket line to THEIR words', code:`export NAME=<NAME>\nexport VAULT=~/Memory/$NAME-vault\nmkdir -p "$VAULT"\n\ncp -R $KIT/templates/vault-skeleton/. "$VAULT"/\nmv "$VAULT/gitignore.template" "$VAULT/.gitignore"\nchmod +x "$VAULT/scripts/pinecone-sync"\n\n# their buckets — four or five, their words not yours\nfor b in projects clients learning personal; do\n  mkdir -p "$VAULT/wiki/topics/$b"\n  sed "s/<bucket-name>/$b/g; s/<Bucket Name>/\${b}/g; s/<YYYY-MM-DD>/$(date +%F)/" \\\n    "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md" > "$VAULT/wiki/topics/$b/_manual.md"\ndone\nrm "$VAULT/wiki/topics/_MANUAL-TEMPLATE.md"\nmkdir -p "$VAULT/wiki/people" "$VAULT/wiki/reference" "$VAULT/raw/sessions"\n\ncd "$VAULT" && git init -q -b main && git add -A \\\n  && git commit -qm "vault: initial skeleton for $NAME"`},
+    {label:'connect it — gh, not SSH (no keypair on their machine)', code:`brew install gh          # if missing\ngh auth login            # THEY log in, on their own account\n\ncd "$VAULT"\ngh repo create <NAME>-vault --private --source=. --remote=origin --push\ngh repo view --json owner,visibility`},
     {label:'verify buckets', code:`ls "$VAULT/wiki/topics"`},
   ],
   verify:`The skeleton on GitHub and the repo marked <b>Private</b> — if it says Public, stop and fix it now. Locally: their four bucket folders, each containing <code>_manual.md</code>.`,
@@ -328,13 +328,13 @@ const STEPS = [
   shotHint:`Terminal: the JSON response`,
 },
 { id:'05', title:'Configure Hermes', mins:'~5 min',
-  intro:`Env file first — paste the bot token and their numeric user ID — then install the two scripts and the capture skill.`,
+  intro:`Env file first — paste the bot token and their numeric user ID — then install the two scripts and <b>both</b> memory skills. <b>vault-capture</b> saves facts the moment they're said; <b>session-log</b> saves what they did at the end of a working conversation, including where they stopped. Facts alone answer "what do I know?" but never "what was I working on?" — which is the question people actually ask a week later.`,
   cmds:[
-    {label:'env file (mode 600)', code:`mkdir -p ~/.hermes/{inbox,scripts,secrets}\ncp ~/Documents/Projects/hermes/templates/env.template ~/.hermes/.env\nchmod 600 ~/.hermes/.env\nopen -e ~/.hermes/.env    # paste the bot token and their numeric user ID`},
-    {label:'scripts + capture skill', code:`K=~/Documents/Projects/hermes/templates\n\ncp "$K/promote.sh"        ~/.hermes/promote.sh\ncp "$K/vault-health.sh"   ~/.hermes/scripts/vault-health.sh\nchmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh\n\nmkdir -p ~/.hermes/skills/note-taking/vault-capture\ncp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md`},
+    {label:'env file (mode 600)', code:`mkdir -p ~/.hermes/{inbox,scripts,secrets}\ncp $KIT/templates/env.template ~/.hermes/.env\nchmod 600 ~/.hermes/.env\nopen -e ~/.hermes/.env    # paste the bot token and their numeric user ID`},
+    {label:'scripts + capture skill', code:`K=$KIT/templates\n\ncp "$K/promote.sh"        ~/.hermes/promote.sh\ncp "$K/vault-health.sh"   ~/.hermes/scripts/vault-health.sh\nchmod +x ~/.hermes/promote.sh ~/.hermes/scripts/vault-health.sh\n\nmkdir -p ~/.hermes/skills/note-taking/vault-capture\ncp "$K/vault-capture-SKILL.md" ~/.hermes/skills/note-taking/vault-capture/SKILL.md\n\nmkdir -p ~/.hermes/skills/note-taking/session-log\ncp "$K/session-log-SKILL.md"   ~/.hermes/skills/note-taking/session-log/SKILL.md`},
   ],
-  verify:`<code>~/.hermes/.env</code> holds real values (no <code>&lt;placeholders&gt;</code>), mode 600.`,
-  prompt:`Gate 05: configure. mkdir -p ~/.hermes/{inbox,scripts,secrets}; copy the kit's templates/env.template to ~/.hermes/.env mode 600 and fill in the bot token and allowed user IDs I gave you at gate 02. Install promote.sh and vault-health.sh from the kit templates (chmod +x), and the vault-capture skill to ~/.hermes/skills/note-taking/vault-capture/SKILL.md. Show me the .env keys (NAMES ONLY, never values) so I can confirm nothing's missing.`,
+  verify:`<code>~/.hermes/.env</code> holds real values (no <code>&lt;placeholders&gt;</code>), mode 600 — and <b>both</b> SKILL.md files exist.`,
+  prompt:`Gate 05: configure. mkdir -p ~/.hermes/{inbox,scripts,secrets}; copy the kit's templates/env.template to ~/.hermes/.env mode 600 and fill in the bot token and allowed user IDs I gave you at gate 02. Install promote.sh and vault-health.sh from the kit templates (chmod +x), and BOTH memory skills — vault-capture to ~/.hermes/skills/note-taking/vault-capture/SKILL.md and session-log to ~/.hermes/skills/note-taking/session-log/SKILL.md. Show me the .env keys (NAMES ONLY, never values) so I can confirm nothing's missing.`,
   shotHint:`.env open in TextEdit (redact the token)`,
 },
 { id:'06', title:'Start Hermes', mins:'~15 min',
@@ -353,7 +353,7 @@ const STEPS = [
 { id:'07', title:'Write their SOUL.md', mins:'~45 min',
   intro:`<b>This is the step that matters.</b> Everything before it is plumbing; this is the product. Run the interview in 04-soul-interview.md, then write it in your own prose.`,
   cmds:[
-    {label:'template in, editor open', code:`cp ~/Documents/Projects/hermes/templates/SOUL.md.template ~/.hermes/SOUL.md\nopen -e ~/.hermes/SOUL.md`},
+    {label:'template in, editor open', code:`cp $KIT/templates/SOUL.md.template ~/.hermes/SOUL.md\nopen -e ~/.hermes/SOUL.md`},
     {label:'after writing — restart & check for leftovers', code:`docker restart hermes\ngrep -c '<' ~/.hermes/SOUL.md`},
   ],
   gotcha:{t:'Placeholders become beliefs', d:`Any <code>&lt;placeholder&gt;</code> left in the file is something the agent will confidently reason from as if it were true. Strip every HTML comment and every angle bracket.`},
@@ -364,7 +364,7 @@ const STEPS = [
 { id:'08', title:'Turn on the promoter', mins:'~10 min',
   intro:`This is the piece that actually writes their memory. Install the launchd job, then prove it runs before trusting the schedule.`,
   cmds:[
-    {label:'install launchd job', code:`sed -e "s|<USER>|$(whoami)|g" -e "s|<NAME>|<NAME>|g" \\\n  ~/Documents/Projects/hermes/templates/com.hermeskit.vault-promote.plist \\\n  > ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\n\nplutil -lint ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\nlaunchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2>/dev/null\nlaunchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\nlaunchctl list | grep vault-promote`},
+    {label:'install launchd job', code:`sed -e "s|<USER>|$(whoami)|g" -e "s|<NAME>|<NAME>|g" \\\n  $KIT/templates/com.hermeskit.vault-promote.plist \\\n  > ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\n\nplutil -lint ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\nlaunchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2>/dev/null\nlaunchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist\nlaunchctl list | grep vault-promote`},
     {label:'manual proof run', code:`VAULT_ROOT=~/Memory/<NAME>-vault \\\nPINECONE_INDEX=<NAME>-vault \\\nPINECONE_STATE=~/.hermes/pinecone-state.json \\\nPINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \\\nPINECONE_SYNC=~/Memory/<NAME>-vault/scripts/pinecone-sync \\\nbash ~/.hermes/promote.sh\n\ncat ~/.hermes/promote-state.json`},
   ],
   verify:`launchd line ends in exit status <code>0</code> (a <code>78</code> = malformed plist, a <code>1</code> = wrong path). Manual run: <code>"status": "ok"</code> — anything else, the message says what's wrong.`,
@@ -373,24 +373,27 @@ const STEPS = [
 },
 { id:'09', title:'Watchdog + digest', mins:'~5 min',
   intro:`The watchdog shouts only when something is wrong — silent otherwise, on purpose. The digest is their morning briefing.`,
-  gotcha:{t:'Cron hours are UTC', d:`Mountain Time is UTC−6 in summer, so <code>13</code> = 7am. Check <b>their</b> actual timezone before creating the digest. And per the notes in people/mazix.md: for a creative person consider skipping the daily digest entirely for the first fortnight — or use the one-idea variant from 05-make-it-useful.md.`},
+  gotcha:{t:'An unpinned job is skipped, not run', d:`Any later model change — <b>including re-picking the same model</b>, which rewrites <code>model.default</code> from <code>provider/model</code> to <code>model</code> — makes every unpinned cron job SKIP "to prevent unintended spend". Silent from their side: the digest just stops arriving. Pin it now. The watchdog runs <code>--no-agent</code> so it needs no pin; anything that calls the agent does.<br><br><b>Cron hours are UTC.</b> Mountain Time is UTC−6 in summer, so <code>13</code> = 7am. Check <b>their</b> actual timezone before creating the digest. And per the notes in people/mazix.md: for a creative person consider skipping the daily digest entirely for the first fortnight — or use the one-idea variant from 05-make-it-useful.md.`},
   cmds:[
     {label:'watchdog', code:`docker exec hermes hermes cron create "0 14 * * *" \\\n  --name vault-health --script vault-health.sh --no-agent --deliver telegram`},
     {label:'digest (adjust the hour — this is UTC)', code:`docker exec hermes hermes cron create "0 13 * * *" \\\n  --name daily-digest --deliver telegram \\\n  "Good morning. Read /vault/wiki/topics/*/_manual.md and any notes from the last 3 days.\n   Give a short briefing: what's open, what's owed, what they said they'd do. Two or three\n   things, in plain sentences, not a table. If nothing needs attention, say so in one line."`},
     {label:'verify', code:`docker exec hermes hermes cron list`},
+    {label:'PIN the digest — grab its id from the list above', code:`docker exec hermes hermes cron edit <job_id> \\\n  --model <model from hermes status> --provider <provider from hermes status>`},
   ],
-  verify:`Both jobs listed.`,
-  prompt:`Gate 09: watchdog + digest. Create the vault-health watchdog cron exactly per the runbook. For the digest, ask me first — the hour is UTC (check <NAME>'s timezone) and the flavor is per-person: business installs get the what's-open-what's-owed briefing; creative installs get the one-idea-you-never-came-back-to variant from doc 05, or skip the digest for the first fortnight. Then show me hermes cron list.`,
+  verify:`Both jobs listed, and the digest <b>pinned</b> to their model + provider.`,
+  prompt:`Gate 09: watchdog + digest. Create the vault-health watchdog cron exactly per the runbook. For the digest, ask me first — the hour is UTC (check <NAME>'s timezone) and the flavor is per-person: business installs get the what's-open-what's-owed briefing; creative installs get the one-idea-you-never-came-back-to variant from doc 05, or skip the digest for the first fortnight. Then show me hermes cron list, and PIN the digest job with hermes cron edit <job_id> --model <m> --provider <p> using the values from hermes status — an unpinned job is skipped rather than run the moment the model config drifts.`,
   shotHint:`cron list output`,
 },
 { id:'10', title:'Smoke test — proves it all works', mins:'~20 min',
   intro:`Have them text their bot: <i>"remember I switched the Henderson job to the Tuesday crew because Thursday's tied up on Ruiz"</i>. The agent should confirm in plain language. Wait 15 minutes (or run the promoter manually with the env from gate 08), then check all three:`,
   cmds:[
+    {label:'0 · wiring check FIRST — read-only, prints its own fixes', code:`bash $KIT/templates/install-verify.sh\n\n# to let it repair the mechanical ones (idempotent, reversible, can't lose data):\nbash $KIT/templates/install-verify.sh --fix\ndocker restart hermes   # only if it changed a config key`},
     {label:'1 · note on disk?', code:`ls -la ~/Memory/<NAME>-vault/wiki/topics/*/ | grep -i henderson`},
     {label:'2 · committed and pushed?', code:`git -C ~/Memory/<NAME>-vault log --oneline -3\ngit -C ~/Memory/<NAME>-vault status -sb`},
     {label:'3 · findable by MEANING, not keyword?', code:`VAULT_ROOT=~/Memory/<NAME>-vault PINECONE_INDEX=<NAME>-vault \\\nPINECONE_STATE=~/.hermes/pinecone-state.json \\\nPINECONE_KEY_FILE=~/.hermes/secrets/pinecone.key \\\n~/Memory/<NAME>-vault/scripts/pinecone-sync search "who is doing the Henderson work"`},
   ],
   subchecks:[
+    `<code>install-verify.sh</code> green BEFORE the live test — a failing smoke test on a half-finished install tells you nothing about which of the two is broken`,
     `Note landed in the vault (on disk)`,
     `Committed and pushed clean`,
     `Semantic search finds it without sharing a keyword`,
@@ -401,18 +404,21 @@ const STEPS = [
   shotHint:`the three passing checks + the bot's answer`,
 },
 { id:'11', title:'Hand it over', mins:'~10 min',
-  intro:`Open the vault in Obsidian so they can see their own memory. Give them their onboarding doc and <b>nothing else</b> — if they have to ask you something the doc should have answered, that's an edit to make.`,
+  intro:`Two habits that only bite in week two: sessions that run for days quietly burning context, and an assistant answering a non-technical owner with terminal commands. One pasted message fixes both — <b>have them paste it</b>, so the standing rules save under their account. Then open the vault in Obsidian so they can see their own memory. Give them their onboarding doc and <b>nothing else</b> — if they have to ask you something the doc should have answered, that's an edit to make.`,
   cmds:[
     {label:'open their memory', code:`open -a Obsidian ~/Memory/<NAME>-vault`},
+    {label:'THEY paste this into their Hermes — session rules + plain language', code:`open $KIT/templates/session-hygiene-prompt.md\n# everything below the --- is what they send`},
+    {label:'verify Hermes actually wrote it', code:`docker exec hermes hermes config get session_reset   # want: idle / 120`},
   ],
   subchecks:[
     `Vault open in Obsidian, they've seen inside it`,
+    `Session hygiene prompt pasted <b>by them</b>; <code>session_reset</code> verified as <code>idle</code> / <code>120</code> — a model agreeing is not a config change`,
     `onboarding/<NAME>.md handed over`,
     `people/<NAME>.md filled in while fresh — paths, bot handle, index name, git remote, whose model account. <b>No secrets in that file.</b>`,
     `Export this page's log (top right) into people/<NAME>.md`,
   ],
   verify:`They can use it without you in the room.`,
-  prompt:`Gate 11: hand-over. Open the vault in Obsidian (open -a Obsidian ~/Memory/<NAME>-vault — "open folder as vault", trust it, no Sync, no plugins). Fill in the kit's people/<NAME>.md while it's fresh: paths, bot handle, index name, git remote, whose model account, install date, and every deviation we logged — NO secrets in that file — then commit and push the kit repo. Last: remind me to export this gate card's log (top-right button) into people/<NAME>.md, and to hand <NAME> their onboarding doc and nothing else.`,
+  prompt:`Gate 11: hand-over. Open the vault in Obsidian (open -a Obsidian ~/Memory/<NAME>-vault — "open folder as vault", trust it, no Sync, no plugins). Fill in the kit's people/<NAME>.md while it's fresh: paths, bot handle, index name, git remote, whose model account, install date, and every deviation we logged — NO secrets in that file — then commit and push the kit repo. Then have <NAME> paste the kit's templates/session-hygiene-prompt.md into their own Hermes (they send it, not me) and verify with hermes config get session_reset that it really wrote idle/120 — a model agreeing is not a config change. Last: remind me to export this gate card's log (top-right button) into people/<NAME>.md, and to hand <NAME> their onboarding doc and nothing else.`,
   shotHint:`Obsidian open on their vault`,
 },
 ];
@@ -428,9 +434,14 @@ function loadState(){ try{ state = JSON.parse(localStorage.getItem(skey())) || {
 function saveState(){ localStorage.setItem(skey(), JSON.stringify(state)); }
 function st(id){ return state[id] || (state[id] = {done:false, ts:null, note:'', subs:[]}); }
 
-/* Repo owner is per-person: family/friends ride qrcteam (operator-supported);
-   paying clients (Diane pattern) own their vault repo outright. */
-const OWNERS = { mazix:'qrcteam', doug:'qrcteam', diane:'<HER-GITHUB-USERNAME>' };
+/* Repo owner is per-person: family/friends ride qrcteam (operator-supported, say the
+   consent sentence out loud once); PAYING CLIENTS own their vault repo from day one —
+   ruled 2026-08-21 on Laurie's install, reversing an earlier "start in qrcteam, transfer
+   later" deferral. Support access is a collaborator invite they grant and can revoke.
+   With `gh auth login` as them, an unqualified `gh repo create` lands it in their account
+   by construction — which is why gate 03 checks the OWNER, not just that it's private. */
+const OWNERS = { mazix:'qrcteam', doug:'qrcteam', diane:'<HER-GITHUB-USERNAME>',
+                 laurie:'<HER-GITHUB-USERNAME>', trenton:'<HIS-GITHUB-USERNAME>' };
 function subName(text){ return text.replaceAll('<NAME>', person).replaceAll('<OWNER>', OWNERS[person] || '<OWNER>'); }
 function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 

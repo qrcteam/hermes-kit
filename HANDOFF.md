@@ -676,3 +676,14 @@ and does it come off at handover?** Settle before the next client install.
 - **`docs/install-day-laurie.html` marked SUPERSEDED** in-page — it was generated from the old
   runbook, so it describes hand-typing and the old kit path. Kept as Laurie's record.
   **Trenton (#5) gets a fresh page from the new runbook.** [decision]
+- **Gate card reconciled against the rewritten runbook (2026-08-22).** It had drifted in seven
+  places, and was **internally inconsistent** — its gate-00 prompt said `~/hermes-kit` while its
+  own command blocks still said `~/Documents/Projects/hermes`. Fixed: kit path -> `$KIT` (5),
+  gate 03 SSH -> `gh` + owner check, **gate 05 was missing the `session-log` skill entirely**
+  (half of memory — facts without "what was I working on?"), gate 09 gained the digest pin +
+  the drift gotcha, gate 10 gained `install-verify.sh` as step 0, gate 11 gained the
+  session-hygiene prompt + verify, and the OWNERS map gained laurie/trenton plus the day-one
+  ownership rule. `tool_progress off` went the other way — it was gate-card-only, now in the
+  runbook too. Verified: `node --check` on the extracted script passes and all 12 gates parse
+  with their fields. **Not visually verified — the Chrome extension was disconnected.** Open
+  `docs/install-guide/index.html` in a browser once Chrome is healthy. [decision]

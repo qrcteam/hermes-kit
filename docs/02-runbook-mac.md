@@ -332,6 +332,10 @@ Pin the two settings that must not drift:
 docker exec hermes hermes config set database.journal_mode delete
 docker exec hermes hermes config set approvals.mode smart
 docker exec hermes hermes config set approvals.cron_mode deny
+
+# quiet bot — no tool chrome in a non-technical person's chat
+docker exec hermes hermes config set display.platforms.telegram.tool_progress off
+
 docker restart hermes
 ```
 
