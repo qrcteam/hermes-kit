@@ -555,7 +555,13 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   Only phase 00 (and the SOUL transcription + `people/laurie.md`) run on Oz's machine. [gotcha]
 - **Laurie's buckets are still undecided** — the page carries Doug's set as a placeholder. They
   get created at step 04.2 and renaming later is a chore; ask her in the first ten minutes. [state]
-- **BIG ONE — the easiest install path is Claude Code running ON their machine.** Laurie's install
+- **CORRECTION (logged 2026-08-22): this was already kit canon, not a new discovery.** The
+  gate card has shipped paste-to-Claude prompts per gate since 2026-08-14 and the vault note
+  `hermes-kit-install-suite` calls Claude-driven install "the method". What IS true: **runbook 02
+  never mentions Claude Code**, so anything built from it (including the install-day page)
+  reproduces the old hand-typing shape. Laurie is the first live proof of it done remotely.
+  Fold it into runbook 02 before Trenton.
+- **The easiest install path is Claude Code running ON their machine.** Laurie's install
   (2026-08-21, macOS, remote): clone `hermes-kit` onto her Mac, start Claude Code there, and let it
   read the runbook and drive the install locally while Oz supervises over screen share. Confirmed
   by Oz as "the easiest thing." This largely retires the phase-02 model of Oz hand-typing every
