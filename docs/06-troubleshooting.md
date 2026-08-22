@@ -394,6 +394,61 @@ Nearly always caused by someone editing the vault through the GitHub web UI. Ask
 
 ---
 
+## "The digest stopped arriving" / cron jobs skipped after a model change
+
+**The single most likely cause: somebody changed the model.** Hit live on the reference install
+2026-08-22, the morning after a model switch.
+
+Hermes records the global inference config on every cron job when it's created. If that config
+has **drifted** since — and the job isn't pinned to a specific model — the job is **skipped, not
+run**:
+
+```
+RuntimeError: Skipped to prevent unintended spend: global inference config drifted
+since this job was created (model 'openai-codex/gpt-5.6-terra' -> 'gpt-5.6-terra'),
+and this job is unpinned. No inference call was made.
+```
+
+Note how small the drift can be. Running `hermes model` and re-picking **the same model** was
+enough: the picker rewrote `model.default` from `openai-codex/gpt-5.6-terra` to
+`gpt-5.6-terra`. Same model, different string, every unpinned job skipped.
+
+This is the guard working — it refuses to spend on a model you might not have meant to select.
+
+**See which jobs are exposed:**
+
+```bash
+docker exec hermes cat /opt/data/cron/jobs.json | python3 -c "
+import json,sys
+for j in json.load(sys.stdin):
+    print(('ENABLED ' if j.get('enabled') else 'disabled'),
+          f\"{j.get('name'):32}\", 'pinned=', j.get('model'), j.get('provider'))"
+```
+
+Anything **enabled** with `pinned= None None` will be skipped the next time it needs inference.
+
+**Fix — pin each one explicitly:**
+
+```bash
+docker exec hermes hermes cron edit <job_id> --model <model> --provider <provider>
+```
+
+Use the values from `hermes status`. Re-run the listing to confirm the pin stuck.
+
+### The trap inside the trap
+
+**A monitor job can report `ok` while carrying a stale snapshot.** Jobs that only call the agent
+when their watched output changes — `--monitor`, queue watchers — sail through every tick
+without touching inference, so `hermes cron list` shows them green. They fail the *first time
+they have real work to do*, which is precisely when you need them.
+
+On the reference install `forge-completion-hermes-review` (every 5m, agent-queue watcher) was
+sitting at `ok` with a drifted snapshot. Don't trust the status column — check `jobs.json`.
+
+**Whenever you change the model, re-pin every enabled cron job in the same sitting.**
+
+---
+
 ## "Model errors" / "provider exhausted"
 
 ```bash

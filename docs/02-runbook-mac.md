@@ -371,6 +371,20 @@ docker exec hermes hermes cron list
 > **You should see** both jobs listed. The digest hour is UTC — Mountain Time is UTC−6 in
 > summer, so `13` = 7am. Check their actual timezone.
 
+**Now pin the digest to their model.** An unpinned job is skipped — not run — the moment the
+global model config drifts, and it drifts on something as small as re-picking the same model in
+`hermes model` (the picker rewrites `openai-codex/gpt-5.6-terra` to `gpt-5.6-terra`, and that
+counts). The failure is silent from the person's side: the digest just stops arriving.
+
+```bash
+docker exec hermes hermes cron list | grep -A1 daily-digest      # grab the job id
+docker exec hermes hermes cron edit <job_id> \
+  --model <model from hermes status> --provider <provider from hermes status>
+```
+
+The watchdog runs `--no-agent`, so it needs no pin. **Any job that calls the agent does.**
+See [`06-troubleshooting.md`](06-troubleshooting.md) → *"The digest stopped arriving"*.
+
 ---
 
 ## 10 · Smoke test — the one that proves it all works
@@ -482,7 +496,7 @@ itself.** Run it first; work this list only for whatever it can't see.
 - [ ] Exactly one gateway running — container only, no native `hermes gateway` on the host
 - [ ] `SOUL.md` written, no `<placeholders>` left
 - [ ] launchd job loaded, manual run returns `"status": "ok"`
-- [ ] Watchdog + digest cron jobs created
+- [ ] Watchdog + digest cron jobs created; **digest pinned** to their model + provider
 - [ ] All three smoke tests pass
 - [ ] `people/<NAME>.md` filled in
 - [ ] Session hygiene prompt pasted by them; `session_reset` verified as `idle` / `120`

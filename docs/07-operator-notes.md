@@ -159,6 +159,28 @@ have.
 
 ---
 
+## Changing the model breaks cron
+
+Not just upgrades — **any** model change, including re-picking the same model in `hermes model`,
+which rewrites `model.default` from `provider/model` to `model`. Every cron job that isn't
+pinned records the old string and is then **skipped to prevent unintended spend** rather than
+run. Nobody is told; the digest simply stops arriving.
+
+```bash
+# after ANY model change, on every install:
+docker exec hermes cat /opt/data/cron/jobs.json | python3 -c "
+import json,sys
+for j in json.load(sys.stdin):
+    print(('ENABLED ' if j.get('enabled') else 'disabled'), j.get('name'), '| pinned=', j.get('model'))"
+docker exec hermes hermes cron edit <job_id> --model <m> --provider <p>
+```
+
+**Monitor jobs lie about this.** One that only calls the agent when its watched output changes
+shows `ok` forever and fails the first time it has real work. Read `jobs.json`, not the status
+column.
+
+---
+
 ## Things this kit deliberately doesn't do
 
 So you don't get talked into them:

@@ -584,4 +584,6 @@ that remembers them (Hermes in Docker + markdown vault + git + Pinecone). For Ma
   2026-08-22. Fix: `hermes cron edit <id> --model <m> --provider <p>`. Watch out — a monitor job
   can show `ok` while carrying a stale snapshot, because it only calls inference on output
   change; Oz's `forge-completion-hermes-review` was one bad tick from going quiet with a green
-  status. **Not yet written into runbook 02 / troubleshooting — do it.** [gotcha]
+  status. **Written up 2026-08-22:** runbook 02 step 9 (pin the digest at creation + checklist line),
+  `06-troubleshooting.md` -> *"The digest stopped arriving"*, and `07-operator-notes.md` ->
+  *"Changing the model breaks cron"*. [gotcha]
