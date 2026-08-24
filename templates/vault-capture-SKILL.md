@@ -24,7 +24,7 @@ find yourself trying, you have misunderstood this skill — write to the inbox i
 
 ```
 READ  from  /vault/...                    ← everything the user already knows
-WRITE to    /opt/data/inbox/vault/...     ← what you want them to know next
+WRITE to    /opt/data/inbox/wiki/topics/... ← what you want them to know next
 ```
 
 ## When to capture

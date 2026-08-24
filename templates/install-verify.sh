@@ -88,6 +88,12 @@ soft() { printf '  %sWARN%s  %s\n' "$Y" "$Z" "$1"
          [[ -n "${2:-}" ]] && printf '        %s↳ %s%s\n' "$D" "$2" "$Z"
          [[ -n "${3:-}" ]] && FIXES="${FIXES}$1|||$3"$'\n'
          warn=$((warn+1)); }
+# ⚠️ NEVER `cmd | grep -q` in this file. This script runs under `set -o pipefail`,
+# and `grep -q` exits the moment it matches — which SIGPIPEs the writer, making the
+# whole pipeline exit 141 EVEN WHEN THE MATCH SUCCEEDED. The result is a check that
+# reports FAIL on a perfectly healthy install. It did exactly that for the promoter
+# job: "Promoter is NOT scheduled" on a machine where the job was loaded and running.
+# Capture first, then match on the variable.
 nope() { printf '  %sSKIP%s  %s\n' "$D" "$Z" "$1"; skip=$((skip+1)); }
 
 dex() { docker exec "$CONTAINER" "$@" 2>/dev/null; }
@@ -201,7 +207,8 @@ else
   soft "No Pinecone key at $PKEY" "Optional under ~200 notes — recall stays keyword-only until it's added."
 fi
 
-if dex hermes status 2>/dev/null | grep -qiE 'provider:.*(subscription|logged|oauth|api)'; then
+hermes_status="$(dex hermes status 2>/dev/null || true)"
+if grep -qiE 'provider:.*(subscription|logged|oauth|api)' <<<"$hermes_status"; then
   ok "A model provider is logged in"
 else
   auth_ok="$(dex hermes auth list 2>/dev/null | grep -c '←' || echo 0)"
@@ -223,14 +230,15 @@ fi
 
 case "$(uname -s)" in
   Darwin)
-    if launchctl list 2>/dev/null | grep -q 'vault-promote'; then
+    launchd_jobs="$(launchctl list 2>/dev/null || true)"
+    if grep -q 'vault-promote' <<<"$launchd_jobs"; then
       ok "Promoter is scheduled (launchd job loaded)"
     else
       # `launchctl load` of a MISSING plist exits 0 — so the naive fix reports
       # success while doing nothing. Guard on the file, and prove the job is
       # actually loaded afterwards, or this lies.
       bad "Promoter is NOT scheduled" "Nothing they tell the agent will ever reach the vault. Runbook step 8 — the plist must exist at ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist first." \
-        "[ -f \"$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist\" ] && launchctl load -w \"$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist\" && launchctl list | grep -q vault-promote"
+        "[ -f \"$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist\" ] && launchctl load -w \"$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist\" && launchctl list > /tmp/hk-jobs.$$ && grep -q vault-promote /tmp/hk-jobs.$$"
     fi ;;
   *)
     if command -v schtasks >/dev/null 2>&1; then
@@ -241,6 +249,32 @@ case "$(uname -s)" in
       nope "Scheduler check (not macOS, no schtasks)"
     fi ;;
 esac
+
+# ⚠️ A wrong GIT_BRANCH is INVISIBLE without this check. promote.sh pulls and
+# pushes the branch it is handed, so a mismatch means captured notes commit
+# locally and never reach GitHub — while the job stays loaded, the heartbeat
+# stays "ok", and every other check on this page still passes. It bit a real
+# install on 2026-08-23 whose vault was on `master` against a template that
+# defaulted to `main`, and the comment sitting directly above that default was
+# not enough to prevent it. Hence a check rather than better prose.
+PLIST="$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist"
+if [[ "$(uname -s)" == "Darwin" && -f "$PLIST" && -n "$VAULT_SRC" && -d "$VAULT_SRC/.git" ]]; then
+  want_branch="$(git -C "$VAULT_SRC" rev-parse --abbrev-ref HEAD 2>/dev/null)"
+  got_branch="$(/usr/libexec/PlistBuddy -c 'Print :EnvironmentVariables:GIT_BRANCH' "$PLIST" 2>/dev/null)"
+  if [[ -z "$got_branch" ]]; then
+    soft "Promoter has no GIT_BRANCH set (promote.sh will assume 'main')" \
+      "The vault is on '$want_branch'. If that is not main, notes will never push."
+  elif [[ "$got_branch" == "<BRANCH>" ]]; then
+    bad "Promoter GIT_BRANCH is still the <BRANCH> placeholder" "Notes will commit locally and never reach GitHub." \
+      "Set it to '$want_branch' in $PLIST, then: launchctl unload \"$PLIST\" && launchctl load -w \"$PLIST\""
+  elif [[ "$got_branch" == "$want_branch" ]]; then
+    ok "Promoter pushes the branch the vault is actually on ($want_branch)"
+  else
+    bad "Promoter is set to push '$got_branch' but the vault is on '$want_branch'" \
+      "Captured notes will commit locally and never reach GitHub, with no error anywhere." \
+      "Set GIT_BRANCH to '$want_branch' in $PLIST, then: launchctl unload \"$PLIST\" && launchctl load -w \"$PLIST\""
+  fi
+fi
 
 STATE="$HERMES_HOME/promote-state.json"
 if [[ -f "$STATE" ]]; then
@@ -336,7 +370,8 @@ fi
 
 wa="$(dex hermes config get platforms.whatsapp.enabled | tr -d '\r\n')"
 if [[ "$wa" == "true" ]]; then
-  if dex curl -s --max-time 4 http://127.0.0.1:3000/health 2>/dev/null | grep -q '"status":"connected"'; then
+  wa_health="$(dex curl -s --max-time 4 http://127.0.0.1:3000/health 2>/dev/null || true)"
+  if grep -q '"status":"connected"' <<<"$wa_health"; then
     ok "WhatsApp bridge is connected"
   else
     bad "WhatsApp is enabled but its bridge is not connected" "Pair from INSIDE the container: docker exec -it $CONTAINER hermes whatsapp"

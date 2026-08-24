@@ -95,7 +95,12 @@ validate() {
   # Patterns tolerate a trailing \r: on Windows the vault sits on the Windows
   # filesystem and a note edited in a Windows editor comes back CRLF. A bare
   # '^---$' would then silently reject every hand-edited note.
-  head -n 1 "$f" | grep -q '^---[[:space:]]*$' || { echo "no frontmatter"; return 1; }
+  # Not `head | grep -q`: this script runs under `set -o pipefail`, and grep -q
+  # exiting on match can SIGPIPE head into a 141 that reads as "no match" — which
+  # here would REJECT a perfectly valid note. Read the line, then test it.
+  local first_line
+  first_line="$(head -n 1 "$f" 2>/dev/null || true)"
+  grep -q '^---[[:space:]]*$' <<<"$first_line" || { echo "no frontmatter"; return 1; }
 
   local fm
   fm="$(awk 'NR>1 && /^---[[:space:]]*$/{exit} NR>1{print}' "$f")"

@@ -3,7 +3,8 @@
   macOS launchd job — runs the promoter every 15 minutes.
 
   Install:
-    1. Replace every <NAME> and every /Users/<USER> below.
+    1. Replace every <NAME>, every /Users/<USER>, and <BRANCH> below.
+     <BRANCH> is the vault repo's branch: git -C <vault> rev-parse --abbrev-ref HEAD
     2. Save to ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
     3. launchctl unload ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist 2>/dev/null
        launchctl load  ~/Library/LaunchAgents/com.hermeskit.vault-promote.plist
@@ -59,9 +60,16 @@
         <key>PATH</key>
         <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
 
-        <!-- Set this to `master` if the vault repo uses the old default branch name. -->
+        <!-- ⚠️ MUST match the vault repo's actual branch. promote.sh pulls and
+             pushes whatever it is given, so a wrong value here means notes commit
+             locally and NEVER reach GitHub — silently, with every other check
+             still passing. Find it with:
+                 git -C <vault> rev-parse --abbrev-ref HEAD
+             Left as a placeholder deliberately: the previous default of `main`
+             was missed on a real install whose vault was on `master`, even with
+             a comment right above it. install-verify.sh now checks this. -->
         <key>GIT_BRANCH</key>
-        <string>main</string>
+        <string>&lt;BRANCH&gt;</string>
     </dict>
 
     <key>StandardOutPath</key>
