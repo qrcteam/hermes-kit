@@ -55,10 +55,16 @@ Pinecone on her own account regardless. It costs nothing and it's the right defa
 
 ## Deviations from the runbook
 
-<record as you go>
+- **Runs native, not Docker.** Gateway is a launchd job (`ai.hermes.gateway`) running
+  `hermes_cli.main gateway run` directly against a venv at `~/.hermes/hermes-agent/venv`, not
+  a container. There is no `/vault` or `/opt/data` mount — real paths are `~/Memory/mazix-vault`
+  and `~/.hermes/inbox`. `install-verify.sh` is Docker-only (`docker exec`, `docker inspect`)
+  and will not run cleanly against this install as-is; verified everything by hand instead
+  (2026-08-28).
 
 ## Log
 
 | Date | What |
 |---|---|
 | 2026-08-13 | Install started: Homebrew + Docker in, OpenRouter key + Telegram bot token configured, allowed users = Oz + Mazíx, container pulling. |
+| 2026-08-28 | **Gate 08 (promoter) had never been done — memory pipeline was dead since day one.** No `com.hermeskit.vault-promote.plist` existed, no cron job ran it either; vault sat at its single day-1 skeleton commit while 11 real captured notes (incl. IRS-tax and health entries from 2026-08-20) piled up unpromoted in the inbox. Fixed: pulled the kit's 2026-08-24 SIGPIPE fix into `~/.hermes/promote.sh`, installed + loaded the launchd job (`~/Library/LaunchAgents/com.hermeskit.vault-promote.plist`, `<USER>`/`<NAME>`=mazix, `<BRANCH>`=main), ran it — all 11 notes promoted, 0 rejected, committed `7cd8eee`, confirmed pushed (`git ls-remote origin main` matches local HEAD). `promote-state.json` now says `"status": "ok"`. Job runs every 15 min going forward. Also fixed `~/.hermes/skills/note-taking/vault-capture/SKILL.md` — it was the literal Docker-template copy, telling the agent to read/write `/vault` and `/opt/data/inbox` which don't exist on this native install; rewritten to the real paths. Notes had still been landing correctly beforehand, meaning the agent was silently overriding its own skill instructions — fragile, now fixed at the source. |

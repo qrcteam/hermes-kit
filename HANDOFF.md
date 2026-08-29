@@ -687,3 +687,50 @@ and does it come off at handover?** Settle before the next client install.
   runbook too. Verified: `node --check` on the extracted script passes and all 12 gates parse
   with their fields. **Not visually verified — the Chrome extension was disconnected.** Open
   `docs/install-guide/index.html` in a browser once Chrome is healthy. [decision]
+
+## 2026-08-28 session — mazix's memory pipeline was dead since day one, gate 08 never done
+Synced local checkout to `170faa4` (was 51 commits behind, including the SIGPIPE fix session
+above). Opened `docs/install-guide/index.html` (via a throwaway `python3 -m http.server` — the
+extension refuses `file://`) to check it against Mazíx's real, live install.
+
+- **Gate 08 (turn on the promoter) had silently never been done on Mazíx's own machine.** No
+  `com.hermeskit.vault-promote.plist` in `~/Library/LaunchAgents/`, no cron job either — just the
+  gateway plist. Her vault (`~/Memory/mazix-vault`) sat at one commit (`11f790f`, day-1 skeleton)
+  for 15 days while **11 real captured notes queued in `~/.hermes/inbox`** since 2026-08-20,
+  including IRS-tax and health entries. Nothing she told Hermes to remember in over a week had
+  actually reached durable storage — captures "succeeded" from her side (skill's step 4 read-back
+  passed) but nobody had ever wired the second half of the pipeline. **`people/mazix.md` still
+  said `Status: INSTALLING` and its "Deviations" section was empty — this is exactly the kind of
+  gap that section exists to catch, and it hadn't been used.** [gotcha]
+- Fixed live: pulled the 2026-08-24 SIGPIPE patch into her `~/.hermes/promote.sh` (her copy
+  predated it), built `com.hermeskit.vault-promote.plist` from the template, loaded it, ran it —
+  all 11 notes promoted, 0 rejected, commit `7cd8eee` pushed and confirmed on GitHub via
+  `git ls-remote`. `promote-state.json` → `"status": "ok"`. Job now runs every 15 min.
+- **First substitution attempt on the plist template silently no-opped** — templated with
+  `sed 's|<USER>|mazix|g'` etc., `plutil -lint` passed, `launchctl load` returned 0, but nothing
+  ran and no log appeared. Cause: the plist body escapes its placeholders as `&lt;USER&gt;` /
+  `&lt;NAME&gt;` / `&lt;BRANCH&gt;` (XML entities) — only the *comment* at the top uses the raw
+  `<USER>` text sed was matching. The job launched pointed at the literal path
+  `/Users/<USER>/.hermes/promote.sh`, which doesn't exist, and its own log path was equally
+  literal, so the failure was invisible on every axis (`launchctl list` still shows exit 0
+  because the *shell* started fine — it's `bash` failing to open a missing file that never
+  surfaced). Fix: substitute both the escaped and raw forms. **Worth turning into an
+  `install-verify.sh` check or a note in the gate-08 instructions** — this will bite the next
+  real install too, since copy-pasting the gate card's own `sed` line has the same bug. [gotcha]
+- **`~/.hermes/skills/note-taking/vault-capture/SKILL.md` was the unmodified Docker template** —
+  told the agent to read `/vault` and write `/opt/data/inbox`, neither of which exists on this
+  machine (Mazíx's install is native launchd, not Docker — see below). Notes had still been
+  landing correctly at the real `~/.hermes/inbox/wiki/topics/...` path regardless, which means
+  the agent was silently reasoning past its own skill's literal (wrong) instructions rather than
+  failing loudly. Fixed by rewriting the skill to the real native paths. **This is a second,
+  independent argument (beyond the plist bug above) for teaching `install-verify.sh` to detect a
+  native install and check the *installed* skill file against it**, not just assume Docker. [gotcha]
+- **Mazíx's install runs natively, not in Docker** — `ai.hermes.gateway` launchd job runs
+  `hermes_cli.main gateway run` directly against a venv (`~/.hermes/hermes-agent/venv`), no
+  container exists (`docker ps` can't even reach the daemon on this box). `install-verify.sh` is
+  Docker-only end to end (`docker exec`, `docker inspect` for every check) and cannot run against
+  this install without a native-mode rewrite. Not attempted this session — verified everything
+  above by hand instead. **Open question for the kit: is native-launchd-instead-of-Docker a
+  supported install shape or an undocumented deviation from Oz's own Mazíx install day?** Nothing
+  in `01-architecture.md` or the runbooks mentions it as an option. Recorded in
+  `people/mazix.md` "Deviations" (which had never been filled in). [state]
