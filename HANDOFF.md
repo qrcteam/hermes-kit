@@ -783,3 +783,54 @@ dying on the first line. Ran it live against Mazíx's real install to prove it, 
   skipped (the Docker-bind-mount WAL check, correctly not applicable). All three changed files
   (`install-verify.sh`, `promote.sh`, `vault-health.sh`) are kit templates, so this benefits every
   future native install, not just this one.
+
+## 2026-08-28 session (cont.) — a second memory system, and TCC confirmed live on a fresh case
+Still the same day. User asked a plain question — "if she ends a session, how does saving and
+learning actually work?" — which surfaced something the earlier fixes hadn't touched: Mazíx's
+`SOUL.md` routes her actual daily work (Main Room, Ravenous Room, Agenda, Care Rhythm, "Moon
+Power 🌝") through `~/Documents/mazix-memory`, a hand-built Obsidian system completely separate
+from `~/Memory/mazix-vault`. Her own `Sync-and-Sweep.md` records why: she hit "the configured
+Vault path was invalid" on 2026-08-27 — the exact promoter bug fixed earlier this session, from
+the other side — and built this as a working replacement the day before it got fixed properly.
+
+- **These two systems are NOT duplicates and should not be merged.** The vault pipeline is
+  create-or-append only, by design — that's what makes it safe to let an agent write there
+  unsupervised. Her Room system needs in-place edits (strike a completed agenda item, update the
+  same Care Rhythm record) that create-or-append cannot express at all. Confirmed this is a real
+  kit gap, not a user error: the kit ships one memory shape (immutable fact archive) and her
+  actual workflow needs a second one (mutable living documents) that nothing in hermes-kit
+  provides. Worth a real decision later — does the kit ever want to support this shape
+  natively, or does every install that needs it hand-build one the way this one did. [state]
+- **It had zero backup** — no git repo at all, sitting under `~/Documents`, which is the exact
+  TCC-blocked location the kit's own README has warned about since 2026-08-12. Gave it the same
+  treatment as the vault: private repo (`qrcteam/mazix-memory`), and a **new, deliberately
+  separate** script (`~/.hermes/scripts/memory-sync.sh` — plain add/commit/push on a schedule,
+  no validate/reject/append logic, because unlike the vault there is nothing here that should
+  ever be rejected). Not a kit template — this one script and schedule exist because of one
+  person's SOUL.md, not a shape every install needs yet.
+- **TCC blocked it live, immediately, confirmed rather than assumed.** First launchd load against
+  the original `~/Documents` path failed with `getcwd: cannot access parent directories:
+  Operation not permitted` — from launchd itself, not from the script. Identical script pointed
+  at `~/Memory` (the existing vault-promote job) had already run clean minutes earlier in this
+  same session, which made this about as close to a controlled experiment as this kind of bug
+  ever gets. Un-loaded the broken job immediately rather than leave it looking scheduled while
+  silently doing nothing every 15 minutes — same principle as the `launchctl load`-of-a-missing-
+  plist lie documented earlier in this file. [gotcha]
+- **Fix: moved the folder, `~/Documents/mazix-memory` → `~/Memory/mazix-memory`**, git history
+  intact (`mv` on a directory containing `.git` just works). Then swept for the old path
+  everywhere, the same discipline the `~/OzLuv` move gotcha upstream in this file demands:
+  `SOUL.md`'s two Room-file paths, the sync script's default, the launchd plist, and — new one
+  for this kit — **Obsidian's own vault registry**
+  (`~/Library/Application Support/obsidian/obsidian.json`), which nothing before this had ever
+  needed to touch. Left a dated addendum in her own `Sync-and-Sweep.md` explaining the fix rather
+  than silently rewriting her record — append, don't overwrite, applies to prose too. Proven end
+  to end: real edit → auto-committed → pushed → confirmed on GitHub, then cleaned up the same way
+  the vault smoke tests are (edit, prove, revert, push clean).
+- **"The Ravenous Book" subfolder was already its own separate repo** (`qrcteam/the-ravenous-
+  book`) before any of this, moved along with the parent folder intact, `.gitignore`d out of the
+  new parent repo to avoid nesting one git repo inside another.
+- Published an artifact for Mazíx — "How Hermes Remembers" — plain-language guide to what gets
+  saved, when, and what to say before closing a session. Deliberately written to cover only the
+  now-fixed, reliable vault mechanism at first; queued to add a Room-system section once this
+  thread's fix was actually settled, rather than document something mid-change.
+  <https://claude.ai/code/artifact/9786996e-01a2-4d63-ae18-f40817cd92ab>
