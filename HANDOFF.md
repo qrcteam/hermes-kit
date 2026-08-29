@@ -834,3 +834,54 @@ the other side — and built this as a working replacement the day before it got
   now-fixed, reliable vault mechanism at first; queued to add a Room-system section once this
   thread's fix was actually settled, rather than document something mid-change.
   <https://claude.ai/code/artifact/9786996e-01a2-4d63-ae18-f40817cd92ab>
+
+## 2026-08-28 session (cont.) — memory-budget prune, and closing this session
+Final piece, same day. User asked how to keep the memory system "optimized" going forward — the
+check turned up `MEMORY.md` and `USER.md` both already OVER their configured caps live
+(2221/2200, 1405/1375), meaning Hermes was already silently evicting facts to make room.
+
+- **Root cause wasn't volume, it was duplication.** Reading MEMORY.md/USER.md against the Room
+  files side by side (only possible now that the Room system is git-tracked and easy to diff
+  against) showed the same facts stored 2–3 times over: SOUL.md's own Rooms/Titles sections
+  restated in MEMORY.md twice more, "add it to the Book" defined identically in three separate
+  files, and — the one that matters most — a Ravenous recipe label drifted to "P/T/L" in USER.md
+  while the Room file (the one actually read every time) correctly says "P/C/Y". That drift is
+  the whole argument for consolidation: two copies of a fact don't stay in sync, they silently
+  diverge, and only one of them is ever actually being read. [gotcha]
+- **Fixed by moving facts to where they're actually used, not just deleting them.** Room-specific
+  detail went INTO the relevant Room file first (Ravenous Room gained the cold-test-portion
+  workflow, the nomadic-kitchen-tools rule, the Yum-lock rule, the content-only-pulls rule; Main
+  Room gained new Agenda and Travel sections that didn't exist there before) — then the now-
+  redundant copies were cut from MEMORY.md/USER.md. Nothing was lost, only relocated to the file
+  that's actually read in context, same principle as the 2026-08-22 prune. Result: MEMORY.md
+  2221→790 (36% of cap), USER.md 1405→332 (24%) — real headroom, not a near-miss. Backups at
+  `~/.hermes/memories/*.bak-20260829T032037Z`. [decision]
+- **`vault-health.sh` (the daily watchdog) now checks this on its own** — warns at 90% of the
+  configured cap, before something is actually evicted, using the same caps Hermes's own
+  `config.yaml` defaults to (2200/1375, overridable). Verified two ways: a synthetic file built
+  to 2250 bytes correctly triggered the alert text; the real, now-pruned install stayed silent.
+  Forced one run through the actual `hermes cron run` path, not just `bash -n`. Shipped to the
+  kit template, not just this install — closes the same class of "silent eviction" gap the
+  2026-08-22 session first documented but never automated a check for. [decision]
+
+### Session closed here — full state, verified
+- `hermes-kit` at `607f11a`, fully pushed, nothing uncommitted, nothing in flight.
+- Mazíx's install: promoter scheduled and running (15 min), watchdog scheduled (daily 13:00 UTC
+  + now checks memory budget), vault-capture and session-log skills installed with real native
+  paths, vault write-locked except during its own promoter runs, `mazix-vault` and `mazix-memory`
+  both private GitHub repos with working auto-sync, `MEMORY.md`/`USER.md` both well under cap.
+  `install-verify.sh` reports 33 passed / 0 failed / 1 informational warning.
+- Artifact for Mazíx, current: <https://claude.ai/code/artifact/9786996e-01a2-4d63-ae18-f40817cd92ab>
+  (covers both the vault and the Room system).
+
+### Open items for whoever picks this up next
+- **Whether the kit should support "mutable living documents" as a first-class shape**, not just
+  something every install hand-builds the way Mazíx's was. Real gap, not yet a decision — see the
+  entry above this one. [state]
+- **`install-verify.sh`'s native-mode support has been proven on exactly one install** (Mazíx's).
+  If Doug, Diane, Laurie, or Trenton also end up native rather than Docker, re-verify against a
+  second real case before trusting it blindly — the Docker-mode checks had years of real installs
+  shaking them out before today; the native ones just got written and tested once. [state]
+- Everything else from earlier in this file (Laurie's install-in-progress status, the Trenton
+  runbook rewrite, the claude-driven-install-as-default documentation, WhatsApp debug backlog)
+  is unchanged by today's session — this session was scoped entirely to Mazíx's memory pipeline.
