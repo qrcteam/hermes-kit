@@ -37,6 +37,18 @@
 # whole "Memory pipeline" section fails, correctly: on that machine Claude Code
 # writes the vault (/end, /ask) and Hermes only reads it, so there is no inbox,
 # no promote.sh and no promoter job to find. See docs/07-operator-notes.md.
+#
+# NATIVE vs DOCKER — the kit's default is Docker: the vault mount is what makes
+# "the agent can't write /vault" a KERNEL guarantee, not just a skill convention
+# (see 01-architecture.md, "the one rule that shapes everything"). Some installs
+# run the gateway natively via launchd instead (no container at all). This
+# script detects which one it's looking at and adjusts every check — but native
+# mode gets an extra WARN that docker mode never sees: on native, Hermes runs as
+# the same OS user as the promoter and the human, so there is no filesystem
+# boundary stopping it from writing the vault directly. Only the vault-capture
+# skill's own discipline does. That is a real, permanent difference in guarantee
+# between the two install shapes, not a bug this script can fix — it can only
+# tell you the truth about which one you have.
 
 set -uo pipefail
 
@@ -96,8 +108,6 @@ soft() { printf '  %sWARN%s  %s\n' "$Y" "$Z" "$1"
 # Capture first, then match on the variable.
 nope() { printf '  %sSKIP%s  %s\n' "$D" "$Z" "$1"; skip=$((skip+1)); }
 
-dex() { docker exec "$CONTAINER" "$@" 2>/dev/null; }
-
 # `docker inspect` reports Docker Desktop's INTERNAL path for bind mounts, not
 # the host path — /host_mnt/Users/... on macOS, /run/desktop/mnt/host/c/... on
 # Windows. Test those against the host filesystem and every check silently
@@ -111,52 +121,121 @@ host_path() {
 
 printf '%sHermes install check%s  ·  %s\n' "$B" "$Z" "$(date '+%Y-%m-%d %H:%M')"
 
+# ── Which install shape is this? ─────────────────────────────────────────────
+# Detect BEFORE anything else so every later check asks the right question
+# instead of assuming Docker and failing every single check on a native box.
+MODE=""
+native_gw=""
+native_job=""
+if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+  container_state="$(docker inspect -f '{{.State.Status}}' "$CONTAINER" 2>/dev/null || echo missing)"
+  [[ "$container_state" == "running" ]] && MODE="docker"
+fi
+if [[ -z "$MODE" ]]; then
+  native_gw="$(pgrep -f 'hermes_cli.main gateway' 2>/dev/null || true)"
+  native_job="$(launchctl list 2>/dev/null | grep 'ai\.hermes\.gateway' || true)"
+  [[ -n "$native_gw" || -n "$native_job" ]] && MODE="native"
+fi
+
+# dex = "run this hermes-facing command wherever the gateway actually lives."
+# Docker: inside the container. Native: directly on the host, same as any
+# other command — there is no boundary to cross.
+dex() {
+  if [[ "$MODE" == "docker" ]]; then
+    docker exec "$CONTAINER" "$@" 2>/dev/null
+  else
+    "$@" 2>/dev/null
+  fi
+}
+if [[ "$MODE" == "docker" ]]; then
+  HCMD="docker exec $CONTAINER hermes"; HCMD_IT="docker exec -it $CONTAINER hermes"
+  RESTART_HINT="docker restart $CONTAINER"
+else
+  HCMD="hermes"; HCMD_IT="hermes"
+  RESTART_HINT="launchctl kickstart -k gui/\$(id -u)/ai.hermes.gateway"
+fi
+
 # ── Environment ──────────────────────────────────────────────────────────────
 section "Environment"
 
-if ! command -v docker >/dev/null 2>&1; then
-  bad "Docker is not installed" "Install Docker Desktop, then re-run this script."
-  printf '\n%sStopping — nothing else can be checked without Docker.%s\n' "$R" "$Z"; exit 1
-fi
-
-if ! docker info >/dev/null 2>&1; then
-  bad "Docker is installed but not running" "Open Docker Desktop and wait for the whale to settle, then re-run."
-  printf '\n%sStopping — nothing else can be checked while Docker is down.%s\n' "$R" "$Z"; exit 1
-fi
-ok "Docker is running"
-
-state="$(docker inspect -f '{{.State.Status}}' "$CONTAINER" 2>/dev/null || echo missing)"
-case "$state" in
-  running) ok "Container '$CONTAINER' is running" ;;
-  missing) bad "Container '$CONTAINER' does not exist" "Runbook step 6 — the 'docker run' block was never executed."
-           printf '\n%sStopping — the rest of the checks need a container.%s\n' "$R" "$Z"; exit 1 ;;
-  *)       bad "Container '$CONTAINER' exists but is '$state'" "docker logs --tail 50 $CONTAINER   # usually a malformed .env or a bad mount path" "docker start $CONTAINER"
-           printf '\n%sStopping — the rest of the checks need it running.%s\n' "$R" "$Z"; exit 1 ;;
+case "$MODE" in
+  docker)
+    ok "Docker is running"
+    ok "Container '$CONTAINER' is running"
+    restart="$(docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' "$CONTAINER" 2>/dev/null)"
+    [[ "$restart" == "unless-stopped" || "$restart" == "always" ]] \
+      && ok "Restart policy is '$restart' — survives a reboot" \
+      || soft "Restart policy is '${restart:-none}'" "Without it they must start Docker by hand after every reboot. Re-create with --restart unless-stopped."
+    ;;
+  native)
+    ok "Running native (no Docker container) — the gateway is a host process"
+    [[ -n "$native_gw" ]] \
+      && ok "Gateway process is running" \
+      || bad "launchd shows the gateway job loaded but no process is actually running" "Check the gateway's own error log under ~/.hermes/logs/." "launchctl kickstart -k gui/\$(id -u)/ai.hermes.gateway"
+    [[ -n "$native_job" ]] \
+      && ok "Gateway is a launchd job — survives logout/reboot" \
+      || soft "No launchd job found for the gateway" "It only runs as long as whatever started it stays open. Install a LaunchAgent (see templates/) so it survives a reboot."
+    soft "Native install: the vault is NOT kernel-enforced read-only" "Docker's :ro mount is what makes 'the agent can't write the vault' a filesystem guarantee, not a request. On native, Hermes runs as the same OS user as the promoter and the human, so nothing at the OS level stops it from writing the vault directly — only the vault-capture skill's own discipline does. See the vault permissions line under Mounts below for what this install actually has."
+    ;;
+  *)
+    bad "Neither a running Docker container ('$CONTAINER') nor a native gateway process was found" "Docker: check 'docker ps -a' and 'docker info'. Native: check 'launchctl list | grep hermes' and 'pgrep -f hermes_cli.main'."
+    printf '\n%sStopping — nothing else can be checked without a running gateway.%s\n' "$R" "$Z"; exit 1 ;;
 esac
-
-restart="$(docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' "$CONTAINER" 2>/dev/null)"
-[[ "$restart" == "unless-stopped" || "$restart" == "always" ]] \
-  && ok "Restart policy is '$restart' — survives a reboot" \
-  || soft "Restart policy is '${restart:-none}'" "Without it they must start Docker by hand after every reboot. Re-create with --restart unless-stopped."
 
 # ── Mounts — the part that protects their memory ─────────────────────────────
 section "Mounts"
 
-VAULT_SRC="$(host_path "$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/vault"}}{{.Source}}{{end}}{{end}}' "$CONTAINER" 2>/dev/null)")"
-VAULT_RW="$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/vault"}}{{.RW}}{{end}}{{end}}' "$CONTAINER" 2>/dev/null)"
+if [[ "$MODE" == "docker" ]]; then
+  VAULT_SRC="$(host_path "$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/vault"}}{{.Source}}{{end}}{{end}}' "$CONTAINER" 2>/dev/null)")"
+  VAULT_RW="$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/vault"}}{{.RW}}{{end}}{{end}}' "$CONTAINER" 2>/dev/null)"
 
-if [[ -z "$VAULT_SRC" ]]; then
-  bad "No /vault mount on the container" "The agent has no memory at all. Re-create with -v \"\$HOME/Memory/<NAME>-vault:/vault:ro\""
-elif [[ "$VAULT_RW" == "false" ]]; then
-  ok "Vault is mounted READ-ONLY  ($VAULT_SRC)"
+  if [[ -z "$VAULT_SRC" ]]; then
+    bad "No /vault mount on the container" "The agent has no memory at all. Re-create with -v \"\$HOME/Memory/<NAME>-vault:/vault:ro\""
+  elif [[ "$VAULT_RW" == "false" ]]; then
+    ok "Vault is mounted READ-ONLY  ($VAULT_SRC)"
+  else
+    bad "Vault is mounted WRITABLE — the agent can destroy their notes" "This is the single most important character in the kit. Re-create the container with :ro on the vault mount."
+  fi
+
+  DATA_SRC="$(host_path "$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/opt/data"}}{{.Source}}{{end}}{{end}}' "$CONTAINER" 2>/dev/null)")"
+  [[ -n "$DATA_SRC" ]] \
+    && ok "Data dir mounted read-write  ($DATA_SRC)" \
+    || bad "No /opt/data mount" "Config, SOUL.md and the inbox all live there. Re-create with -v \"\$HOME/.hermes:/opt/data\""
 else
-  bad "Vault is mounted WRITABLE — the agent can destroy their notes" "This is the single most important character in the kit. Re-create the container with :ro on the vault mount."
-fi
+  # No mount to inspect on native. Find the vault from whatever already knows
+  # where it is, most-trustworthy source first: a caller-supplied VAULT_ROOT,
+  # then the last real promoter run, then the scheduled job's own config, then
+  # (only if nothing else exists) a lone ~/Memory/*-vault directory.
+  VAULT_SRC="${VAULT_ROOT:-}"
+  if [[ -z "$VAULT_SRC" && -f "$HERMES_HOME/promote-state.json" ]]; then
+    VAULT_SRC="$(python3 -c 'import json,sys
+try: print(json.load(open(sys.argv[1])).get("vault",""))
+except Exception: pass' "$HERMES_HOME/promote-state.json" 2>/dev/null || true)"
+  fi
+  if [[ -z "$VAULT_SRC" ]]; then
+    NPLIST="$HOME/Library/LaunchAgents/com.hermeskit.vault-promote.plist"
+    [[ -f "$NPLIST" ]] && VAULT_SRC="$(/usr/libexec/PlistBuddy -c 'Print :EnvironmentVariables:VAULT_ROOT' "$NPLIST" 2>/dev/null || true)"
+  fi
+  if [[ -z "$VAULT_SRC" && -d "$HOME/Memory" ]]; then
+    found_vaults="$(find "$HOME/Memory" -mindepth 1 -maxdepth 1 -type d -name '*-vault' 2>/dev/null)"
+    n="$(printf '%s\n' "$found_vaults" | grep -c . || true)"
+    [[ "$n" -eq 1 ]] && VAULT_SRC="$found_vaults"
+  fi
 
-DATA_SRC="$(host_path "$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/opt/data"}}{{.Source}}{{end}}{{end}}' "$CONTAINER" 2>/dev/null)")"
-[[ -n "$DATA_SRC" ]] \
-  && ok "Data dir mounted read-write  ($DATA_SRC)" \
-  || bad "No /opt/data mount" "Config, SOUL.md and the inbox all live there. Re-create with -v \"\$HOME/.hermes:/opt/data\""
+  if [[ -z "$VAULT_SRC" || ! -d "$VAULT_SRC" ]]; then
+    bad "Could not find the vault" "No promote-state.json, no promoter plist, and no single ~/Memory/*-vault to guess from. Re-run with VAULT_ROOT=<path> bash install-verify.sh"
+  else
+    ok "Vault found at $VAULT_SRC"
+    vperm="$(stat -f '%Sp' "$VAULT_SRC" 2>/dev/null || stat -c '%A' "$VAULT_SRC" 2>/dev/null)"
+    case "$vperm" in
+      *w*) soft "Vault directory is writable by this user (mode ${vperm:-?})" "Normal for native — see the Environment warning above. If you want an actual write barrier rather than a skill convention, chmod the vault tree read-only by default and have promote.sh toggle it write-able only for its own run." ;;
+      *)   ok "Vault directory has no write bit for this user (mode ${vperm:-?}) — a real barrier, not just a skill convention" ;;
+    esac
+  fi
+
+  DATA_SRC="$HERMES_HOME"
+  ok "Data dir (native — no mount, it's just $DATA_SRC)"
+fi
 
 # macOS hides Desktop/Documents/Downloads from background jobs, silently.
 case "$VAULT_SRC" in
@@ -168,18 +247,26 @@ esac
 # ── Settings that must not drift ─────────────────────────────────────────────
 section "Settings"
 
-jm="$(dex hermes config get database.journal_mode | tr -d '\r\n')"
-[[ "$jm" == "delete" ]] \
-  && ok "journal_mode = delete" \
-  || bad "journal_mode = '${jm:-unset}' (must be 'delete')" "SQLite's WAL corrupts across a Docker bind mount. Expect 'database disk image is malformed' within a week." "docker exec $CONTAINER hermes config set database.journal_mode delete"
+if [[ "$MODE" == "docker" ]]; then
+  # WAL corruption over a Docker Desktop bind mount (gRPC-FUSE / virtiofs file
+  # locking) is a Docker-specific failure mode — it doesn't apply the same way
+  # to a native SQLite file sitting on a normal local filesystem, so this check
+  # only runs in docker mode.
+  jm="$(dex hermes config get database.journal_mode | tr -d '\r\n')"
+  [[ "$jm" == "delete" ]] \
+    && ok "journal_mode = delete" \
+    || bad "journal_mode = '${jm:-unset}' (must be 'delete')" "SQLite's WAL corrupts across a Docker bind mount. Expect 'database disk image is malformed' within a week." "$HCMD config set database.journal_mode delete"
+else
+  nope "journal_mode check (Docker-bind-mount-specific; not a native failure mode)"
+fi
 
 am="$(dex hermes config get approvals.mode | tr -d '\r\n')"
 [[ "$am" == "smart" ]] && ok "approvals.mode = smart" \
-  || soft "approvals.mode = '${am:-unset}' (expected 'smart')" "docker exec $CONTAINER hermes config set approvals.mode smart" "docker exec $CONTAINER hermes config set approvals.mode smart"
+  || soft "approvals.mode = '${am:-unset}' (expected 'smart')" "$HCMD config set approvals.mode smart" "$HCMD config set approvals.mode smart"
 
 cm="$(dex hermes config get approvals.cron_mode | tr -d '\r\n')"
 [[ "$cm" == "deny" ]] && ok "approvals.cron_mode = deny" \
-  || soft "approvals.cron_mode = '${cm:-unset}' (expected 'deny')" "Scheduled agent jobs could take actions with nobody awake to approve them." "docker exec $CONTAINER hermes config set approvals.cron_mode deny"
+  || soft "approvals.cron_mode = '${cm:-unset}' (expected 'deny')" "Scheduled agent jobs could take actions with nobody awake to approve them." "$HCMD config set approvals.cron_mode deny"
 
 # ── Credentials ──────────────────────────────────────────────────────────────
 section "Credentials"
@@ -213,7 +300,7 @@ if grep -qiE 'provider:.*(subscription|logged|oauth|api)' <<<"$hermes_status"; t
 else
   auth_ok="$(dex hermes auth list 2>/dev/null | grep -c '←' || echo 0)"
   [[ "${auth_ok:-0}" -gt 0 ]] && ok "A model credential is active" \
-    || bad "No model logged in" "docker exec -it $CONTAINER hermes model   — they must do this on their own account."
+    || bad "No model logged in" "$HCMD_IT model   — they must do this on their own account."
 fi
 
 # ── The memory pipeline ──────────────────────────────────────────────────────
@@ -295,6 +382,20 @@ for s in vault-capture session-log; do
     || bad "Skill missing: $s" "" "mkdir -p \"$HERMES_HOME/skills/note-taking/$s\" && cp \"$KIT/${s}-SKILL.md\" \"$HERMES_HOME/skills/note-taking/$s/SKILL.md\""
 done
 
+if [[ "$MODE" == "native" && -f "$HERMES_HOME/skills/note-taking/vault-capture/SKILL.md" ]]; then
+  # The kit's template is written for Docker's /vault and /opt/data/inbox. On a
+  # native install neither path exists, so an unmodified copy tells the agent
+  # to read and write locations that are not there — it may still work if the
+  # model reasons past its own instructions, but that is not something to rely
+  # on. Flag it explicitly rather than let it pass silently.
+  bad_paths="$(grep -cE '(^|[^/])(/vault|/opt/data)(/|$| )' "$HERMES_HOME/skills/note-taking/vault-capture/SKILL.md" 2>/dev/null | tr -d ' ')"
+  if [[ "${bad_paths:-0}" -gt 0 ]]; then
+    bad "vault-capture skill still points at Docker paths (/vault, /opt/data) on a native install" "Neither path exists on this machine. Rewrite it to \$HOME/Memory/<vault> and \$HERMES_HOME/inbox, or the agent is following instructions that point nowhere."
+  else
+    ok "vault-capture skill uses real (non-Docker) paths"
+  fi
+fi
+
 # ── The vault itself ─────────────────────────────────────────────────────────
 section "The vault"
 
@@ -363,9 +464,9 @@ if grep -q '\[Telegram\] Connected' "$GWLOG" 2>/dev/null; then
     *) soft "Telegram connected earlier; can't confirm current state" "tail -5 \"$GWLOG\"" ;;
   esac
 elif [[ -f "$GWLOG" ]]; then
-  bad "Telegram has never connected" "Check the token and allowed-user ID in .env, then: docker restart $CONTAINER"
+  bad "Telegram has never connected" "Check the token and allowed-user ID in .env, then: $RESTART_HINT"
 else
-  soft "No gateway log yet at $GWLOG" "Normal on a container that has only just started."
+  soft "No gateway log yet at $GWLOG" "Normal on a gateway that has only just started."
 fi
 
 wa="$(dex hermes config get platforms.whatsapp.enabled | tr -d '\r\n')"
@@ -374,21 +475,43 @@ if [[ "$wa" == "true" ]]; then
   if grep -q '"status":"connected"' <<<"$wa_health"; then
     ok "WhatsApp bridge is connected"
   else
-    bad "WhatsApp is enabled but its bridge is not connected" "Pair from INSIDE the container: docker exec -it $CONTAINER hermes whatsapp"
+    bad "WhatsApp is enabled but its bridge is not connected" "Pair: $HCMD_IT whatsapp"
   fi
   [[ -f "$HERMES_HOME/whatsapp/session/creds.json" || -f "$HERMES_HOME/platforms/whatsapp/session/creds.json" ]] \
     && ok "WhatsApp pairing is stored" \
-    || bad "No WhatsApp creds.json — never paired" "docker exec -it $CONTAINER hermes whatsapp"
+    || bad "No WhatsApp creds.json — never paired" "$HCMD_IT whatsapp"
 else
   nope "WhatsApp not enabled (fine if they only wanted Telegram)"
 fi
 
-# One gateway, and only one. Two of them share this bind-mounted ~/.hermes and
-# fight over the same bot token — which reads as "the bot is silent" forever.
-if pgrep -f 'hermes_cli.main gateway' >/dev/null 2>&1; then
-  bad "A second gateway is running on the host, competing with the container" "They share ~/.hermes and the same Telegram token, so both fail. macOS: launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist"
+# One gateway, and only one. In docker mode a host-level gateway is always a
+# STRAY — the real one lives inside the container's own PID namespace and a
+# host pgrep can never see it, so any match here means someone also started a
+# native one by hand and it's now fighting the container for the same bot
+# token. In native mode the process we already found in the Environment
+# section above IS the one true gateway, so the question flips: we want
+# exactly one match, not zero.
+#
+# Not a bare `pgrep -f 'hermes_cli.main gateway'`: the native launchd job
+# wraps the real gateway in `hermes_cli.stderr_timestamp -- ... hermes_cli.main
+# gateway run`, and that wrapper's OWN command line contains the pattern as an
+# argument — so a single running gateway shows up as two pgrep matches (the
+# wrapper and its child), reporting a false "competing gateway". Exclude the
+# wrapper explicitly.
+proc_list="$(ps -axo command= 2>/dev/null || true)"
+gw_count="$(printf '%s\n' "$proc_list" | awk '/hermes_cli\.main gateway/ && !/stderr_timestamp/' | grep -c . || echo 0)"
+if [[ "$MODE" == "docker" ]]; then
+  if [[ "${gw_count:-0}" -gt 0 ]]; then
+    bad "A second gateway is running on the host, competing with the container" "They share ~/.hermes and the same Telegram token, so both fail. macOS: launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist"
+  else
+    ok "Exactly one gateway (the container) — nothing competing on the host"
+  fi
 else
-  ok "Exactly one gateway (the container) — nothing competing on the host"
+  case "${gw_count:-0}" in
+    0) bad "No native gateway process found" "Expected exactly one for a native install. See the Environment section above." ;;
+    1) ok "Exactly one native gateway process running" ;;
+    *) bad "$gw_count gateway processes running — competing for the same Telegram token" "Only one should run. Check 'launchctl list | grep hermes' and any 'hermes gateway run' left in a terminal by hand." ;;
+  esac
 fi
 
 # ── Apply the safe repairs (--fix only) ──────────────────────────────────────
@@ -408,7 +531,7 @@ if (( FIX )) && [[ -n "$FIXES" ]]; then
 
   printf '\n  %d repaired, %d could not be\n' "$applied" "$failed"
   if (( applied )); then
-    printf '  %sConfig changes need a restart to take effect:%s docker restart %s\n' "$D" "$Z" "$CONTAINER"
+    printf '  %sConfig changes need a restart to take effect:%s %s\n' "$D" "$Z" "$RESTART_HINT"
     printf '  %sThen re-run without --fix to confirm what is left.%s\n' "$D" "$Z"
   fi
 elif (( FIX )); then

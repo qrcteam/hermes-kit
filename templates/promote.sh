@@ -146,7 +146,26 @@ if ! mkdir "$LOCK_DIR" 2>/dev/null; then
     log "another run in progress, skipping"; exit 0
   fi
 fi
-trap 'rmdir "$LOCK_DIR" 2>/dev/null' EXIT
+# Only load-bearing when there is no Docker :ro mount underneath us — i.e. on
+# a native (non-Docker) install. There, Hermes runs as the same OS user as
+# this script and the human, so nothing at the filesystem level stops it from
+# writing the vault directly; the skill's "don't" is a convention, not a
+# barrier. This makes it one: the vault tree carries no write bit except
+# during this script's own run. It is not proof against an agent that
+# deliberately chmods before writing — nothing running as the same user can
+# be proof against that — but it turns an accidental or careless direct write
+# into a loud permission-denied instead of a silent, unreviewed change that
+# bypasses validate()/reject()/promote history entirely.
+# `.git` is left writable throughout: a locked working tree still blocks git
+# from actually touching a file (unlink/write need permission on the file and
+# its parent directory, not on .git), and keeping it open lets a human run
+# `git log`/`status`/`pull` by hand between runs without unlocking anything.
+lock_vault()   { chmod -R a-w "$VAULT_ROOT" 2>/dev/null || true
+                 chmod -R u+w "$VAULT_ROOT/.git" 2>/dev/null || true; }
+unlock_vault() { chmod -R u+w "$VAULT_ROOT" 2>/dev/null || true; }
+unlock_vault
+
+trap 'lock_vault; rmdir "$LOCK_DIR" 2>/dev/null' EXIT
 
 mkdir -p "$INBOX" "$INBOX/_rejected" "$INBOX/_promoted"
 

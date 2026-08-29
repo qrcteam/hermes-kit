@@ -734,3 +734,52 @@ extension refuses `file://`) to check it against Mazíx's real, live install.
   supported install shape or an undocumented deviation from Oz's own Mazíx install day?** Nothing
   in `01-architecture.md` or the runbooks mentions it as an option. Recorded in
   `people/mazix.md` "Deviations" (which had never been filled in). [state]
+
+## 2026-08-28 session (cont.) — install-verify.sh learns native mode; the vault gets a real lock
+Same session, continued at the user's request ("tackle it now"). `install-verify.sh` now detects
+Docker vs. native at the top (running container vs. a `hermes_cli.main gateway` process / loaded
+`ai.hermes.gateway` launchd job) and branches every check on it, instead of assuming Docker and
+dying on the first line. Ran it live against Mazíx's real install to prove it, not just `bash -n`.
+
+- **First real run found two more genuine gaps**, not artifacts of the rewrite: the `session-log`
+  skill (gate 05 — "what was I working on?", half of memory per the 2026-08-22 gate-card
+  reconciliation) had never been installed, same as `vault-capture` had been the raw Docker
+  template with `/vault`/`/opt/data` paths that don't exist on this machine. Both fixed the same
+  way — installed/rewritten with real native paths. [gotcha]
+- **The rewrite's own first draft had a bug**, caught by running it rather than trusting it: the
+  new native "exactly one gateway" check used `pgrep -f 'hermes_cli.main gateway'`, but the
+  launchd wrapper (`hermes_cli.stderr_timestamp -- ... hermes_cli.main gateway run`) has that
+  exact string in ITS OWN command line as an argument, so one running gateway pgrep-matched
+  twice and reported a false "2 gateway processes competing for the Telegram token." Fixed by
+  excluding `stderr_timestamp` from the match. **Lesson for whoever extends this script next:
+  test every new check against a live native install before trusting it — the docker-mode
+  checks had years of real installs shaking them out; the native ones just got written.** [gotcha]
+- **The check surfaced the real, permanent architectural gap between the two install shapes**:
+  Docker's `:ro` mount makes "the agent can't write the vault" a kernel guarantee; native has
+  no such boundary, because Hermes runs as the same OS user as the promoter and the human. This
+  isn't a bug in this install specifically — every native install has it, and the runbooks don't
+  mention it. Closed it as far as it can be closed at the OS-user layer: `promote.sh` now
+  `chmod -R a-w`s the vault tree (leaving `.git` writable so a human can still `git log`/`status`
+  /`pull` between runs) and only unlocks it for its own brief run. **This is NOT proof against an
+  agent that deliberately chmods before writing — nothing running as the same OS user can be** —
+  but it turns an accidental or careless direct write into a loud `permission denied` instead of
+  a silent, unreviewed change that bypasses `validate()`/`reject()`/the promote history entirely.
+  Proven end to end on Mazíx's real vault: direct write → `permission denied`; a full capture
+  cycle through the locked state → unlocked, wrote, committed, pushed, relocked, confirmed on
+  GitHub. `install-verify.sh`'s Mounts check now reports this as PASS ("a real barrier, not just
+  a skill convention") when the lock is in place, WARN when it isn't. [decision]
+- **`vault-health.sh` (gate 09, the watchdog) had the identical Docker-only-defaults bug** —
+  `PROMOTE_STATE`/`INBOX`/`VAULT` all defaulted to `/opt/data`/`/vault`, and `hermes cron create
+  --script` has no flag to hand a script per-job environment variables, so there was no way to
+  override them from the cron definition itself. Fixed generically for the kit (not just Mazíx):
+  the script now checks for `/.dockerenv` (only present inside an actual container) to pick
+  Docker defaults vs. native ones, and on native, resolves the vault path from the last real
+  `promote-state.json` — a fact, not a guess — the same trust order `install-verify.sh` already
+  uses. Scheduled on Mazíx's install (`hermes cron create "0 13 * * *" --script vault-health.sh
+  --no-agent --deliver telegram`, job `b702df93402d`) and force-run once through the real `hermes
+  cron run` path to confirm it executes cleanly, not just under `bash -n`. [decision]
+- **End state, verified**: `install-verify.sh` on Mazíx's install → 33 passed, 0 failed, 1
+  warning (the honest "native has no kernel enforcement" note — informational, not a defect), 1
+  skipped (the Docker-bind-mount WAL check, correctly not applicable). All three changed files
+  (`install-verify.sh`, `promote.sh`, `vault-health.sh`) are kit templates, so this benefits every
+  future native install, not just this one.
