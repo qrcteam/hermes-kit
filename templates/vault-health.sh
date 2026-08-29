@@ -33,6 +33,7 @@ if [[ -f /.dockerenv ]]; then
   STATE_FILE="${PROMOTE_STATE:-/opt/data/promote-state.json}"
   INBOX="${INBOX:-/opt/data/inbox}"
   VAULT="${VAULT:-/vault}"
+  MEMORIES_DIR="${MEMORIES_DIR:-/opt/data/memories}"
 else
   STATE_FILE="${PROMOTE_STATE:-$HOME/.hermes/promote-state.json}"
   INBOX="${INBOX:-$HOME/.hermes/inbox}"
@@ -42,8 +43,14 @@ try: print(json.load(open(sys.argv[1])).get("vault",""))
 except Exception: pass' "$STATE_FILE" 2>/dev/null)"
   fi
   VAULT="${VAULT:-$HOME/Memory/vault}"
+  MEMORIES_DIR="${MEMORIES_DIR:-$HOME/.hermes/memories}"
 fi
 STALE_HOURS="${STALE_HOURS:-2}"
+# Same defaults Hermes itself ships (config.yaml memory.memory_char_limit /
+# user_char_limit). Override if a config drifted from these.
+MEMORY_CAP="${MEMORY_CAP:-2200}"
+USER_CAP="${USER_CAP:-1375}"
+BUDGET_WARN_PCT="${BUDGET_WARN_PCT:-90}"
 
 alerts=""
 add() { alerts="${alerts}• $1"$'\n'; }
@@ -82,7 +89,30 @@ fi
 # ── 3. is the vault actually there? ──────────────────────────────────────────
 [[ -d "$VAULT/wiki" ]] || add "I can't see your notes folder at $VAULT. Recall will be wrong until that's fixed."
 
-# ── 4. speak only if there's something to say ────────────────────────────────
+# ── 4. is the always-loaded memory near its budget? ──────────────────────────
+# MEMORY.md and USER.md are FIXED-SIZE budgets injected into every message,
+# not logs — when one is full, Hermes evicts something old to fit something
+# new, silently, with no announcement. Caught this happening live once
+# already (2026-08-22: a real fact vanished overnight). Warn well before the
+# cap, not after, so there's actually time to prune instead of finding out
+# something is already gone.
+check_budget() {
+  local file="$1" cap="$2" label="$3"
+  [[ -f "$file" ]] || return 0
+  local size pct
+  size="$(wc -c <"$file" 2>/dev/null | tr -d ' ')"
+  [[ -n "$size" ]] || return 0
+  pct=$(( size * 100 / cap ))
+  if (( size > cap )); then
+    add "$label is over its memory budget (${size}/${cap} chars) — it's already evicting something to make room for anything new. Time to prune."
+  elif (( pct >= BUDGET_WARN_PCT )); then
+    add "$label is at ${pct}% of its memory budget (${size}/${cap} chars) — prune it soon, before it starts silently dropping facts."
+  fi
+}
+check_budget "$MEMORIES_DIR/MEMORY.md" "$MEMORY_CAP" "MEMORY.md"
+check_budget "$MEMORIES_DIR/USER.md" "$USER_CAP" "USER.md"
+
+# ── 5. speak only if there's something to say ────────────────────────────────
 if [[ -n "$alerts" ]]; then
   printf 'Heads up — your memory system needs attention:\n\n%s\n' "$alerts"
 fi
