@@ -924,3 +924,6 @@ check turned up `MEMORY.md` and `USER.md` both already OVER their configured cap
   Open: story-room's telegram toolset still has terminal/file/code_execution, which can read
   the container's `/vault` + `/projects` mounts (all BP/personal notes) — profiles isolate
   memory, not the filesystem. [decision pending]
+- **Decided 2026-09-30: story-room KEEPS terminal/file/code tools and `/vault` reach.** Oz:
+  "it's ok if it has access to my notes and vault. I trust the people in the chat." Don't
+  re-raise. [decision]
