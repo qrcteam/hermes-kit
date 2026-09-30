@@ -79,7 +79,7 @@ same `~/.hermes` (it's bind-mounted), so they share the config, the state DB, th
 session and the *same Telegram token* — and Telegram allows exactly one poller per bot.
 
 ```bash
-ps aux | grep "[h]ermes_cli.main gateway"     # want: nothing
+pgrep -fl "hermes_cli.main.*gateway run"      # want: nothing
 launchctl list | grep -i hermes.gateway        # macOS: want: nothing
 ```
 
@@ -87,6 +87,8 @@ Fix — the container is the install this kit builds; the host one is the interl
 
 ```bash
 launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist
+launchctl disable gui/$(id -u)/ai.hermes.gateway   # survives the plist being rewritten
+pkill -f "hermes_cli.main.*gateway run"           # launchd may not be what started it
 docker restart hermes
 ```
 

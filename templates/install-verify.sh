@@ -132,7 +132,7 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   [[ "$container_state" == "running" ]] && MODE="docker"
 fi
 if [[ -z "$MODE" ]]; then
-  native_gw="$(pgrep -f 'hermes_cli.main gateway' 2>/dev/null || true)"
+  native_gw="$(pgrep -f 'hermes_cli[.]main.*gateway run' 2>/dev/null || true)"
   native_job="$(launchctl list 2>/dev/null | grep 'ai\.hermes\.gateway' || true)"
   [[ -n "$native_gw" || -n "$native_job" ]] && MODE="native"
 fi
@@ -499,10 +499,10 @@ fi
 # wrapper and its child), reporting a false "competing gateway". Exclude the
 # wrapper explicitly.
 proc_list="$(ps -axo command= 2>/dev/null || true)"
-gw_count="$(printf '%s\n' "$proc_list" | awk '/hermes_cli\.main gateway/ && !/stderr_timestamp/' | grep -c . || echo 0)"
+gw_count="$(printf '%s\n' "$proc_list" | awk '/hermes_cli\.main.*gateway run/ && !/stderr_timestamp/' | grep -c . || echo 0)"
 if [[ "$MODE" == "docker" ]]; then
   if [[ "${gw_count:-0}" -gt 0 ]]; then
-    bad "A second gateway is running on the host, competing with the container" "They share ~/.hermes and the same Telegram token, so both fail. macOS: launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist"
+    bad "A second gateway is running on the host, competing with the container" "They share ~/.hermes and the same Telegram token, so both fail. macOS: launchctl unload -w ~/Library/LaunchAgents/ai.hermes.gateway.plist; launchctl disable gui/$(id -u)/ai.hermes.gateway"
   else
     ok "Exactly one gateway (the container) — nothing competing on the host"
   fi

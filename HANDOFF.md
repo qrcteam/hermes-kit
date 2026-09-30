@@ -888,7 +888,7 @@ check turned up `MEMORY.md` and `USER.md` both already OVER their configured cap
 - **RECURRENCE 2026-09-29 — the native gateway came back after a Hermes update.** At 21:13 an
   update rewrote `~/Library/LaunchAgents/ai.hermes.gateway.plist` (launchd bootstrap failed,
   so it started via the "in-process fallback" — **`launchctl list` showed nothing while the
-  gateway ran**; check `pgrep -fl "hermes_cli.main gateway"` instead). Result: Telegram
+  gateway ran**; check `pgrep -fl "hermes_cli.main.*gateway run"` instead — see the 2026-09-30 correction below). Result: Telegram
   polling conflict again = "Hermes is down". Fix applied: `launchctl unload -w` (errors 5,
   harmless — never registered) + **`launchctl disable gui/501/ai.hermes.gateway`** (this is
   the one that sticks across plist rewrites) + kill the PIDs + `docker restart hermes`.
@@ -897,3 +897,20 @@ check turned up `MEMORY.md` and `USER.md` both already OVER their configured cap
   Hermes runs (FTS off, LIKE fallback); offline `.recover` repair (2026-08-17 recipe) pending
   Oz's go. **Expect this after every Hermes update** until the updater stops installing the
   host service. [gotcha]
+- **CORRECTION + state.db REPAIRED 2026-09-30.** The native gateway came BACK at 21:51 the
+  same night and ran alongside the container until morning — my "native: none" verification
+  was a false negative. **Current Hermes launches as `run_module('hermes_cli.main', ...)
+  gateway run`, so the pattern `hermes_cli.main gateway` no longer matches anything.** Use
+  `hermes_cli.main.*gateway run`. Fixed in `templates/install-verify.sh` (mode detection +
+  competing-gateway count — it would have misread every current install) and
+  `docs/06-troubleshooting.md`. **Who started it: Oz, running `hermes setup` natively on the
+  host** 21:33–21:51 while Hermes coached him over Telegram (terminal backend, CLI tools, Nous
+  Subscription). The wizard ends by starting a host gateway via the in-process fallback —
+  launchd `disable` does not stop that. **Running the host setup wizard on a Docker install
+  = two gateways.** Repair (Aug-17 recipe): 7,425/7,425 messages, all tables intact except
+  1 gateway_routing + 2 delivery_obligations rows; both FTS5 indexes needed `'rebuild'`
+  after `.recover`; lost_and_found orphans dropped (kept in quarantine copy). The native
+  gateway had meanwhile opened the repaired file and flipped it to WAL with a bad frame —
+  restored the clean copy again. Everything in
+  `~/.hermes/_quarantine-2026-09-30-state-db-corruption/`. Container connected 07:08,
+  integrity ok, journal_mode delete. [gotcha]
