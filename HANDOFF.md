@@ -914,3 +914,13 @@ check turned up `MEMORY.md` and `USER.md` both already OVER their configured cap
   restored the clean copy again. Everything in
   `~/.hermes/_quarantine-2026-09-30-state-db-corruption/`. Container connected 07:08,
   integrity ok, journal_mode delete. [gotcha]
+- **Why Oz ran host setup (2026-09-30): a per-project bot, `story-room`** (Oz + Mazíx creative
+  room, own bot 8699811774, own SOUL/memory/state.db under `~/.hermes/profiles/story-room`).
+  The profile itself is correctly isolated; the damage came from the wizard ALSO starting a
+  host gateway for the default profile. **The container already serves it** —
+  `gateway.multiplex_profiles: true` in `~/.hermes/config.yaml`; log line
+  `✓ telegram connected (profile: story-room)`. So: **new project bot = new profile under
+  `~/.hermes/profiles/<name>` + `docker restart hermes`; never start a gateway on the host.**
+  Open: story-room's telegram toolset still has terminal/file/code_execution, which can read
+  the container's `/vault` + `/projects` mounts (all BP/personal notes) — profiles isolate
+  memory, not the filesystem. [decision pending]
