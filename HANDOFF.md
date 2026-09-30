@@ -885,3 +885,15 @@ check turned up `MEMORY.md` and `USER.md` both already OVER their configured cap
 - Everything else from earlier in this file (Laurie's install-in-progress status, the Trenton
   runbook rewrite, the claude-driven-install-as-default documentation, WhatsApp debug backlog)
   is unchanged by today's session — this session was scoped entirely to Mazíx's memory pipeline.
+- **RECURRENCE 2026-09-29 — the native gateway came back after a Hermes update.** At 21:13 an
+  update rewrote `~/Library/LaunchAgents/ai.hermes.gateway.plist` (launchd bootstrap failed,
+  so it started via the "in-process fallback" — **`launchctl list` showed nothing while the
+  gateway ran**; check `pgrep -fl "hermes_cli.main gateway"` instead). Result: Telegram
+  polling conflict again = "Hermes is down". Fix applied: `launchctl unload -w` (errors 5,
+  harmless — never registered) + **`launchctl disable gui/501/ai.hermes.gateway`** (this is
+  the one that sticks across plist rewrites) + kill the PIDs + `docker restart hermes`.
+  Connected 21:32. **state.db is b-tree corrupt again** (`quick_check`: invalid page, 2nd
+  reference to page 6244) though `journal_mode: delete` is set — two writers is the cause.
+  Hermes runs (FTS off, LIKE fallback); offline `.recover` repair (2026-08-17 recipe) pending
+  Oz's go. **Expect this after every Hermes update** until the updater stops installing the
+  host service. [gotcha]
