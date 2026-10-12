@@ -927,3 +927,11 @@ check turned up `MEMORY.md` and `USER.md` both already OVER their configured cap
 - **Decided 2026-09-30: story-room KEEPS terminal/file/code tools and `/vault` reach.** Oz:
   "it's ok if it has access to my notes and vault. I trust the people in the chat." Don't
   re-raise. [decision]
+- **Verified 2026-10-12: Hermes ↔ Oz Foundation access.** Two paths. (1) `foundation-oz-bp`
+  MCP (`/opt/data/mcp-node/foundation-mcp/server.mjs`, token `FOUNDATION_OZ_BP_TOKEN`) →
+  `https://clients.beautiful-possibilities.com/api/agent/*` — list/get/create/update for
+  businesses, contacts, tasks, ideas, projects, collection rows + notes/touches/links; **no
+  delete exists anywhere**. Live GET on businesses/tasks/contacts = 200 with real data. Writes
+  NOT exercised (would leave a junk record) — suggested Oz test via Telegram. Note the base path
+  is `/api/agent`, not `/api/v1` (404). (2) `supabase-oz-bp-foundation` postgres MCP as
+  `hermes_ro` — SELECT-only. [state]
