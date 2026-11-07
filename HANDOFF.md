@@ -935,3 +935,25 @@ check turned up `MEMORY.md` and `USER.md` both already OVER their configured cap
   NOT exercised (would leave a junk record) — suggested Oz test via Telegram. Note the base path
   is `/api/agent`, not `/api/v1` (404). (2) `supabase-oz-bp-foundation` postgres MCP as
   `hermes_ro` — SELECT-only. [state]
+- **Mirror backup fixed 2026-11-04 (blocked since the Sep 29 update).** The update added
+  `~/.hermes/installs/` + `tools/` (vendored code, 1.7 GB); sample text there tripped the credential
+  gate every night, so GitHub stopped at Sep 29. Now excluded, plus media/scratch: `/inbox/transcription/`,
+  `/downloads/`, `/tmp/`, `/tts-voices/` (Oz's call: media stays on the Mac only) and the ComfyUI
+  `rest-api.md` doc; gate exception for `set_hermes_home_override(`. **rsync `--delete` does NOT remove
+  newly excluded files from the mirror — move them out by hand or the gate keeps scanning them.** Moved
+  copies: `~/code/_quarantine-2026-11-04-hermes-mirror/`; stuck commit on local branch
+  `quarantine/2026-09-30-oversize`. launchd run pushed `59fb2290`, exit 0. **Future updates may add new
+  top-level folders: first suspect for any new FAILED alert.** Container still v0.20.0, latest v0.22.7:
+  update not done. [gotcha]
+- **Update to v0.23.0 attempted + ROLLED BACK 2026-11-07.** v0.23.0 crash-loops on Docker Desktop Mac:
+  `unsafe_control_path (/opt/data is owned by uid 0, expected uid 10000)` then `unsafe_control_permissions
+  (gateway.sock mode 0755)`. Docker Desktop's fakeowner bind mount ignores chown/chmod (tested: chown inside
+  a container never sticks), so `HERMES_UID`/`HERMES_GID` can't fix it. Open upstream bug #142743 — every
+  release since v0.22.3; v0.22.2 is the last reported-good. Only real workaround is a named volume for
+  /opt/data (breaks mirror backup, vault-promote, host access — rejected). Back on v0.20.0 at 17:13 UTC,
+  ~6 min down, 11,462 messages intact. Stopped v0.23 container kept as `hermes-v0.23.0-trial` (restart=no);
+  backups in `~/.hermes/_backup-2026-11-07-pre-update/`. **Side fix:** story-room `state.db` was still WAL
+  (left by the Sep 30 host wizard) — set to `delete` offline, quick_check ok, and added
+  `database.journal_mode: delete` to `profiles/story-room/config.yaml`. Also: v0.23 drops
+  `session_reset.mode: idle` (needs `hermes plugins install hermes-session-reset-policy`) and the `quo` MCP
+  needs `hermes mcp login quo` — note for whenever the upgrade happens. [gotcha]

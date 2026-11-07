@@ -140,6 +140,15 @@ for the check-in and support. Don't bill for infrastructure you don't own.
 
 Hermes moves fast. Don't chase releases; upgrade when something you need is in one.
 
+> **Mac (Docker Desktop) installs: do not go past v0.22.2** until upstream
+> [#142743](https://github.com/NousResearch/hermes-agent/issues/142743) is fixed. From v0.22.3 on
+> (v0.23.0 confirmed 2026-11-07) the gateway crash-loops with
+> `unsafe_control_permissions (/opt/data/gateway.sock has mode 0755…)` / `unsafe_control_path
+> (/opt/data is owned by uid 0…)`: Docker Desktop's bind mount ignores chmod/chown, so the new
+> socket-safety check rejects every bind-mounted `~/.hermes`. `HERMES_UID`/`HERMES_GID` does not
+> help. Pin a tag (`nousresearch/hermes-agent:v0.22.2`) instead of `:latest`, and **rename the old
+> container instead of `docker rm`** so rollback is one `docker rename` + `docker start`.
+
 ```bash
 docker pull nousresearch/hermes-agent:latest
 docker stop hermes && docker rm hermes
